@@ -9,10 +9,13 @@ import com.abacpoc.engine.DatabricksEngine;
 import com.abacpoc.engine.E6DataEngine;
 import com.abacpoc.engine.Engine;
 import com.abacpoc.scenario.Dr2HotSwap;
+import com.abacpoc.scenario.E6Scenarios;
+import com.abacpoc.scenario.Scenario;
 import com.abacpoc.util.Jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -96,8 +99,13 @@ public class Runner {
     public static void runAll(Engine e, Connection c, List<Case> cases, boolean seeded) {
         int pass = 0, fail = 0, skip = 0, info = 0, error = 0;
 
+        List<Scenario> scenarios = new ArrayList<>();
+        scenarios.add(new Dr2HotSwap());
+        scenarios.addAll(E6Scenarios.all());
+
         System.out.println("================================================================");
-        System.out.println(" ABAC JDBC test suite — " + cases.size() + " cases + DR2 hot-swap scenario (3 checks)");
+        System.out.println(" ABAC JDBC test suite — " + cases.size() + " cases + "
+                         + scenarios.size() + " scenarios");
         System.out.println(" Auth: OAuth M2M as the service principal + per-case custom_claim hot-swap");
         System.out.println(" Fixture: " + (seeded
             ? "seeded namespaced rows (suite_a_*, " + Cases.SUITE_ORG + ") — dropped at the end"
@@ -163,14 +171,16 @@ public class Runner {
             }
         }
 
-        Dr2HotSwap dr2Scenario = new Dr2HotSwap();   // stateful ABAC has_tag() hot-swap scenario (DR2a/b/c)
-        Optional<Capability> missingDr2 = firstMissing(dr2Scenario.requires(), e);
-        if (missingDr2.isPresent()) {
-            System.out.println("   verdict: SKIP (" + e.name() + " lacks " + missingDr2.get() + ")");
-            skip++;
-        } else {
-            int[] dr2 = dr2Scenario.run(e, c);
-            pass += dr2[0]; fail += dr2[1]; skip += dr2[2]; error += dr2[3];
+        for (Scenario s : scenarios) {
+            Optional<Capability> missing = firstMissing(s.requires(), e);
+            if (missing.isPresent()) {
+                System.out.println();
+                System.out.println("[" + s.id() + "] verdict: SKIP (" + e.name() + " lacks " + missing.get() + ")");
+                skip++;
+                continue;
+            }
+            int[] r = s.run(e, c);
+            pass += r[0]; fail += r[1]; skip += r[2]; error += r[3];
         }
 
         System.out.println();
