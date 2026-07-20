@@ -13,9 +13,16 @@ import com.abacpoc.util.Jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class Runner {
+
+    private static Optional<Capability> firstMissing(Set<Capability> required, Engine e) {
+        return required.stream().filter(cap -> !e.supports(cap)).min(Comparator.naturalOrder());
+    }
 
     public static Engine select() {
         String which = System.getenv().getOrDefault("ENGINE", "databricks").trim().toLowerCase();
@@ -101,8 +108,7 @@ public class Runner {
         System.out.println("================================================================");
 
         for (Case cs : cases) {
-            java.util.Optional<Capability> missing = cs.requires().stream()
-                    .filter(cap -> !e.supports(cap)).findFirst();
+            Optional<Capability> missing = firstMissing(cs.requires(), e);
             if (missing.isPresent()) {
                 System.out.println("   verdict: SKIP (" + e.name() + " lacks " + missing.get() + ")");
                 skip++;
@@ -158,8 +164,7 @@ public class Runner {
         }
 
         Dr2HotSwap dr2Scenario = new Dr2HotSwap();   // stateful ABAC has_tag() hot-swap scenario (DR2a/b/c)
-        java.util.Optional<Capability> missingDr2 = dr2Scenario.requires().stream()
-                .filter(cap -> !e.supports(cap)).findFirst();
+        Optional<Capability> missingDr2 = firstMissing(dr2Scenario.requires(), e);
         if (missingDr2.isPresent()) {
             System.out.println("   verdict: SKIP (" + e.name() + " lacks " + missingDr2.get() + ")");
             skip++;
