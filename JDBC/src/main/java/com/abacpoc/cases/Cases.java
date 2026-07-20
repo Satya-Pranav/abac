@@ -543,6 +543,52 @@ public final class Cases {
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
             Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.CLASSIC_RLS)));
 
+        // ---- CL. Malformed / partial IDENTITY CLAIMS against the already-governed `customer` table.
+        //      No new objects — only the claim JSON varies. get_user_context() parses the claim via
+        //      from_json(current_oauth_custom_identity_claim(),
+        //        'STRUCT<tenant:int,user:string,org:string,mode:string,root:string,permissions:array<string>>').
+        //      When a field is absent, explicitly null, or the wrong JSON type, from_json yields NULL
+        //      for that field (never an error, never a default) -- and every branch comparison in
+        //      abac_row_filter against NULL evaluates to NULL, never TRUE. So no branch can fire and
+        //      the row is excluded. Every CL case therefore expects 0 rows: this is the fail-closed
+        //      floor for the whole model. A NON-ZERO count in any CL case would mean a malformed claim
+        //      GRANTS access -- a security finding, not a test bug.
+        //      NOTE: an outright MISSING claim is a different case (C7-adjacent; current_oauth_custom_
+        //      identity_claim() itself hard-errors when the token carries no claim at all). CL covers
+        //      claims that ARE present but malformed -- present-but-unparseable, not absent.
+        cs.add(new Case("CL1", "CL",
+            "Claim missing the `mode` key entirely",
+            "from_json produces ctx.mode = NULL. Branch 1 (mode='DISABLE') is NULL, branch 3a "
+          + "(mode='RBAC_ABAC') is NULL. Only 3b could fire, and this user has no assignment -> 0 rows. "
+          + "The query must NOT return unfiltered data.",
+            "{\"tenant\":1,\"user\":\"u.analyst1@example.com\",\"org\":\"100\",\"root\":\"Customer\",\"permissions\":[]}",
+            "SELECT count(*) FROM " + e.qualify("customer"),
+            Expect.zero()));
+
+        cs.add(new Case("CL2", "CL",
+            "Claim with an explicit null user",
+            "ctx.user = NULL, so the 3b subject match (esa.subjectID = ctx.user) is NULL for every row "
+          + "and no assignment can match -> 0 rows.",
+            "{\"tenant\":1,\"user\":null,\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"Customer\",\"permissions\":[]}",
+            "SELECT count(*) FROM " + e.qualify("customer"),
+            Expect.zero()));
+
+        cs.add(new Case("CL3", "CL",
+            "Claim with `permissions` as a string instead of an array",
+            "The declared struct type is ARRAY<STRING>. A scalar string is not coercible, so "
+          + "ctx.permissions is NULL and array_contains(NULL, ...) is NULL -> branch 2 cannot fire -> 0.",
+            "{\"tenant\":1,\"user\":\"u.analyst1@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"Item\",\"permissions\":\"Customer\"}",
+            "SELECT count(*) FROM " + e.qualify("customer"),
+            Expect.zero()));
+
+        cs.add(new Case("CL4", "CL",
+            "Structurally valid but empty claim object",
+            "Every field is NULL. No branch can evaluate TRUE, so the table is fully filtered -> 0 rows. "
+          + "This is the fail-closed floor: an empty claim must never mean 'no restriction'.",
+            "{}",
+            "SELECT count(*) FROM " + e.qualify("customer"),
+            Expect.zero()));
+
         return cs;
     }
 }
