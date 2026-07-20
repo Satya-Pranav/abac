@@ -328,6 +328,76 @@ public final class Cases {
             Expect.atLeast(20),
             Set.of(Capability.CLASSIC_RLS, Capability.VIEWS)));
 
+        // ---- SC. Policy SCOPE (sql/17): an isolated schema (abac_tpcds.abac_scope) so a
+        //      SCHEMA-level policy cannot reach any main-suite table. These tables live in a
+        //      DIFFERENT schema than the rest of the suite, so they are referenced by literal
+        //      qualified name below, NOT via e.qualify() (which prefixes abac_tpcds.tpcds_1_delta).
+        //      scope_schema_policy (ON SCHEMA) binds has_tag('abac_scope_id') -> scope_filter
+        //      (id <= 10 of 20 fixed rows) across every tagged table in the schema:
+        //        SC1 = scoped_a      -- the first table it governs.
+        //        SC2 = scoped_c      -- a THIRD, otherwise-unrelated table with the SAME tag and
+        //                               governed by NOTHING else, proving schema scope covers every
+        //                               matching member, not just the first (scoped_a).
+        //        SC3 = ungoverned    -- inside the ON SCHEMA scope but carries NO matching tag, so
+        //                               MATCH COLUMNS finds nothing and the policy silently does not
+        //                               apply. THE DANGER: a broken policy fails CLOSED; a
+        //                               non-matching one fails OPEN -- unfiltered, with no error.
+        //        SC4 = scoped_b      -- ALSO carries a second, TABLE-level policy (scope_table_policy,
+        //                               id <= 5). NOT a precedence contest: Unity Catalog allows at
+        //                               most one row filter per table, enforced at query time,
+        //                               table-wide. Both CREATE POLICY statements succeed; the QUERY
+        //                               fails with UC_ABAC_MULTIPLE_ROW_FILTERS (SQLSTATE 42KDJ) --
+        //                               NOT "the more specific (table) policy wins". scoped_b exists
+        //                               solely to carry this conflict; scoped_c (SC2) is unaffected,
+        //                               so the whole script applies in one pass and stays re-runnable.
+        final String SCOPE = "abac_tpcds.abac_scope.";
+
+        cs.add(new Case("SC1", "SC",
+            "ON SCHEMA policy governs a table in that schema",
+            "scope_schema_policy is bound ON SCHEMA, not ON TABLE. scoped_a has the tagged id column, "
+          + "so scope_filter (id <= 10) applies: 10 of 20 rows.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + SCOPE + "scoped_a",
+            Expect.exact(10),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.SCHEMA_SCOPE)));
+
+        cs.add(new Case("SC2", "SC",
+            "ON SCHEMA policy covers EVERY matching member, not just the first",
+            "scoped_c is a THIRD table in the same schema, tagged the same way, and governed by "
+          + "NOTHING but the schema-level policy (unlike scoped_b, which also carries SC4's "
+          + "table-level policy and exists solely for that conflict). Schema scope is a search "
+          + "scope, so it must govern scoped_c identically to scoped_a -- proving scope is not "
+          + "limited to the first table it happened to bind. Deterministic count: nothing above "
+          + "the id <= 10 cutoff is visible.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + SCOPE + "scoped_c WHERE id > 10",
+            Expect.zero(),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.SCHEMA_SCOPE)));
+
+        cs.add(new Case("SC3", "SC",
+            "A table with no matching tag is NOT governed -- returns ALL rows",
+            "`ungoverned` sits inside the policy's ON SCHEMA scope but has no abac_scope_id tag on "
+          + "any column, so MATCH COLUMNS finds nothing for this table and the policy silently does "
+          + "not apply. This is the documented dangerous case: a BROKEN policy fails CLOSED (errors, "
+          + "or blocks everything); a NON-MATCHING one fails OPEN -- unfiltered access, no error at all.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + SCOPE + "ungoverned",
+            Expect.exact(20),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.SCHEMA_SCOPE)));
+
+        cs.add(new Case("SC4", "SC",
+            "Schema-level + table-level row filters CONFLICT -- they do not have a precedence order",
+            "scoped_b is covered by BOTH scope_schema_policy (ON SCHEMA) and scope_table_policy "
+          + "(ON TABLE). This is NOT a precedence test: Databricks permits at most ONE row filter "
+          + "per table, enforced at query time, table-wide. Both CREATE POLICY statements succeed; "
+          + "the QUERY fails with UC_ABAC_MULTIPLE_ROW_FILTERS (SQLSTATE 42KDJ) -- NOT 'the more "
+          + "specific (table) policy wins'. A planner that silently picked one would be wrong, and "
+          + "that is exactly what this case disproves.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + SCOPE + "scoped_b",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.SCHEMA_SCOPE)));
+
         return cs;
     }
 }
