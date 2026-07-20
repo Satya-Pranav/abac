@@ -398,6 +398,65 @@ public final class Cases {
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
             Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.SCHEMA_SCOPE)));
 
+        // ---- TG. MATCH COLUMNS tag BINDING (sql/18): a THIRD isolated schema
+        //      (abac_tpcds.abac_tags) so these policies cannot reach any main-suite table. These
+        //      tables live in a DIFFERENT schema than the rest of the suite, so they are referenced
+        //      by literal qualified name below, NOT via e.qualify() (which prefixes
+        //      abac_tpcds.tpcds_1_delta).
+        //        TG1 = tagval:  two columns (id, other) both carry abac_role, but with DIFFERENT tag
+        //                       VALUES ('filter' vs 'ignore'). has_tag_value('abac_role','filter')
+        //                       must bind ONLY `id`. Discriminating power: id <= 10 of 20 rows -> 10;
+        //                       the same predicate mistakenly applied to `other` (values
+        //                       10,20,...,200 = id*10) would keep only other <= 10 -> exactly 1 row
+        //                       (id=1) -- a different, unambiguous count that would expose a wrong
+        //                       binding.
+        //        TG2 = dualtag: TWO columns (a, b) carry the IDENTICAL tag -- the alias binding is
+        //                       genuinely ambiguous. Both possible bindings give the SAME row COUNT
+        //                       (10), so this case selects `a` itself: the observed id values reveal
+        //                       which column Databricks actually bound. UNKNOWN until observed --
+        //                       ships as INFO; the observed answer becomes the oracle e6data must
+        //                       later reproduce.
+        //        TG3 = notag:   MATCH COLUMNS matches NO column (no tags at all on `notag`). The
+        //                       policy is created successfully but silently DOES NOT APPLY -- all 20
+        //                       rows are visible. THE DANGER: a broken policy fails CLOSED; a
+        //                       non-matching one fails OPEN -- unfiltered, no error at all.
+        final String TAGS_S = "abac_tpcds.abac_tags.";
+
+        cs.add(new Case("TG1", "TG",
+            "has_tag_value() binds only the column whose tag VALUE matches",
+            "Both columns carry abac_role, but with different values. has_tag_value('abac_role','filter') "
+          + "must bind `id` (values 1..20, filter id <= 10 -> 10 rows) and NOT `other` (values 10..200 "
+          + "= id*10; the same predicate applied to `other` would keep only other <= 10, i.e. exactly "
+          + "1 row -- id=1). A count of 10 (not 1) proves the right column was bound.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + TAGS_S + "tagval",
+            Expect.exact(10),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
+        cs.add(new Case("TG2", "TG",
+            "Two columns sharing one tag -- the alias binding is ambiguous",
+            "a = 1..20 and b = 21-a (20..1) both carry abac_dual. tag_filter keeps <= 10, so binding "
+          + "`a` keeps rows 1..10, binding `b` keeps rows where b <= 10 (a in 11..20) -- a DIFFERENT "
+          + "set of 10 rows with the SAME count either way, so row count alone cannot tell them apart. "
+          + "Selecting `a` itself exposes which column was actually bound. INFO first: record the "
+          + "observed id list (or whether Databricks errors on the ambiguity instead), then convert to "
+          + "a hard assertion -- the observed answer is the oracle e6data must reproduce.",
+            DISABLE_CLAIM,
+            "SELECT a FROM " + TAGS_S + "dualtag ORDER BY a",
+            Expect.info(),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
+        cs.add(new Case("TG3", "TG",
+            "A MATCH COLUMNS that matches nothing makes the policy SILENTLY not apply",
+            "notag_policy references a tag no column on `notag` carries. The policy is created "
+          + "successfully -- no DDL error -- and the table returns ALL 20 rows unfiltered. This is "
+          + "the most dangerous failure mode in the whole model: a BROKEN policy fails CLOSED, but a "
+          + "NON-MATCHING one fails OPEN.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + TAGS_S + "notag",
+            Expect.exact(20),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
         return cs;
     }
 }
