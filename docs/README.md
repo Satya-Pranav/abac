@@ -46,4 +46,4 @@ packaged as a project skill:
 
 - **`../abac_docs/`** — the authoritative real customer artifacts (Databricks SQL templates, Sentinel migration scripts, the Java app layer, and **`customer_data/`** — the real metadata-table DDLs + sample data & per-tenant scale estimates, see [`../abac_docs/customer_data/README.md`](../abac_docs/customer_data/README.md)). Source of truth.
 - **`../sql/`** — the runnable execution plan (`00`–`20` + `99`).
-- **`../JDBC/`** — the JDBC client + `AbacTestSuite`; see its own `README.md`.
+- **`../JDBC/`** — the JDBC client + the `Runner` test suite (engine-pluggable); see its own `README.md`.

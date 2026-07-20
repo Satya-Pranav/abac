@@ -49,7 +49,7 @@ abac/
 │   ├── testing/                     ← jdbc-cases.md (60 cases + 8 scenarios), explore-behaviours.md
 │   └── archive/                     ← abac-tpcds-setup-plan.md (superseded draft plan, see §8)
 ├── sql/                             ← the runnable execution plan (00–20, 99)
-├── JDBC/                            ← JDBC client + AbacTestSuite (see JDBC/README.md)
+├── JDBC/                            ← JDBC client + Runner suite (see JDBC/README.md)
 └── abac_docs/                       ← SOURCE OF TRUTH: real customer artifacts
     ├── customer_data/                       ← real metadata-table DDLs + sample data & scale estimates (see its README)
     ├── Databricks/

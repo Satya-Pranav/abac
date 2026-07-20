@@ -56,7 +56,7 @@ Statements API call — this just proves the real driver mechanism matches the r
 
 ## Run the full test suite (all cases at once) — the final program
 
-`AbacTestSuite` runs **every** case from [`../docs/testing/jdbc-cases.md`](../docs/testing/jdbc-cases.md) (ABAC, permissions,
+`Runner` runs **every** case from [`../docs/testing/jdbc-cases.md`](../docs/testing/jdbc-cases.md) (ABAC, permissions,
 RBAC_ABAC, and ctx-edge tinkering) through this same OAuth token hot-swap — re-minting a token with
 a fresh `custom_claim` **per case**. It **auto-detects** whether the deployed `abac_row_filter` is
 2-branch or 3-branch, checks each case against the matching expectation, and logs per case: the
@@ -73,7 +73,7 @@ the header line tells you which happened.
 
 ```bash
 cd JDBC && mvn -q package        # same env vars as above
-java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.AbacTestSuite
+java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
 ```
 
 Per-case output, then a summary:

@@ -6,7 +6,7 @@ Two clients drive it: raw `curl` (SQL Statements API) and the **JDBC client** in
 
 Related files: [`../../README.md`](../../README.md) (master context), [`runbook.md`](runbook.md)
 (raw runbook + exact commands), [`../testing/jdbc-cases.md`](../testing/jdbc-cases.md) (runnable cases
-+ per-row trace of all 43 cases + the DR2 hot-swap scenario), [`sql/`](../../sql/) (the DDL),
++ per-row trace of all 60 cases + 8 scenarios), [`sql/`](../../sql/) (the DDL),
 [`abac_docs/`](../../abac_docs/) (customer source of truth).
 
 ---

@@ -44,9 +44,18 @@ Only when output changes intentionally. There is exactly one sanctioned regenera
 
 ## Reproducing the baseline
 
+> **The original capture can no longer be regenerated.** It was produced by
+> `com.abacpoc.AbacTestSuite`, which Task 4 deleted once its contents had moved into
+> `Runner`/`Cases`/`Dr2HotSwap`. The pre-refactor output is preserved verbatim as
+> `pre-refactor-baseline.txt` — that file is the only remaining record of it.
+
+To run the suite as it exists now (a superset: 60 cases + 8 scenarios):
+
 ```bash
 java -cp JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
-  com.abacpoc.AbacTestSuite > baseline/databricks-baseline.txt 2>&1
+  com.abacpoc.Runner > /tmp/run.txt 2>&1
 ```
 Requires `CLIENT_ID`, `CLIENT_SECRET`, `WORKSPACE_HOST`, `WAREHOUSE_ID`, and `sql/01`–`sql/15`
-applied. Takes ~2 min (DR2 sleeps 10s deliberately).
+applied (`sql/16`–`20` add the newer groups). Takes ~2 min (DR2 sleeps 10s deliberately).
+
+`ENGINE=e6data` selects the other engine; see `docs/deployment/runbook.md`.
