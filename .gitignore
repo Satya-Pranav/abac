@@ -2,6 +2,6 @@ target/
 *.class
 .idea/
 *.iml
-baseline/
+baseline/*.txt
 .superpowers/
 .DS_Store
