@@ -32,6 +32,16 @@ public final class E6DataEngine implements Engine {
     @Override public boolean supports(Capability c) { return false; }
 
     @Override public Connection connect() throws SQLException {
+        // The shaded jar-with-dependencies build overwrites META-INF/services/java.sql.Driver
+        // rather than merging entries, so the e6data driver's own service registration does not
+        // survive into the fat jar and DriverManager's ServiceLoader lookup never finds it.
+        // Explicitly loading the class here is the standard JDBC idiom to force registration.
+        try {
+            Class.forName("io.e6.jdbc.driver.E6Driver");
+        } catch (ClassNotFoundException cnfe) {
+            throw new SQLException("e6data JDBC driver (io.e6.jdbc.driver.E6Driver) is not on the classpath. "
+                + "Check the com.e6data:e6-jdbc-driver dependency in JDBC/pom.xml.", cnfe);
+        }
         String url = "jdbc:e6data://" + host + ":" + port
                    + "/database=" + database + "&catalog=" + catalog;
         Properties props = new Properties();
