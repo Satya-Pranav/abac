@@ -457,6 +457,60 @@ public final class Cases {
             Expect.exact(20),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
+        // ---- UC. The UDF CONTRACT (sql/19): a FOURTH isolated schema (abac_tpcds.abac_udf) so
+        //      these policies cannot reach any main-suite table. Referenced by literal qualified
+        //      name below, NOT via e.qualify() (which prefixes abac_tpcds.tpcds_1_delta).
+        //        UC1 = arity: two_param(id BIGINT, extra STRING) declares TWO params; sql/19's
+        //                     (commented-out) arity_policy supplies only ONE via USING COLUMNS. A
+        //                     row filter auto-supplies NO argument of its own (unlike a column
+        //                     mask's ON COLUMN, which auto-binds arg 1) -- ALL n declared params
+        //                     must appear in USING COLUMNS. EXPECTED: CREATE POLICY is REJECTED
+        //                     (arity mismatch); the SQL script's recorded error, not a row count,
+        //                     is this case's real finding.
+        //        UC2 = type:  date_param(d DATE) is bound via USING COLUMNS to `ts`, a TIMESTAMP
+        //                     column. Either Databricks coerces TIMESTAMP -> DATE and the filter
+        //                     applies (9 of 20 rows), or it rejects the binding and the query
+        //                     errors. Both are legitimate findings.
+        //
+        //      SAME-TABLE NOTE: UC1 and UC2 both query `arity`. Since arity_policy is never created
+        //      (UC1 stays commented out in sql/19), any row count observed against `arity` reflects
+        //      ONLY type_policy (UC2) -- or its absence, if UC2's coercion is instead rejected --
+        //      and says nothing about UC1. UC1's real payload is the CREATE POLICY rejection
+        //      recorded in sql/19, not this count. Because that count is downstream of UC2's
+        //      still-unresolved coercion-vs-rejection question, UC1 ships as Expect.info() too,
+        //      rather than guessing a number that could contradict the live result. Both UC1 and
+        //      UC2 convert to hard assertions together once observed (same pattern as A3/C6/TH3
+        //      and TG2).
+        final String UDF_S = "abac_tpcds.abac_udf.";
+
+        cs.add(new Case("UC1", "UC",
+            "USING COLUMNS arity must match the UDF signature",
+            "two_param declares (id BIGINT, extra STRING) but sql/19's commented-out arity_policy "
+          + "supplies only (id) via USING COLUMNS. Row filters auto-supply NO argument, so all n "
+          + "params must be provided -- CREATE POLICY is expected to be REJECTED with an "
+          + "arity-mismatch error, which the operator records verbatim in sql/19 before re-commenting "
+          + "the block. THAT rejection, not a row count, is this case's real assertion: since "
+          + "arity_policy never exists, this table's count reflects only UC2's type_policy (or its "
+          + "absence). Because UC2's coercion-vs-rejection outcome is itself unresolved, this case "
+          + "ships as INFO rather than asserting a count that depends on an unobserved fact; it "
+          + "converts to a hard assertion alongside UC2 once both are observed.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + UDF_S + "arity",
+            Expect.info(),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
+        cs.add(new Case("UC2", "UC",
+            "Declared DATE param vs bound TIMESTAMP column",
+            "date_param(d DATE) is bound via USING COLUMNS to the TIMESTAMP column ts. Rows are "
+          + "2020-01-02..2020-01-21 and the filter keeps d < 2020-01-11, i.e. 9 of 20 rows, IF "
+          + "Databricks coerces TIMESTAMP -> DATE at bind time. If it instead rejects the type "
+          + "mismatch, the query errors. Both are legitimate findings. INFO first; convert to a hard "
+          + "assertion (Expect.exact or Expect.errorContains) once observed.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + UDF_S + "arity",
+            Expect.info(),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
         return cs;
     }
 }
