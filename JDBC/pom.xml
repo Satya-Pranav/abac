@@ -24,6 +24,16 @@
       <artifactId>databricks-jdbc</artifactId>
       <version>3.4.1</version>
     </dependency>
+
+    <!-- e6data JDBC driver. NOTE: this coordinate does not resolve from any configured remote
+         repository — it must be installed into the local repo first via install-file. See
+         "Running against e6data" in docs/deployment/runbook.md for the exact command and for the
+         deliberate version/jar-build mismatch that command creates. -->
+    <dependency>
+      <groupId>com.e6data</groupId>
+      <artifactId>e6-jdbc-driver</artifactId>
+      <version>1.0.1</version>
+    </dependency>
   </dependencies>
 
   <build>

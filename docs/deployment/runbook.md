@@ -281,6 +281,90 @@ java -jar target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
 
 ---
 
+## 9. Running against e6data
+
+The test suite (`com.abacpoc.Runner`) selects its engine via one env var, defaulting to the
+Databricks flow documented above:
+
+```bash
+export ENGINE=e6data
+```
+
+`E6DataEngine` is a **connection surface only** — see the warning at the end of this section
+before you run it.
+
+### Env vars
+
+```bash
+export E6_HOST="<e6data-host>"
+export E6_PORT="443"            # optional — defaults to 443 if unset
+export E6_CATALOG="<catalog>"
+export E6_DATABASE="<database>"
+export E6_USER="<user>"
+export E6_PASSWORD="<password>"          # from your secret store — do NOT hard-code
+```
+
+All six of `E6_HOST` / `E6_CATALOG` / `E6_DATABASE` / `E6_USER` / `E6_PASSWORD` are required
+(`E6DataEngine` throws `IllegalStateException` at construction if any is missing or empty);
+`E6_PORT` is the only optional one.
+
+### Getting the driver on the classpath: the install-file fallback
+
+`JDBC/pom.xml` declares:
+
+```xml
+<dependency>
+  <groupId>com.e6data</groupId>
+  <artifactId>e6-jdbc-driver</artifactId>
+  <version>1.0.1</version>
+</dependency>
+```
+
+This coordinate is very unlikely to resolve from any configured remote repository. If
+`mvn -q package` fails to resolve it, install the driver jar into your local Maven repo under that
+coordinate:
+
+```bash
+mvn install:install-file \
+  -Dfile=$HOME/Downloads/e6data-jdbc-1.1.28-1158d14.jar \
+  -DgroupId=com.e6data -DartifactId=e6-jdbc-driver -Dversion=1.0.1 -Dpackaging=jar
+```
+
+**⚠️ Deliberate version/jar mismatch — read before you get confused by this months from now.**
+The jar file itself is build **1.1.28** (filename `e6data-jdbc-1.1.28-1158d14.jar`), but the
+command above installs it under Maven coordinate version **1.0.1**. That is intentional, not a
+typo: `1.0.1` is the version the e6-jdbc-driver repo's own `pom.xml` declares, which is what the
+plan/POM pins against. There is currently no published artifact whose Maven version matches the
+`1.1.28` build string, so the working local jar is filed under the coordinate the POM expects.
+If you ever swap in a newer driver build, keep pinning it to `1.0.1` (or bump the version in both
+`pom.xml` and the `install-file` command together) — don't let the two drift independently.
+
+After installing, confirm the driver class actually made it into the shaded jar:
+
+```bash
+unzip -l JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar | grep -c "io/e6/jdbc/driver/E6Driver"
+```
+Expect `1`.
+
+### Running it
+
+```bash
+ENGINE=e6data E6_HOST=<host> E6_PORT=<port> E6_CATALOG=<cat> E6_DATABASE=<db> \
+E6_USER=<user> E6_PASSWORD=<pw> \
+java -cp JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
+```
+
+**A red or skipped run is the expected result today.** `E6DataEngine.supports(...)` returns
+`false` for every `Capability`, so every ABAC case reports `SKIP` rather than running, and
+`E6DataEngine.applyIdentity(...)` unconditionally throws `SQLException` — it is not a no-op. That
+throw is deliberate: the e6data ABAC identity flow doesn't exist yet, and silently no-op'ing here
+would let cases execute with **no identity applied** and report a false `PASS` against unfiltered
+data, which is the single most misleading outcome a governance suite can produce. Do not "fix"
+this by making `applyIdentity` a no-op — implement the real identity flow instead when it lands;
+`applyIdentity` is the one seam meant to change, nothing else in the suite should need to move.
+
+---
+
 ## ⚠️ Review notes (added — answers to the inline questions)
 
 **ⓐ Why is the 3rd column (`org_id`) sent?**
