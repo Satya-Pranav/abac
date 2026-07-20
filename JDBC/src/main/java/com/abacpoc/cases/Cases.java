@@ -1,9 +1,11 @@
 package com.abacpoc.cases;
 
+import com.abacpoc.engine.Capability;
 import com.abacpoc.engine.Engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** The catalog of ABAC test cases plus the shared claim/constant helpers they're built from. */
 public final class Cases {
@@ -290,6 +292,41 @@ public final class Cases {
             "START: sql/15 attached a CLASSIC Unity Catalog row filter DIRECTLY to reason via 'ALTER TABLE reason SET ROW FILTER rls_reason ON (r_reason_sk)' — no governed tag, no CREATE POLICY, no ABAC wrapper; the filter fn is the pure predicate 'k >= 20' and ignores any claim. FILTER: UC applies the table-bound row filter to the SP, keeping only r_reason_sk >= 20. END: count(*) WHERE r_reason_sk < 20 = 0 — a data-independent proof that the classic (table-managed) RLS form filters WITHOUT any ABAC tag/policy machinery. Contrast DR2, which does the same via a has_tag() policy.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + e.qualify("reason") + " WHERE r_reason_sk < 20", Expect.zero()));
+
+        // ---- V. Do row filters propagate through VIEWS? (sql/16) `reason` carries classic RLS
+        //      (rls_reason, r_reason_sk >= 20) and `income_band` carries the ABAC has_tag() policy
+        //      (income_band_dr2_policy, cutoff <= 10 of 20 fixed rows), both bound in sql/15. sql/16
+        //      adds two views over those already-governed base tables and grants the SP SELECT on
+        //      the views — proving the base table's row filter follows through the view rather than
+        //      being bypassed. (v_income_band_governed is named for what it is: income_band IS
+        //      governed, and that governance holding through the view is exactly what V2 tests.)
+        cs.add(new Case("V1", "V",
+            "View over a governed base table inherits the base row filter",
+            "reason carries classic RLS (rls_reason: r_reason_sk >= 20) from sql/15. Querying THROUGH "
+          + "v_reason_governed must still exclude r_reason_sk < 20 — a view must not be a bypass.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + e.qualify("v_reason_governed") + " WHERE r_reason_sk < 20",
+            Expect.zero(),
+            Set.of(Capability.CLASSIC_RLS, Capability.VIEWS)));
+
+        cs.add(new Case("V2", "V",
+            "View over a table governed by an ABAC policy still filters",
+            "v_income_band_governed selects from income_band, which carries the DR2 ABAC has_tag() "
+          + "policy (income_band_dr2_policy, cutoff ib_income_band_sk <= 10) from sql/15. Through the "
+          + "view the same 10-of-20 restriction must hold.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + e.qualify("v_income_band_governed"),
+            Expect.exact(10),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.VIEWS)));
+
+        cs.add(new Case("V3", "V",
+            "Aggregate through a view cannot leak filtered rows",
+            "max(r_reason_sk) is unremarkable, but min() through the view must be >= 20: an aggregate "
+          + "computed over filtered-out rows would reveal their existence.",
+            DISABLE_CLAIM,
+            "SELECT min(r_reason_sk) FROM " + e.qualify("v_reason_governed"),
+            Expect.atLeast(20),
+            Set.of(Capability.CLASSIC_RLS, Capability.VIEWS)));
 
         return cs;
     }
