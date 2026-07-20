@@ -8,12 +8,10 @@ import com.abacpoc.engine.DatabricksEngine;
 import com.abacpoc.engine.E6DataEngine;
 import com.abacpoc.engine.Engine;
 import com.abacpoc.scenario.Dr2HotSwap;
+import com.abacpoc.util.Jdbc;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Runner {
@@ -114,37 +112,37 @@ public class Runner {
             try {
                 e.applyIdentity(c, cs.claim());
                 if (exp.kind == Kind.IDLIST) {                      // assert the projected id list exactly
-                    List<String> actualIds = firstColumn(c, cs.sql());
+                    List<String> actualIds = Jdbc.firstColumn(c, cs.sql());
                     boolean ok = actualIds.equals(exp.ids);
                     System.out.println("   actual : " + actualIds);
                     System.out.println("   verdict: " + (ok ? "PASS" : "FAIL"));
                     if (ok) pass++; else fail++;
                 } else if (exp.kind == Kind.INFO) {
-                    List<String> ids = firstColumn(c, cs.sql());
+                    List<String> ids = Jdbc.firstColumn(c, cs.sql());
                     System.out.println("   actual : " + ids);
                     System.out.println("   verdict: INFO");
                     info++;
                 } else if (exp.kind == Kind.ERR) {
                     try {                                          // this case EXPECTS the query to fail
-                        long actual = count(c, cs.sql());
+                        long actual = Jdbc.count(c, cs.sql());
                         System.out.println("   actual : " + actual + " rows (no error)");
                         System.out.println("   verdict: FAIL (expected an error)");
                         fail++;
                     } catch (SQLException qe) {
                         boolean ok = qe.getMessage() != null && qe.getMessage().contains(exp.text);
-                        System.out.println("   actual : <error> " + shortErr(qe.getMessage()));
+                        System.out.println("   actual : <error> " + Jdbc.shortErr(qe.getMessage()));
                         System.out.println("   verdict: " + (ok ? "PASS (got the expected error)" : "FAIL (different error)"));
                         if (ok) pass++; else fail++;
                     }
                 } else {
-                    long actual = count(c, cs.sql());              // captured under the case claim
+                    long actual = Jdbc.count(c, cs.sql());              // captured under the case claim
                     boolean ok = check(e, c, exp, actual, cs.sql());  // ALL probes the DISABLE total AFTER this
                     System.out.println("   actual : " + actual);
                     System.out.println("   verdict: " + (ok ? "PASS" : "FAIL"));
                     if (ok) pass++; else fail++;
                 }
             } catch (SQLException ex) {
-                System.out.println("   actual : <error> " + shortErr(ex.getMessage()));
+                System.out.println("   actual : <error> " + Jdbc.shortErr(ex.getMessage()));
                 System.out.println("   verdict: ERROR");
                 error++;
             }
@@ -174,7 +172,7 @@ public class Runner {
         try {
             e.applyIdentity(c, Cases.DISABLE_CLAIM);  // fixture reads `customer`; session must carry a claim
             dropFixture(e, c);                                      // clear any leftovers from an aborted run
-            for (String sql : fixtureInserts(e)) exec(c, sql);
+            for (String sql : fixtureInserts(e)) Jdbc.exec(c, sql);
             return true;
         } catch (SQLException e2) {
             System.out.println(" Fixture setup skipped: " + e2.getMessage());
@@ -184,11 +182,7 @@ public class Runner {
 
     /** Delete ONLY the suite-namespaced rows (safe: never touches the real seed). */
     public static void dropFixture(Engine e, Connection c) throws SQLException {
-        for (String sql : fixtureDeletes(e)) exec(c, sql);
-    }
-
-    static void exec(Connection c, String sql) throws SQLException {
-        try (Statement st = c.createStatement()) { st.execute(sql); }
+        for (String sql : fixtureDeletes(e)) Jdbc.exec(c, sql);
     }
 
     static boolean check(Engine e, Connection c, Expect exp, long actual, String sql) throws SQLException {
@@ -205,27 +199,6 @@ public class Runner {
     /** Total rows the query returns unfiltered, measured by re-running it under a DISABLE claim. */
     static long totalUnderDisable(Engine e, Connection c, String sql) throws SQLException {
         e.applyIdentity(c, Cases.DISABLE_CLAIM);
-        return count(c, sql);
-    }
-
-    static long count(Connection c, String sql) throws SQLException {
-        try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            return rs.next() ? rs.getLong(1) : 0L;
-        }
-    }
-
-    /** Collapse a huge multi-line driver error into one readable line. */
-    static String shortErr(String msg) {
-        if (msg == null) return "(no message)";
-        String s = msg.replaceAll("\\s+", " ").trim();
-        return s.length() > 260 ? s.substring(0, 260) + " …" : s;
-    }
-
-    static List<String> firstColumn(Connection c, String sql) throws SQLException {
-        List<String> out = new ArrayList<>();
-        try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) out.add(rs.getString(1));
-        }
-        return out;
+        return Jdbc.count(c, sql);
     }
 }

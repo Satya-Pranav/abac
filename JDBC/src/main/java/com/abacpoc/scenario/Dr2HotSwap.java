@@ -3,11 +3,10 @@ package com.abacpoc.scenario;
 import com.abacpoc.cases.Cases;
 import com.abacpoc.engine.Capability;
 import com.abacpoc.engine.Engine;
+import com.abacpoc.util.Jdbc;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Set;
 
 /** The DR2 hot-swap scenario: the ABAC has_tag() policy on `income_band` binds the stable
@@ -38,7 +37,7 @@ public class Dr2HotSwap implements Scenario {
         try {
             e.applyIdentity(c, Cases.DISABLE_CLAIM);   // dr2_wrapper calls get_user_context() -> session must carry a claim
             // DR2a — baseline: original inner cutoff <= 10 -> 10 of 20 rows
-            long a1 = count(c, CNT);
+            long a1 = Jdbc.count(c, CNT);
             boolean ok1 = (a1 == 10);
             dr2Print("DR2a", "baseline (ABAC policy; dr2_row_filter cutoff <= 10): 10 of 20 rows",
                      CNT, "10", String.valueOf(a1), ok1);
@@ -46,11 +45,11 @@ public class Dr2HotSwap implements Scenario {
 
             // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5
             long t0 = System.nanoTime();
-            exec(c, dr2Def(e, 5));
+            Jdbc.exec(c, dr2Def(e, 5));
             System.out.println();
             System.out.println("   [swapped dr2_row_filter -> cutoff <= 5; waiting 10s before re-asserting ...]");
             sleep(10_000);
-            long a2 = count(c, CNT);
+            long a2 = Jdbc.count(c, CNT);
             long ms = (System.nanoTime() - t0) / 1_000_000;
             boolean ok2 = (a2 == 5);
             dr2Print("DR2b", "after CREATE OR REPLACE (cutoff <= 5) + 10s delay: 5 of 20 rows"
@@ -59,18 +58,18 @@ public class Dr2HotSwap implements Scenario {
             if (ok2) pass++; else fail++;
 
             // revert the inner UDF to its original definition
-            exec(c, dr2Def(e, 10));
-            long a3 = count(c, CNT);
+            Jdbc.exec(c, dr2Def(e, 10));
+            long a3 = Jdbc.count(c, CNT);
             boolean ok3 = (a3 == 10);
             dr2Print("DR2c", "reverted dr2_row_filter -> cutoff <= 10: visible count back to 10",
                      CNT, "10", String.valueOf(a3), ok3);
             if (ok3) pass++; else fail++;
         } catch (SQLException e2) {
-            System.out.println("   actual : <error> " + shortErr(e2.getMessage()));
+            System.out.println("   actual : <error> " + Jdbc.shortErr(e2.getMessage()));
             System.out.println("   verdict: ERROR (DR2 scenario). Ensure sql/15 ran and the SP OWNS dr2_row_filter"
                              + " (CREATE OR REPLACE needs ownership — see sql/15's GRANT CREATE FUNCTION fallback).");
             error++;
-            try { exec(c, dr2Def(e, 10)); } catch (SQLException ignore) { /* best-effort revert */ }
+            try { Jdbc.exec(c, dr2Def(e, 10)); } catch (SQLException ignore) { /* best-effort revert */ }
         }
         return new int[]{pass, fail, error};
     }
@@ -95,24 +94,5 @@ public class Dr2HotSwap implements Scenario {
 
     static void sleep(long ms) {
         try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-    }
-
-    // ---- Private helpers (own copies; see Task 4 report for rationale) ----
-
-    private static void exec(Connection c, String sql) throws SQLException {
-        try (Statement st = c.createStatement()) { st.execute(sql); }
-    }
-
-    private static long count(Connection c, String sql) throws SQLException {
-        try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            return rs.next() ? rs.getLong(1) : 0L;
-        }
-    }
-
-    /** Collapse a huge multi-line driver error into one readable line. */
-    private static String shortErr(String msg) {
-        if (msg == null) return "(no message)";
-        String s = msg.replaceAll("\\s+", " ").trim();
-        return s.length() > 260 ? s.substring(0, 260) + " …" : s;
     }
 }
