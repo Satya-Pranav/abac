@@ -1,4 +1,4 @@
-# JDBC test cases — 43 cases + a DR2 hot-swap scenario, ctx/claim tinkering + per-row filter trace
+# JDBC test cases — 60 cases + 8 scenarios, ctx/claim tinkering + per-row filter trace
 
 The runnable case catalog for the JDBC client (`JDBC/`), **merged with the end-to-end per-row
 flow**. Each case is: **purpose → ctx JSON claim → SQL → expected**, plus a trace down to the exact
@@ -8,7 +8,8 @@ equivalent is the same claim in `CUSTOM_CLAIM`, re-minted per
 the counts match.
 
 Read [§0–§2](#0-the-pipeline-every-query-goes-through) once (the shared machinery), then jump to any
-group. The final [one-line summary](#one-line-summary-per-case) lists all 43 cases (plus the DR2 hot-swap checks).
+group. The final [one-line summary](#one-line-summary-per-case) lists all 60 cases (plus the 8
+scenarios: the DR2 hot-swap's 3 checks + the 7 `E6-*` e6data placeholders).
 
 ```bash
 cd JDBC && mvn -q package        # once
@@ -16,16 +17,18 @@ cd JDBC && mvn -q package        # once
 J() { java -jar target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar "$1" "$2"; }
 ```
 
-> **Run all 43 cases + the DR2 hot-swap scenario at once** with the bundled test suite — it **self-seeds a namespaced fixture**
+> **Run all 60 cases + 8 scenarios at once** with the bundled test suite — it **self-seeds a namespaced fixture**
 > (`suite_a_*` + `SUITE_ORG` / `SUITE_EMPTY`, dropped afterward; needs `MODIFY` per `sql/09`, else it
 > falls back to the existing seed), executes every case below through the real OAuth hot-swap
-> (targeting the **deployed 3-branch filter** — no auto-detect), and logs
-> id / purpose / description / claim / SQL / expected / actual / verdict per case with a
-> `SUMMARY -> PASS x FAIL x INFO x ERROR x` line:
+> (targeting the **deployed 3-branch filter** — no auto-detect), then runs the DR2 hot-swap and the
+> 7 `E6-*` scenarios, and logs id / purpose / description / claim / SQL / expected / actual / verdict
+> per case with a `SUMMARY -> PASS x FAIL x SKIP x INFO x ERROR x` line:
 > ```bash
-> java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.AbacTestSuite
+> java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
 > ```
-> (source: `JDBC/src/main/java/com/abacpoc/AbacTestSuite.java`). Because it seeds its own fixture,
+> (source: `JDBC/src/main/java/com/abacpoc/Runner.java`; the case catalog itself lives in
+> `JDBC/src/main/java/com/abacpoc/cases/Cases.java`). `ENGINE` selects the target (`databricks`,
+> the default, or `e6data`) — see the skill's `poc-playbook.md` §6. Because it seeds its own fixture,
 > Step 0 below is optional for the suite. The individual `J '<claim>' '<sql>'` commands are for
 > running one case ad-hoc.
 
@@ -208,6 +211,19 @@ Case-group coverage against the deployed filter:
 | **conflict (W/WP/WS)** two row filters on one table (`sql/12`, `warehouse`) | ❌ query errors `UC_ABAC_MULTIPLE_ROW_FILTERS` (by design) |
 | **DR1** direct **classic** RLS (`sql/15`, `reason`) | ✅ works — `ALTER TABLE … SET ROW FILTER`, **no tags, no policy** |
 | **DR2** ABAC `has_tag()` policy **hot-swap** (`sql/15`, `income_band`) | ✅ works — replace the inner UDF, wait 10s, re-assert, revert |
+| **CL** malformed/partial identity claims (no new SQL; queries the already-governed `customer`) | ✅ works — **verified live**, part of the current 50 PASS |
+| **V** views over already-governed base tables (`sql/16`) | ⏳ **pending `sql/16`** — expected to inherit the base filter (not yet verified) |
+| **SC** `ON SCHEMA` policy scope, isolated `abac_scope` schema (`sql/17`) | ⏳ **pending `sql/17`** — SC4 expects the same one-row-filter-per-table conflict (not yet verified) |
+| **TG** `MATCH COLUMNS` tag binding, isolated `abac_tags` schema (`sql/18`) | ⏳ **pending `sql/18`** — TG2 ships `INFO` even after applying (the alias binding is genuinely ambiguous) |
+| **UC** UDF arity/type contract, isolated `abac_udf` schema (`sql/19`) | ⏳ **pending `sql/19`** — UC1/UC2 ship `INFO` even after applying (outcome unknown until observed) |
+| **XT** cross-mechanism conflict, isolated `abac_xmech` schema (`sql/20`) | ⏳ **pending `sql/20`** — XT1 expects the conflict to span classic RLS + ABAC (not yet verified) |
+| **E6-\*** e6data scenarios (planner/cache/pool/expiry/retry/breaker/errclass) | `SKIP` on Databricks **by design** — placeholders awaiting the e6data ABAC identity flow |
+
+> **Honesty note on the five rows above marked "pending":** `sql/16`–`20` create the objects those
+> cases query. As of this writing **none of them have been applied** to a live workspace, so their
+> expected results are **derived from the filter/policy definitions in the SQL scripts, not
+> observed**. Treat every "Expect" in the V/SC/TG/UC/XT sections below as a prediction, not a
+> confirmed result, until a live run says otherwise.
 
 ---
 
@@ -668,6 +684,318 @@ policy binding is never touched — no "function in use" conflict), waits **10 s
 
 ---
 
+## ⚠️ Groups V, SC, TG, UC, XT — written but not yet applied to a live workspace
+
+`sql/16`–`20` create every object the six groups below (V, SC, TG, UC, XT — plus CL, which needs
+no new SQL) query. **As of this writing, none of `sql/16`–`20` have been applied** to a live
+Databricks workspace, so:
+
+- Every case in V, SC, TG, UC, XT currently reports `ERROR` (object not found) — **except** SC4 and
+  XT1, which predict a *specific* conflict error and instead currently report `FAIL` (they get
+  "table not found", not `UC_ABAC_MULTIPLE_ROW_FILTERS` — a different error than expected, hence
+  FAIL rather than ERROR).
+- **Every "Expect" below is a prediction derived from the filter/policy definitions in `sql/16`–`20`,
+  not an observed result.** Do not read this section as confirming Databricks behavior — only as
+  documenting what the SQL is designed to do and what the suite will check once it's applied.
+- Two sub-cases (**TG2**, and **UC1**/**UC2**) ship as `Expect.info()` even *after* the SQL is
+  applied, because their real-world outcome is genuinely unknown until observed (an ambiguous
+  `MATCH COLUMNS` alias binding; a row-filter UDF arity/type contract question). They convert to
+  hard assertions only once a live run records the answer — the same INFO→assertion precedent
+  already used for **A3, C6, and TH3** earlier in this catalog.
+- CL (below) is the one exception: it queries the already-governed `customer` table with no new
+  objects, so it **is** verified live (part of the current 50 PASS).
+
+## V. Do row filters propagate through views? (sql/16)
+
+`sql/16` adds two views over base tables that are already governed by sql/15's two mechanisms —
+`reason` (classic RLS, `rls_reason`: keeps `r_reason_sk >= 20`) and `income_band` (the DR2 ABAC
+`has_tag()` policy, cutoff `ib_income_band_sk <= 10` of 20 fixed rows). No new policy is created;
+only the views. All three cases probe whether a view is a bypass.
+
+**V1 — a view over a CLASSIC-RLS table must not bypass the filter (`v_reason_governed`).**
+- *Trace:* `v_reason_governed` is a plain `SELECT r_reason_sk, r_reason_desc FROM reason`. If UC
+  applies the base table's row filter to every access path (not just a direct `SELECT`), the view
+  inherits the same `>= 20` restriction DR1 already proved on the base table.
+- *Expect (not yet verified — pending `sql/16`):* `count(*) WHERE r_reason_sk < 20` through the view
+  = **0** — the same data-independent proof as DR1, now run through a view.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.tpcds_1_delta.v_reason_governed WHERE r_reason_sk < 20"
+```
+
+**V2 — a view over an ABAC `has_tag()` policy table still filters (`v_income_band_governed`).**
+- *Trace:* `v_income_band_governed` selects `ib_income_band_sk` from `income_band`, which carries
+  the DR2 policy (`income_band_dr2_policy` / `dr2_row_filter`, cutoff `<= 10`). The view is named
+  for what it is — `income_band` **is** governed, and that governance holding through the view is
+  exactly what this case tests (an earlier draft mis-named it `v_ungoverned`).
+- *Expect (not yet verified — pending `sql/16`):* **exactly 10** (of 20) — the same restriction
+  DR2a asserts on the base table, unbypassed by the view.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.tpcds_1_delta.v_income_band_governed"
+```
+
+**V3 — an aggregate through a view cannot leak the existence of filtered-out rows.**
+- *Trace:* `min(r_reason_sk)` over `v_reason_governed`. If the view bypassed the filter, the
+  minimum could fall below 20 and reveal that hidden rows exist — the same concern TH3 addresses
+  on a base table.
+- *Expect (not yet verified — pending `sql/16`):* **>= 20**.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT min(r_reason_sk) FROM abac_tpcds.tpcds_1_delta.v_reason_governed"
+```
+
+---
+
+## SC. Policy SCOPE — does `ON SCHEMA` govern every member, and what happens at the edges? (sql/17)
+
+`sql/17` creates the **first** of four isolated schemas this expansion adds —
+`abac_tpcds.abac_scope` — so a schema-level policy here can never reach a main-suite table. All
+four SC cases are referenced by literal qualified name (not `e.qualify()`, which prefixes
+`abac_tpcds.tpcds_1_delta`). `scope_schema_policy` is bound `ON SCHEMA`, not `ON TABLE`, and matches
+`has_tag('abac_scope_id')` → `scope_filter` (`id <= 10` of 20 fixed rows per table).
+
+**SC1 — an `ON SCHEMA` policy governs a table inside its scope (`scoped_a`).**
+- *Trace:* `scoped_a`'s `id` column carries `abac_scope_id`, so the schema-level policy applies to
+  it exactly as a table-level policy would.
+- *Expect (not yet verified — pending `sql/17`):* **exactly 10** (of 20 seeded rows).
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_scope.scoped_a"
+```
+
+**SC2 — schema scope covers every matching member, not just the first (`scoped_c`).**
+- *Trace:* `scoped_c` is a **third** table in the same schema, carrying the identical tag, governed
+  by nothing but the schema-level policy (unlike `scoped_b`, which also carries SC4's table-level
+  policy and exists solely for that conflict). If schema scope only bound the first table it
+  happened to see, `scoped_c` would return unfiltered.
+- *Expect (not yet verified — pending `sql/17`):* `count(*) WHERE id > 10` = **0** — nothing above
+  the cutoff leaks, proving the schema policy reaches every tagged table in scope.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_scope.scoped_c WHERE id > 10"
+```
+
+**SC3 — a table with no matching tag is NOT governed — fails OPEN (`ungoverned`).**
+- *Trace:* `ungoverned` sits inside `abac_scope`'s `ON SCHEMA` reach but carries no `abac_scope_id`
+  tag on any column, so `MATCH COLUMNS has_tag('abac_scope_id')` matches nothing for this table and
+  the policy silently does not apply.
+- *Expect (not yet verified — pending `sql/17`):* **exactly 20** (ALL rows). The dangerous case: a
+  *broken* policy fails CLOSED; a *non-matching* one fails OPEN, with no error at all.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_scope.ungoverned"
+```
+
+**SC4 — schema-level + table-level row filters on the SAME table CONFLICT (`scoped_b`).**
+- *Trace:* `scoped_b` carries both `scope_schema_policy` (ON SCHEMA) and `scope_table_policy` (ON
+  TABLE, `id <= 5`). This is **not** a precedence contest: Unity Catalog allows at most one row
+  filter per table, enforced at query time, regardless of scope level. Both `CREATE POLICY`
+  statements succeed; only the query fails.
+- *Expect (not yet verified — pending `sql/17`):* query **ERROR** containing
+  `UC_ABAC_MULTIPLE_ROW_FILTERS` — **not** "the more specific (table) policy wins". **Currently
+  observed** (schema not yet applied): `FAIL`, because the query instead errors "table not found" —
+  the object doesn't exist yet, a different error than the one this case predicts.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_scope.scoped_b"
+```
+
+---
+
+## TG. `MATCH COLUMNS` tag BINDING — value matching, ambiguity, and no-match (sql/18)
+
+`sql/18` creates the **second** isolated schema, `abac_tpcds.abac_tags`. Same literal-qualified-name
+convention as SC.
+
+**TG1 — `has_tag_value()` binds only the column whose tag VALUE matches (`tagval`).**
+- *Trace:* both `id` and `other` carry the `abac_role` tag, but with different values (`filter` vs
+  `ignore`). `has_tag_value('abac_role','filter')` must resolve to `id` only; if it mistakenly bound
+  `other` (values `id*10`), the same `<= 10` predicate would keep exactly **1** row (`other=10`,
+  i.e. `id=1`) instead of 10 — a clean, discriminable wrong-binding signal.
+- *Expect (not yet verified — pending `sql/18`):* **exactly 10**.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_tags.tagval"
+```
+
+**TG2 — two columns sharing ONE tag: which does the alias bind? (`dualtag`) — ships as INFO.**
+- *Trace:* `a` (1..20) and `b` (21-a, i.e. 20..1) both carry `abac_dual`; `MATCH COLUMNS
+  has_tag('abac_dual') AS c` is genuinely ambiguous about which column `c` means. Both possible
+  bindings give the SAME row count (10 of 20), so a count alone cannot distinguish them — only the
+  actual `a` values (or an outright DDL/query error, if Databricks rejects the ambiguity) reveal
+  which column was bound.
+- *Expect:* **`Expect.info()` — unknown until observed, even after `sql/18` is applied.** Converts
+  to a hard assertion (`Expect.exactIds(...)` or `Expect.errorContains(...)`) once a live run
+  records the answer — same INFO→assertion precedent as A3/C6/TH3.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT a FROM abac_tpcds.abac_tags.dualtag ORDER BY a"
+```
+
+**TG3 — a `MATCH COLUMNS` that matches NO column fails OPEN (`notag`).**
+- *Trace:* `notag_policy`'s `MATCH COLUMNS has_tag('abac_nonexistent_tag')` matches no column on
+  `notag` (it carries no tags at all). `CREATE POLICY` still succeeds — no DDL error — but the
+  policy silently never applies.
+- *Expect (not yet verified — pending `sql/18`):* **exactly 20** (ALL rows) — the same fail-open
+  danger as SC3, here via a tag key that matches nothing rather than a table outside scope.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_tags.notag"
+```
+
+---
+
+## UC. The UDF CONTRACT — arity and type coercion (sql/19)
+
+`sql/19` creates the **third** isolated schema, `abac_tpcds.abac_udf`, with one table (`arity`) that
+both UC cases query.
+
+**UC1 — `USING COLUMNS` arity must match the UDF signature (CREATE POLICY, not a row count) — ships as INFO.**
+- *Trace:* `two_param(id BIGINT, extra STRING)` declares two params; the **deliberately
+  commented-out** `arity_policy` in `sql/19` would supply only `id` via `USING COLUMNS`. A row
+  filter auto-supplies **no** argument of its own (unlike a column mask's `ON COLUMN`, which
+  auto-binds arg 1), so all `n` declared params must appear. `CREATE POLICY` is expected to be
+  **REJECTED** with an arity-mismatch error — that rejection, recorded verbatim by the operator
+  before re-commenting the block, is UC1's real finding, not a row count.
+- *Expect:* **`Expect.info()`.** `SELECT count(*) FROM arity` reflects only UC2's `type_policy` (or
+  its absence) and says nothing about UC1 — both convert to hard assertions together once observed
+  (they share one table by design; see the code comment in `Cases.java`).
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_udf.arity"
+```
+
+**UC2 — a declared DATE param bound to a TIMESTAMP column (`type_policy`) — ships as INFO.**
+- *Trace:* `date_param(d DATE)` is bound via `USING COLUMNS` to `ts`, a TIMESTAMP column (not DATE).
+  Either Databricks coerces TIMESTAMP → DATE at bind time and the filter applies (`ts` runs
+  2020-01-02..2020-01-21; keeping `d < 2020-01-11` would leave **9** of 20 rows), or it rejects the
+  type mismatch and the query errors. Both are legitimate findings.
+- *Expect:* **`Expect.info()`** — the same query as UC1 (`SELECT count(*) FROM arity`); converts to
+  `Expect.exact(9)` or `Expect.errorContains(...)` once observed, alongside UC1.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_udf.arity"
+```
+
+---
+
+## XT. CROSS-MECHANISM conflict — does the one-row-filter limit span BOTH attachment mechanisms? (sql/20)
+
+`sql/20` creates the **fourth** isolated schema, `abac_tpcds.abac_xmech`. Every other conflict case
+in this suite (W1, WP1/WP2, WS1, SC4) stays **within one mechanism** — two ABAC policies, or a
+schema-level policy plus a table-level policy. XT1 is the only case that crosses mechanisms.
+
+**XT1 — a classic `SET ROW FILTER` AND an ABAC policy on the SAME table (`both`).**
+- *Trace:* `abac_xmech.both` carries `xmech_policy` (ABAC, tag-driven, `id <= 10`) **and** a classic
+  `ALTER TABLE ... SET ROW FILTER` (`classic_fn`, `id > 15`) — deliberately **disjoint** predicates,
+  so every possible non-error outcome is diagnostic, not ambiguous.
+- *Expect (hypothesised, not yet verified — pending `sql/20`):* query **ERROR** containing
+  `UC_ABAC_MULTIPLE_ROW_FILTERS` — the one-row-filter-per-table limit spans BOTH mechanisms, not
+  just ABAC-vs-ABAC. A non-error count would instead decode as: **0** = the two filters were ANDed
+  (`id<=10 AND id>15` is empty), **10** = the ABAC policy won, **5** = the classic filter won,
+  **20** = neither applied. **Currently observed** (schema not yet applied): `FAIL`, because the
+  query instead errors "table not found" — a different error than the one this case predicts.
+```bash
+J '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.abac_xmech.both"
+```
+
+---
+
+## CL. Malformed / partial IDENTITY CLAIMS against the already-governed `customer` table
+
+No new SQL objects — only the claim JSON varies, so (unlike V/SC/TG/UC/XT above) **this group is
+verified live**: all four cases are part of the current 50 PASS. `get_user_context()` parses the
+claim via `from_json(current_oauth_custom_identity_claim(), 'STRUCT<tenant:int,user:string,
+org:string,mode:string,root:string,permissions:array<string>>')`. When a field is absent,
+explicitly `null`, or the wrong JSON type, `from_json` yields NULL for that field — never an error,
+never a default — and every branch comparison against NULL evaluates to NULL, never TRUE. So no
+branch can fire and the row is excluded: every CL case expects **0** rows, the fail-closed floor
+for the whole model. A non-zero count in any CL case would be a **security finding**, not a test
+bug. (An outright *missing* claim is different — `current_oauth_custom_identity_claim()` itself
+hard-errors with no claim at all; CL covers claims that ARE present but malformed.)
+
+**CL1 — a claim missing the `mode` key entirely, from a user with NO assignment.**
+- *Trace:* `from_json` yields `ctx.mode = NULL`; branch 1 (`mode='DISABLE'`) and branch 3a
+  (`mode='RBAC_ABAC'`) are both unreadable and never fire. Branch 3b (the per-row `EXISTS`) does
+  **not** read `ctx.mode` at all, so it still runs independent of mode's absence — but
+  `u.nobody@example.com` is used here precisely because it names **no** row in
+  `ABAC_EntitySubjectAssignment` (only the analyst/vendor-manager/developer are seeded there), so
+  3b also fails.
+- *Expect:* **0.**
+```bash
+J '{"tenant":1,"user":"u.nobody@example.com","org":"100","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.tpcds_1_delta.customer"
+```
+
+**CL2 — a claim with an explicit null `user`.**
+- *Trace:* `ctx.user = NULL`, so 3b's subject match (`esa.subjectID = ctx.user`) is NULL for every
+  row and no assignment can match.
+- *Expect:* **0.**
+```bash
+J '{"tenant":1,"user":null,"org":"100","mode":"ABAC","root":"Customer","permissions":[]}' \
+  "SELECT count(*) FROM abac_tpcds.tpcds_1_delta.customer"
+```
+
+**CL3 — `permissions` sent as a scalar STRING instead of an array.**
+- *Trace:* the declared struct type is `ARRAY<STRING>`. A scalar string is not coercible, so
+  `ctx.permissions` is NULL and `array_contains(NULL, ...)` is NULL — branch 2 can never fire.
+- *Expect:* **0.**
+```bash
+J '{"tenant":1,"user":"u.analyst1@example.com","org":"100","mode":"ABAC","root":"Item","permissions":"Customer"}' \
+  "SELECT count(*) FROM abac_tpcds.tpcds_1_delta.customer"
+```
+
+**CL4 — a null ELEMENT inside an otherwise well-typed `permissions` array (distinct from CL1–CL3 and C7).**
+- *Trace:* `root='Item'` while querying `customer` (`object_type='Customer'`), so branch 3's gate
+  fails and only branch 2 is live. `permissions` parses to `array('Other', NULL)` — a null
+  **element** inside a real, non-null array, distinct from CL3 (wrong *type*) and from C7's
+  "every field is NULL" empty claim. `array_contains(array('Other', NULL), 'Customer')` hits SQL's
+  classic "IN with a NULL" ambiguity (FALSE or NULL — which one Spark returns is immaterial), but a
+  `WHERE` predicate admits a row only on TRUE, so branch 2 does not fire either way.
+- *Expect:* **0.**
+```bash
+J '{"tenant":1,"user":"u.analyst1@example.com","org":"100","mode":"ABAC","root":"Item","permissions":["Other",null]}' \
+  "SELECT count(*) FROM abac_tpcds.tpcds_1_delta.customer"
+```
+
+**Observed (live Databricks run): all 4 CL cases PASS.**
+
+---
+
+## E6. e6data scenarios — capability-gated placeholders (awaiting the identity flow)
+
+Seven scenarios (`JDBC/src/main/java/com/abacpoc/scenario/E6Scenarios.java`) specify what the suite
+must assert once `E6DataEngine.applyIdentity` implements the e6data ABAC identity flow. Today that
+method deliberately **throws** rather than no-ops (see `E6DataEngine.java`) — a silent no-op would
+let ABAC cases run with NO identity against unfiltered data and report PASS, the exact false-green
+this whole suite exists to prevent.
+
+| Scenario | What it will assert once implemented |
+| --- | --- |
+| **E6-PLANNER** | Authenticate on planner A, query planner B — identity is honored, not reused or dropped |
+| **E6-CACHE** | After a policy change, a subsequent query reflects it (ASSERT the new result; REPORT how long it took) |
+| **E6-POOL** | Two identities over a reused connection do not bleed into each other |
+| **E6-EXPIRY** | Token expiry mid-flow yields a clean categorized error, never unfiltered rows |
+| **E6-RETRY** | A transient connect failure recovers within a bounded ATTEMPT COUNT (a count, not a duration) |
+| **E6-BREAKER** | Sustained downstream failure surfaces an error to the client (REPORT time to surface; do not assert on it) |
+| **E6-ERRCLASS** | Client errors are distinguishable from internal errors |
+
+**Timing is always REPORTED, never ASSERTED** (project-wide policy): E6-CACHE and E6-BREAKER print
+elapsed milliseconds but only assert on the result/error; E6-RETRY asserts an attempt *count*
+instead of a duration, since wall-clock timing is inherently environment-dependent.
+
+Each scenario declares `Capability.CLAIM_SWAP`. **Current status: all 7 print `SKIP (awaiting the
+e6data ABAC identity flow)`** on both engines today, but for different reasons — on Databricks
+(which claims to support every capability) because the placeholder body always reports SKIP
+regardless of capability; on e6data because `E6DataEngine.supports()` returns `false` for every
+capability, so the capability gate itself skips them. Alongside the DR2 hot-swap (3 checks), this
+brings the suite to **8 scenarios total** — the header line reads
+`ABAC JDBC test suite — 60 cases + 8 scenarios`.
+
+---
+
 ## D. From the customer template — what's reusable
 
 The template (`abac_docs/Databricks/scripts-templates/`) is the source of truth. What carries
@@ -870,11 +1198,53 @@ DROP FUNCTION abac_tpcds.tpcds_1_delta.rf_deny_all;
 | DR2a | ABAC `has_tag` policy, inner cutoff `<=10` | 10 |
 | DR2b | inner UDF swapped `<=5` (+10s delay) | 5 |
 | DR2c | inner UDF reverted `<=10` | 10 |
+| V1 | view over classic RLS (`v_reason_governed`) | 0 *(pending sql/16)* |
+| V2 | view over ABAC `has_tag()` policy (`v_income_band_governed`) | 10 *(pending sql/16)* |
+| V3 | view aggregate floor holds (`min` through the view) | ≥20 *(pending sql/16)* |
+| SC1 | `ON SCHEMA` policy governs a tagged table | 10 *(pending sql/17)* |
+| SC2 | schema scope covers every matching member | 0 *(pending sql/17)* |
+| SC3 | no matching tag → fails OPEN | 20 *(pending sql/17)* |
+| SC4 | schema+table row-filter conflict | ERROR *(pending sql/17; currently FAIL — "table not found")* |
+| TG1 | `has_tag_value()` binds the right column | 10 *(pending sql/18)* |
+| TG2 | ambiguous dual-tag alias | INFO *(pending sql/18 — stays INFO after applying)* |
+| TG3 | `MATCH COLUMNS` matches nothing → fails OPEN | 20 *(pending sql/18)* |
+| UC1 | `USING COLUMNS` arity mismatch (CREATE POLICY rejected) | INFO *(pending sql/19 — stays INFO after applying)* |
+| UC2 | declared DATE param bound to a TIMESTAMP column | INFO *(pending sql/19 — stays INFO after applying)* |
+| XT1 | classic + ABAC row filter on the same table | ERROR *(pending sql/20; currently FAIL — "table not found")* |
+| CL1 | malformed claim: missing `mode` | 0 |
+| CL2 | malformed claim: null `user` | 0 |
+| CL3 | malformed claim: `permissions` as a scalar string | 0 |
+| CL4 | malformed claim: null element inside `permissions` | 0 |
+| E6-PLANNER | e6data scenario (placeholder) | SKIP |
+| E6-CACHE | e6data scenario (placeholder) | SKIP |
+| E6-POOL | e6data scenario (placeholder) | SKIP |
+| E6-EXPIRY | e6data scenario (placeholder) | SKIP |
+| E6-RETRY | e6data scenario (placeholder) | SKIP |
+| E6-BREAKER | e6data scenario (placeholder) | SKIP |
+| E6-ERRCLASS | e6data scenario (placeholder) | SKIP |
 
-Expected suite line: `SUMMARY -> PASS 46 FAIL 0 INFO 0 ERROR 0` — the **43 cases** (all assert; A3/C6/TH3
-are hard assertions against their observed outputs) **plus the 3 DR2 hot-swap checks** = 46. The **4
-conflict cases** (W1/WP1/WP2/WS1) PASS by matching the `UC_ABAC_MULTIPLE_ROW_FILTERS` error text; **DR1**
-proves classic RLS filters with no tags; **DR2a/b/c** prove a live UDF change reflects (10 → 5 → 10).
+Two "expected" lines, depending on what's applied — **neither is a substitute for actually running
+the suite**:
+
+- **Right now** (`sql/16`–`20` not yet applied to a live workspace):
+  `SUMMARY -> PASS 50   FAIL 2   SKIP 7   INFO 0   ERROR 11`. PASS 50 = the original 46 (43 cases,
+  all assert — A3/C6/TH3 are hard assertions against their observed outputs — plus the 3 DR2
+  hot-swap checks) **plus CL1–CL4** (verified live against the already-governed `customer` table, no
+  new SQL needed). FAIL 2 = SC4 and XT1, which predict a *specific* conflict error but currently get
+  "table not found" instead. ERROR 11 = V1–V3, SC1–SC3, TG1–TG3, UC1–UC2 — every other case that
+  queries an object `sql/16`–`20` haven't created yet. SKIP 7 = the seven `E6-*` scenarios. The **4
+  conflict cases** (W1/WP1/WP2/WS1) PASS by matching the `UC_ABAC_MULTIPLE_ROW_FILTERS` error text;
+  **DR1** proves classic RLS filters with no tags; **DR2a/b/c** prove a live UDF change reflects
+  (10 → 5 → 10).
+- **Hypothesised once `sql/16`–`20` are applied** (⚠️ **not yet verified by a live run — a
+  prediction, not a result**): `SUMMARY -> PASS 60   FAIL 0   SKIP 7   INFO 3   ERROR 0`. The 10
+  newly-resolvable hard assertions (V1–V3, SC1–SC4, TG1, TG3, XT1) would raise PASS from the current
+  50 to 60 (the FAIL 2 → 0 and 8 of the ERROR 11 → 0 as those cases flip to PASS); TG2, UC1, and UC2
+  (the remaining 3 of the current ERROR 11) become `INFO` instead of PASS/FAIL — their outcomes are
+  genuinely unknown until observed (the alias-ambiguity and UDF-arity/type questions) — converting to
+  hard assertions only after that observation, the same way A3/C6/TH3 did earlier in this catalog.
+  SKIP 7 (the `E6-*` scenarios) is unaffected by `sql/16`–`20`. **Do not treat this second line as
+  confirmed** — it is derived from reading `sql/16`–`20`'s definitions, not from executing them.
 
 ## Cross-checks
 
@@ -885,4 +1255,5 @@ proves classic RLS filters with no tags; **DR2a/b/c** prove a live UDF change re
 [`../deployment/runbook.md`](../deployment/runbook.md) (end-to-end runbook) ·
 `sql/05_dataset_udfs.sql` (the deployed 3-branch filter) ·
 `sql/13`/`sql/14` (the M and TH onboarding) ·
+`sql/16`–`20` (views / policy scope / tag binding / UDF contract / cross-mechanism — see the V/SC/TG/UC/XT groups above) ·
 [`explore-behaviours.md`](explore-behaviours.md) (owner-side behaviour sweep).

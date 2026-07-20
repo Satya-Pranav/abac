@@ -328,7 +328,7 @@ public final class Cases {
             Expect.atLeast(20),
             Set.of(Capability.CLASSIC_RLS, Capability.VIEWS)));
 
-        // ---- SC. Policy SCOPE (sql/17): an isolated schema (abac_tpcds.abac_scope) so a
+        // ---- SC. Policy SCOPE (sql/17): the FIRST isolated schema (abac_tpcds.abac_scope) so a
         //      SCHEMA-level policy cannot reach any main-suite table. These tables live in a
         //      DIFFERENT schema than the rest of the suite, so they are referenced by literal
         //      qualified name below, NOT via e.qualify() (which prefixes abac_tpcds.tpcds_1_delta).
@@ -398,7 +398,7 @@ public final class Cases {
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
             Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.SCHEMA_SCOPE)));
 
-        // ---- TG. MATCH COLUMNS tag BINDING (sql/18): a THIRD isolated schema
+        // ---- TG. MATCH COLUMNS tag BINDING (sql/18): the SECOND isolated schema
         //      (abac_tpcds.abac_tags) so these policies cannot reach any main-suite table. These
         //      tables live in a DIFFERENT schema than the rest of the suite, so they are referenced
         //      by literal qualified name below, NOT via e.qualify() (which prefixes
@@ -457,7 +457,7 @@ public final class Cases {
             Expect.exact(20),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
-        // ---- UC. The UDF CONTRACT (sql/19): a FOURTH isolated schema (abac_tpcds.abac_udf) so
+        // ---- UC. The UDF CONTRACT (sql/19): the THIRD isolated schema (abac_tpcds.abac_udf) so
         //      these policies cannot reach any main-suite table. Referenced by literal qualified
         //      name below, NOT via e.qualify() (which prefixes abac_tpcds.tpcds_1_delta).
         //        UC1 = arity: two_param(id BIGINT, extra STRING) declares TWO params; sql/19's
@@ -511,7 +511,7 @@ public final class Cases {
             Expect.info(),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
-        // ---- XT. CROSS-MECHANISM conflict (sql/20): a FIFTH isolated schema
+        // ---- XT. CROSS-MECHANISM conflict (sql/20): the FOURTH isolated schema
         //      (abac_tpcds.abac_xmech) so this pairing cannot reach any main-suite table.
         //      Referenced by literal qualified name below, NOT via e.qualify() (which prefixes
         //      abac_tpcds.tpcds_1_delta).

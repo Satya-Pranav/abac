@@ -25,7 +25,7 @@ packaged as a project skill:
 
 | Doc | What it covers |
 |---|---|
-| [`testing/jdbc-cases.md`](testing/jdbc-cases.md) | The **43-case** catalog (+ a DR2 hot-swap scenario) with per-row filter trace: how to run, the tester model, the deployed 3-branch filter, groups A/B/R/C/T-O/M/TH/conflict/DR, and a one-line summary per case |
+| [`testing/jdbc-cases.md`](testing/jdbc-cases.md) | The **60-case + 8-scenario** catalog with per-row filter trace: how to run, the tester model, the deployed 3-branch filter, groups A/B/R/C/T-O/M/TH/conflict/DR/V/SC/TG/UC/XT/CL, the DR2 + e6data scenarios, and a one-line summary per case. Groups V/SC/TG/UC/XT are written but **not yet verified live** (`sql/16`–`20` pending apply) |
 | [`testing/explore-behaviours.md`](testing/explore-behaviours.md) | Owner-side behaviour sweep (`sql/11`) — ctx/claim/mode/metadata grids, RBAC_ABAC, which filter is live |
 
 ## Design & findings
@@ -45,5 +45,5 @@ packaged as a project skill:
 ## Not in `docs/`
 
 - **`../abac_docs/`** — the authoritative real customer artifacts (Databricks SQL templates, Sentinel migration scripts, the Java app layer, and **`customer_data/`** — the real metadata-table DDLs + sample data & per-tenant scale estimates, see [`../abac_docs/customer_data/README.md`](../abac_docs/customer_data/README.md)). Source of truth.
-- **`../sql/`** — the runnable execution plan (`00`–`14` + `99`).
+- **`../sql/`** — the runnable execution plan (`00`–`20` + `99`).
 - **`../JDBC/`** — the JDBC client + `AbacTestSuite`; see its own `README.md`.

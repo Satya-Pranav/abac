@@ -112,8 +112,18 @@ UDFs (`get_user_context`, `entity_type_to_object_type`, …) → `05` the row fi
 owner-side validation (test wrapper, no policy) → `07` tags → `08` policies → `09` grants → `10` live
 SP validation → `11` owner behaviour sweep. Extras: `12` row-filter conflict, `13` onboard 4 more
 tables, `14` threshold/range filter, `15` direct **classic RLS** (`reason`, `SET ROW FILTER`, no tags)
-+ an ABAC `has_tag()` policy whose inner UDF the suite **hot-swaps** live (`income_band`).
-**Checkpoint:** validate through `06` (as owner) before attaching policies.
++ an ABAC `has_tag()` policy whose inner UDF the suite **hot-swaps** live (`income_band`), `16`
+**views** over already-governed base tables (does a view bypass the filter?), `17` **policy SCOPE**
+(`ON SCHEMA` vs `ON TABLE`, an isolated `abac_scope` schema), `18` **tag BINDING** (`has_tag_value()`
+matching, an ambiguous dual-tag alias, a no-match fail-open, an isolated `abac_tags` schema), `19`
+the **UDF CONTRACT** (`USING COLUMNS` arity, declared-vs-bound type coercion, an isolated `abac_udf`
+schema), `20` **cross-mechanism** conflict (classic RLS + an ABAC policy on the same table, an
+isolated `abac_xmech` schema).
+**Checkpoint:** validate through `06` (as owner) before attaching policies. `16`–`20` are each
+self-contained and idempotent, applied **as owner** in numeric order — see `docs/testing/jdbc-cases.md`
+(groups V, SC, TG, UC, XT) for the cases each one unlocks. **As of this writing `16`–`20` have not
+yet been applied to a live workspace**, so those cases still report `ERROR`/`FAIL` pending that apply
+— their expected results in the case catalog are derived from these scripts' definitions, not observed.
 
 ## 5. Variations you can build on the same skeleton
 
@@ -133,10 +143,17 @@ tables, `14` threshold/range filter, `15` direct **classic RLS** (`reason`, `SET
   effective identity is `claim.user`, which must equal a seeded `subjectID`. Wrong/empty user → 0.
 - **Owners bypass row filters** — to see filtering you must run as the SP. Owner-side, validate logic
   by calling a *test wrapper* with a literal ctx (`sql/06`, `sql/11`) — no policy needed.
-- **The 43-case JDBC suite + DR2 hot-swap scenario** (`AbacTestSuite.java`) self-seeds a namespaced fixture, injects each
-  claim via the OAuth hot-swap, and asserts row counts / error text. Groups: A (pure ABAC), B-perm
-  (permissions branch), R (RBAC_ABAC org tree), C (claim parsing/case), T/O (tenant & org
-  sensitivity), M/N (new governed tables), TH (threshold), W/WP/WS (conflict negatives). Full catalog
+- **The 60-case JDBC suite + 8 scenarios** (`Runner.java`, cases in `cases/Cases.java`) self-seeds a
+  namespaced fixture, injects each claim via the OAuth hot-swap, and asserts row counts / error text.
+  `ENGINE` (env var) selects the target — `databricks` (default) or `e6data`; capability gating
+  (`Capability` + `Engine.supports()`) reports `SKIP`, not a false PASS/FAIL, for any case or
+  scenario the selected engine doesn't support yet. Groups: A (pure ABAC), B-perm (permissions
+  branch), R (RBAC_ABAC org tree), C (claim parsing/case), T/O (tenant & org sensitivity), M/N (new
+  governed tables), TH (threshold), W/WP/WS (conflict negatives), V (views, `sql/16`), SC (policy
+  scope, `sql/17`), TG (tag binding, `sql/18`), UC (UDF contract, `sql/19`), XT (cross-mechanism,
+  `sql/20`), CL (malformed claims). Scenarios: DR2 (hot-swap, `sql/15`) + 7 `E6-*` placeholders
+  awaiting the e6data ABAC identity flow. **V/SC/TG/UC/XT are not yet verified live** — `sql/16`–`20`
+  haven't been applied to a workspace yet; CL needs no new SQL and is already verified. Full catalog
   + per-row trace: `docs/testing/jdbc-cases.md`.
 - **Deterministic assertions beat data-dependent ones.** E.g. the threshold proof: `count(*) WHERE
   qty < 500` = 0 is guaranteed because the row filter (`qty >= 500`) is ANDed with the query

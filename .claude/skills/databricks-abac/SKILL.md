@@ -19,7 +19,9 @@ Reference material under this skill:
   e6data planner-side view): full `CREATE POLICY` grammar, argument binding, tag inheritance, conflict
   rules, limits, fail-closed. **Read this for "how does Databricks ABAC actually behave?"**
 - **`references/poc-playbook.md`** — the concrete POC on TPC-DS: the deployed 3-branch row filter, the
-  OAuth `custom_claim` hot-swap, the deploy order, and the 43-case JDBC test methodology (+ classic-RLS and live-UDF-swap cases). **Read this
+  OAuth `custom_claim` hot-swap, the deploy order, and the 60-case + 8-scenario JDBC test methodology
+  (classic-RLS/live-UDF-swap cases, views, policy scope, tag binding, the UDF contract,
+  cross-mechanism conflicts, malformed claims, and e6data-engine scenario placeholders). **Read this
   for "how do I author/deploy/test one of these end to end?"**
 - **`references/unity-catalog-governance.md`** — the broader Unity Catalog governance model (RBAC,
   ABAC, RLS/CLS, workspace–catalog bindings, storage credentials) and how these row-filter/column-mask
@@ -77,6 +79,16 @@ UDF                      = the BOOLEAN filter / masking logic run per row/value 
 | **Columns never inherit tags** — table/schema/catalog tags do inherit (different keys accumulate; same key overrides) | tag every target/input column **directly** |
 | **Fail-closed**: deleted UDF/governed tag, conflicting filters, unsupported compute/time-travel | the query is **blocked**, not silently unfiltered |
 | **Owners / metastore admins bypass row filters** | to observe filtering, query **as the target principal** (e.g. the service principal in `TO`) |
+
+**Expectations awaiting a live run (hypotheses, not yet confirmed).** The POC's `sql/17`–`20` write
+the objects for these cases, but as of this writing they have not been applied to a live workspace —
+so the rows below are *predictions*, phrased as such, not settled facts like the table above:
+
+| Rule (hypothesis — not yet confirmed) | Consequence if confirmed |
+|---|---|
+| A **schema-level (`ON SCHEMA`) + a table-level (`ON TABLE`) row filter on the SAME table** are *expected* to hit the identical one-row-filter-per-table conflict two table-level policies hit — **not** "the more specific (table) policy wins". *POC case SC4, `sql/17` — pending a live run.* | Don't rely on scope granularity as a precedence mechanism; design one filter per table regardless of the scope it's attached at. |
+| A **`MATCH COLUMNS` tag that exists on NO column anywhere on a table** is *expected* to fail OPEN the same way a tag that only partially matches does. *POC case TG3, `sql/18` — pending a live run.* | A policy referencing a nonexistent tag key is created successfully (no DDL error) and silently never applies — the same fail-open danger as the general `MATCH COLUMNS` rule above, reached via a different route (zero matches anywhere, not a near-miss). |
+| The **one-row-filter-per-table limit is expected to span BOTH mechanisms** — classic `ALTER TABLE ... SET ROW FILTER` **and** an ABAC `CREATE POLICY` row filter on the same table. *POC case XT1, `sql/20` — pending a live run.* | Mixing the two attachment mechanisms on one table would also error `UC_ABAC_MULTIPLE_ROW_FILTERS`; a non-error count instead would mean the two mechanisms are tracked independently (or ANDed) — see `docs/testing/jdbc-cases.md`'s XT1 decode table for how to read whichever outcome shows up. |
 
 ## The row-filter UDF pattern (as deployed in the POC)
 
