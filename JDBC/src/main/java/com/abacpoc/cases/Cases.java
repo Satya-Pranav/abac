@@ -557,18 +557,26 @@ public final class Cases {
         //      identity_claim() itself hard-errors when the token carries no claim at all). CL covers
         //      claims that ARE present but malformed -- present-but-unparseable, not absent.
         cs.add(new Case("CL1", "CL",
-            "Claim missing the `mode` key entirely",
-            "from_json produces ctx.mode = NULL. Branch 1 (mode='DISABLE') is NULL, branch 3a "
-          + "(mode='RBAC_ABAC') is NULL. Only 3b could fire, and this user has no assignment -> 0 rows. "
-          + "The query must NOT return unfiltered data.",
-            "{\"tenant\":1,\"user\":\"u.analyst1@example.com\",\"org\":\"100\",\"root\":\"Customer\",\"permissions\":[]}",
+            "Claim missing the `mode` key entirely, sent by a user with NO assignment",
+            "from_json produces ctx.mode = NULL. Branch 1 (mode='DISABLE') is NULL and branch 3a "
+          + "(mode='RBAC_ABAC') is NULL -- both unreadable without a mode, regardless of who ctx.user "
+          + "is. Branch 3b (the per-row EXISTS) does NOT read ctx.mode at all, so it fires or fails "
+          + "independent of mode's absence; it depends only on esa.subjectID = ctx.user matching a "
+          + "live, active, non-deleted assignment. u.nobody@example.com is used here precisely because "
+          + "it appears in NO ABAC_EntitySubjectAssignment row in sql/03_seed_metadata.sql -- only "
+          + "u.analyst1@example.com (Customer 2012), u.vendor.mgr@example.com (Item 3006), and "
+          + "u.developer@example.com (StoreSale 118144) are seeded there -- so 3b's EXISTS also fails "
+          + "-> 0 rows. A non-zero count here would mean a malformed claim (missing mode) GRANTS "
+          + "access -- a security finding, not a test bug.",
+            "{\"tenant\":1,\"user\":\"u.nobody@example.com\",\"org\":\"100\",\"root\":\"Customer\",\"permissions\":[]}",
             "SELECT count(*) FROM " + e.qualify("customer"),
             Expect.zero()));
 
         cs.add(new Case("CL2", "CL",
             "Claim with an explicit null user",
             "ctx.user = NULL, so the 3b subject match (esa.subjectID = ctx.user) is NULL for every row "
-          + "and no assignment can match -> 0 rows.",
+          + "and no assignment can match -> 0 rows. A non-zero count here would mean a malformed claim "
+          + "(null user) GRANTS access -- a security finding, not a test bug.",
             "{\"tenant\":1,\"user\":null,\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"Customer\",\"permissions\":[]}",
             "SELECT count(*) FROM " + e.qualify("customer"),
             Expect.zero()));
@@ -576,16 +584,32 @@ public final class Cases {
         cs.add(new Case("CL3", "CL",
             "Claim with `permissions` as a string instead of an array",
             "The declared struct type is ARRAY<STRING>. A scalar string is not coercible, so "
-          + "ctx.permissions is NULL and array_contains(NULL, ...) is NULL -> branch 2 cannot fire -> 0.",
+          + "ctx.permissions is NULL and array_contains(NULL, ...) is NULL -> branch 2 cannot fire -> 0. "
+          + "A non-zero count here would mean a malformed claim (permissions as a scalar string) GRANTS "
+          + "access -- a security finding, not a test bug.",
             "{\"tenant\":1,\"user\":\"u.analyst1@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"Item\",\"permissions\":\"Customer\"}",
             "SELECT count(*) FROM " + e.qualify("customer"),
             Expect.zero()));
 
         cs.add(new Case("CL4", "CL",
-            "Structurally valid but empty claim object",
-            "Every field is NULL. No branch can evaluate TRUE, so the table is fully filtered -> 0 rows. "
-          + "This is the fail-closed floor: an empty claim must never mean 'no restriction'.",
-            "{}",
+            "Claim with a null ELEMENT inside `permissions` (not covered by CL1-CL3 or C1-C8)",
+            "root='Item' while querying customer (object_type='Customer'), so branch 3's gate "
+          + "(root=object_type) is FALSE and only branch 2 is live: 'root<>object_type AND "
+          + "array_contains(ctx.permissions, object_type)'. permissions parses to ARRAY('Other', "
+          + "NULL) -- a null ELEMENT inside an otherwise well-typed array, distinct from CL3 (permissions "
+          + "is the WRONG TYPE, a scalar string) and from C7's 'everything is NULL' empty-claim case: "
+          + "here permissions is a real, non-null array that merely contains one null entry. "
+          + "The target value 'Customer' is deliberately NOT one of the array's non-null elements, so "
+          + "array_contains(array('Other', NULL), 'Customer') hits SQL's classic 'IN with a NULL' "
+          + "ambiguity: it may evaluate to FALSE (value absent) or to NULL (an unresolved NULL element "
+          + "means the engine cannot be certain the value is absent). Which one Spark actually returns "
+          + "is immaterial here: the row filter is applied as a WHERE predicate, and a WHERE clause "
+          + "admits a row only when its predicate is TRUE -- FALSE and NULL exclude it identically. So "
+          + "branch 2 does not fire either way; branch 1 is FALSE (mode='ABAC' is not DISABLE) and "
+          + "branch 3 is FALSE (the root gate fails), so every row is excluded -> 0 rows. A non-zero "
+          + "count here would mean a malformed claim (a null inside permissions) GRANTS access -- a "
+          + "security finding, not a test bug.",
+            "{\"tenant\":1,\"user\":\"u.analyst1@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"Item\",\"permissions\":[\"Other\",null]}",
             "SELECT count(*) FROM " + e.qualify("customer"),
             Expect.zero()));
 
