@@ -304,7 +304,7 @@ export E6_USER="<user>"
 export E6_PASSWORD="<password>"          # from your secret store — do NOT hard-code
 ```
 
-All six of `E6_HOST` / `E6_CATALOG` / `E6_DATABASE` / `E6_USER` / `E6_PASSWORD` are required
+All five of `E6_HOST` / `E6_CATALOG` / `E6_DATABASE` / `E6_USER` / `E6_PASSWORD` are required
 (`E6DataEngine` throws `IllegalStateException` at construction if any is missing or empty);
 `E6_PORT` is the only optional one.
 

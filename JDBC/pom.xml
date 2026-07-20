@@ -40,6 +40,16 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <!-- CAUTION for whoever adds the NEXT JDBC driver: jar-with-dependencies OVERWRITES
+             META-INF/services/* rather than merging them, so only ONE driver's
+             META-INF/services/java.sql.Driver entry survives into the shaded jar. Today the
+             Databricks entry wins and e6data's is clobbered — which is why
+             E6DataEngine.connect() calls Class.forName("io.e6.jdbc.driver.E6Driver")
+             explicitly. Which driver survives is an accident of unpack order, NOT pinned
+             behavior: it can flip on a dependency-order or plugin-version change, with no
+             compile-time signal — only a runtime "No suitable driver found". If you add a
+             third driver, load it explicitly too, or switch to maven-shade-plugin with
+             ServicesResourceTransformer (which merges service files properly). -->
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.7.1</version>
         <configuration>
