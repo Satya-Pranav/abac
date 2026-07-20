@@ -23,14 +23,14 @@
 - **Baseline is 43 cases + 3 DR2 checks = 46.** Any change to this count before Task 5 is a bug.
 - **The operator runs all Databricks verification steps** — they require `CLIENT_ID`, `CLIENT_SECRET`, `WORKSPACE_HOST`, `WAREHOUSE_ID`, which are not available to the implementing agent.
 - Build: `cd JDBC && mvn -q package`. Run: `java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner`.
-- **No version control.** This is a temporary staging setup; the finished suite gets merged into the
-  regression repo, which is where history will live. There are no commit steps in this plan.
-
-> **Consequence worth planning around:** Tasks 2–4 restructure ~650 lines across new files with no
-> undo. Before starting Task 2, take a one-time snapshot so a failed gate is recoverable:
-> `tar czf /tmp/abac-jdbc-src-snapshot.tgz JDBC/src JDBC/pom.xml`
-> Restoring is `tar xzf /tmp/abac-jdbc-src-snapshot.tgz`. Cheap insurance for the only irreversible
-> stretch of the plan.
+- **Version control:** local git repo (`main`), initialized at `69d25b8`. **Each task ends with one
+  commit** covering its files — the step is not written out per task; it is this standing rule.
+  History is local staging only; the finished suite is destined for the regression repo.
+- **Gate cadence:** Tasks 2, 3, and 4 each end in an operator-run identical-output gate.
+  **Execution stops after each** until that gate passes, so a diff always names exactly one task.
+  This is the entire reason the plan is refactor-first — do not batch these three.
+- **Phase 1 SQL:** Tasks 7–12 write their `sql/` scripts and cases without applying them. The
+  operator applies `sql/16`–`sql/20` in one sitting, then all new groups are verified together.
 
 ---
 
