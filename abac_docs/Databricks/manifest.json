@@ -1,0 +1,38 @@
+{
+			"module": "ABAC",
+			"sqlFileLocation": "app.metadata.sql.ABAC",
+			"sparktables": [
+				{
+					"tblName": "entity_type_to_object_type",
+					"createSQL": "create_entity_type_to_object_type.sql"
+				},
+				{
+					"tblName": "get_user_context",
+					"createSQL": "create_get_user_context.sql"
+				},
+				{
+					"tblName": "mask_column",
+					"createSQL": "create_mask_column.sql"
+				},
+				{
+					"tblName": "object_type_to_permission",
+					"createSQL": "create_object_type_to_permission.sql"
+				},
+				{
+					"tblName": "policy_default",
+					"policySQL": "create_policy_default.sql"
+				},
+				{
+					"tblName": "policy_no_type",
+					"policySQL": "create_policy_no_type.sql"
+				},
+				{
+					"tblName": "row_filter",
+					"createSQL": "create_row_filter.sql"
+				},
+				{
+					"tblName": "row_filter_wrapper",
+					"createSQL": "create_row_filter_wrapper.sql"
+				}
+			]
+}
