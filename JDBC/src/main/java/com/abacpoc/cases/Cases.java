@@ -511,6 +511,38 @@ public final class Cases {
             Expect.info(),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
+        // ---- XT. CROSS-MECHANISM conflict (sql/20): a FIFTH isolated schema
+        //      (abac_tpcds.abac_xmech) so this pairing cannot reach any main-suite table.
+        //      Referenced by literal qualified name below, NOT via e.qualify() (which prefixes
+        //      abac_tpcds.tpcds_1_delta).
+        //        XT1 = both: a tag-driven ABAC CREATE POLICY row filter (abac_fn, id <= 10) AND a
+        //                    classic ALTER TABLE ... SET ROW FILTER (classic_fn, id > 15) attached
+        //                    to the SAME table. Every other row-filter-conflict case in this suite
+        //                    (W1, WP1/WP2, WS1, SC4) stays WITHIN one mechanism -- two ABAC
+        //                    policies, or schema-level + table-level ABAC policies. This is the
+        //                    only case that crosses mechanisms, asking whether the one-row-filter-
+        //                    per-table limit is tracked per mechanism or per table.
+        //
+        //      The two predicates are DELIBERATELY DISJOINT (id <= 10 vs id > 15 of 20 seeded
+        //      rows), so every non-error outcome is diagnostic rather than ambiguous:
+        //        ERROR (UC_ABAC_MULTIPLE_ROW_FILTERS) -> the limit spans BOTH mechanisms (expected)
+        //        0  -> the two filters were ANDed together (id <= 10 AND id > 15 is empty)
+        //        10 -> the ABAC policy won                5 -> the classic filter won
+        //        20 -> neither mechanism applied
+        final String XMECH_S = "abac_tpcds.abac_xmech.";
+
+        cs.add(new Case("XT1", "XT",
+            "Classic SET ROW FILTER + ABAC policy on the SAME table",
+            "abac_fn keeps id <= 10; classic_fn keeps id > 15. The two predicates are DISJOINT, so any "
+          + "non-error result is diagnostic: 0 rows means they were ANDed, 10 means the ABAC policy won, "
+          + "5 means classic won, 20 means neither applied. Expect instead the same one-row-filter-per-"
+          + "table conflict Databricks raises for two ABAC policies -- proving the limit is per TABLE, not "
+          + "per mechanism.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + XMECH_S + "both",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.CLASSIC_RLS)));
+
         return cs;
     }
 }
