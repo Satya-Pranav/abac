@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public final class DatabricksEngine implements Engine {
 
-    /** Unchanged from AbacTestSuite.DB — the refactor must not move any table. */
+    /** Unchanged prefix — the refactor must not move any table. */
     private static final String PREFIX = "abac_tpcds.tpcds_1_delta.";
 
     private final String host, warehouseId, clientId, clientSecret;
