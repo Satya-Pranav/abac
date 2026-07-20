@@ -35,7 +35,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.abacpoc.AbacJdbcClient</mainClass>
+              <mainClass>com.abacpoc.Runner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

@@ -80,9 +80,9 @@ public class AbacJdbcClient {
 
     /**
      * Reproduces DatabricksConnectionProxy.checkClaim() + newProvider().
-     * Package-private + static so AbacTestSuite can re-swap the claim per test case.
+     * Public + static so DatabricksEngine (com.abacpoc.engine) can delegate to it per test case.
      */
-    static void injectCustomClaim(Connection connection, String ctxJson) throws SQLException {
+    public static void injectCustomClaim(Connection connection, String ctxJson) throws SQLException {
         DatabricksConnection dconnection = connection.unwrap(DatabricksConnection.class);
         IDatabricksClient client = dconnection.getSession().getDatabricksClient();
         IDatabricksConnectionContext ctx = client.getConnectionContext();
