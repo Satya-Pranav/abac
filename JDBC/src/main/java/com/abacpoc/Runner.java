@@ -4,6 +4,7 @@ import com.abacpoc.cases.Case;
 import com.abacpoc.cases.Cases;
 import com.abacpoc.cases.Expect;
 import com.abacpoc.cases.Expect.Kind;
+import com.abacpoc.engine.Capability;
 import com.abacpoc.engine.DatabricksEngine;
 import com.abacpoc.engine.E6DataEngine;
 import com.abacpoc.engine.Engine;
@@ -86,7 +87,7 @@ public class Runner {
     }
 
     public static void runAll(Engine e, Connection c, List<Case> cases, boolean seeded) {
-        int pass = 0, fail = 0, info = 0, error = 0;
+        int pass = 0, fail = 0, skip = 0, info = 0, error = 0;
 
         System.out.println("================================================================");
         System.out.println(" ABAC JDBC test suite — " + cases.size() + " cases + DR2 hot-swap scenario (3 checks)");
@@ -100,6 +101,14 @@ public class Runner {
         System.out.println("================================================================");
 
         for (Case cs : cases) {
+            java.util.Optional<Capability> missing = cs.requires().stream()
+                    .filter(cap -> !e.supports(cap)).findFirst();
+            if (missing.isPresent()) {
+                System.out.println("   verdict: SKIP (" + e.name() + " lacks " + missing.get() + ")");
+                skip++;
+                continue;
+            }
+
             Expect exp = cs.exp();
 
             System.out.println();
@@ -148,13 +157,22 @@ public class Runner {
             }
         }
 
-        int[] dr2 = new Dr2HotSwap().run(e, c);   // stateful ABAC has_tag() hot-swap scenario (DR2a/b/c)
-        pass += dr2[0]; fail += dr2[1]; error += dr2[3];
+        Dr2HotSwap dr2Scenario = new Dr2HotSwap();   // stateful ABAC has_tag() hot-swap scenario (DR2a/b/c)
+        java.util.Optional<Capability> missingDr2 = dr2Scenario.requires().stream()
+                .filter(cap -> !e.supports(cap)).findFirst();
+        if (missingDr2.isPresent()) {
+            System.out.println("   verdict: SKIP (" + e.name() + " lacks " + missingDr2.get() + ")");
+            skip++;
+        } else {
+            int[] dr2 = dr2Scenario.run(e, c);
+            pass += dr2[0]; fail += dr2[1]; skip += dr2[2]; error += dr2[3];
+        }
 
         System.out.println();
         System.out.println("================================================================");
         System.out.println(" SUMMARY  ->  PASS " + pass
-                         + "   FAIL " + fail + "   INFO " + info + "   ERROR " + error);
+                         + "   FAIL " + fail + "   SKIP " + skip
+                         + "   INFO " + info + "   ERROR " + error);
         System.out.println("================================================================");
     }
 

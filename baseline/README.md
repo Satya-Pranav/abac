@@ -4,7 +4,12 @@
 43 cases + 3 DR2 checks = **46**, all green. Phase 0 tasks (2–4) must reproduce it exactly.
 
 Captured 2026-07-20 against `abac_tpcds.tpcds_1_delta`, after `sql/15_direct_rls.sql` was applied.
-Summary line: `SUMMARY  ->  PASS 46   FAIL 0   INFO 0   ERROR 0`
+Summary line (post-Task 5): `SUMMARY  ->  PASS 46   FAIL 0   SKIP 0   INFO 0   ERROR 0`
+
+Task 5 added the `SKIP` counter (capability gating: a case whose `requires()` includes a
+capability the engine doesn't `supports()` reports SKIP instead of running). Against Databricks,
+which supports every `Capability`, this is always `SKIP 0` — the counter only moves for an engine
+with narrower support (e.g. e6data).
 
 ## The normalizer
 
