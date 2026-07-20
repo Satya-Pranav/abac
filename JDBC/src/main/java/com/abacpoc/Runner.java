@@ -1,5 +1,6 @@
 package com.abacpoc;
 
+import com.abacpoc.cases.Cases;
 import com.abacpoc.engine.DatabricksEngine;
 import com.abacpoc.engine.E6DataEngine;
 import com.abacpoc.engine.Engine;
@@ -36,7 +37,7 @@ public class Runner {
         try (c) {
             boolean seeded = AbacTestSuite.setUpFixture(engine, c);
             try {
-                AbacTestSuite.runAll(engine, c, AbacTestSuite.cases(engine), seeded);
+                AbacTestSuite.runAll(engine, c, Cases.all(engine), seeded);
             } finally {
                 if (seeded) {
                     try { AbacTestSuite.dropFixture(engine, c); System.out.println(" Fixture: dropped."); }
