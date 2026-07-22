@@ -35,6 +35,11 @@
 -- Creates an ISOLATED schema (abac_tpcds.abac_udf) so these policies cannot reach any main-suite
 -- table (abac_tpcds.tpcds_1_delta.*).
 --
+-- PREREQUISITE: Uses only the already-registered governed tag keys abac_column_id / abac_column_org
+-- (see sql/07). Do NOT introduce a new tag key without registering it first in Settings > Catalog >
+-- Governed tags -- an unregistered key fails at CREATE POLICY time with UC_INVALID_POLICY_CONDITION
+-- 'Unknown tag policy key'.
+--
 -- Apply as OWNER / metastore admin. Prerequisites: none beyond catalog abac_tpcds already existing
 -- (sql/01). Teardown at the bottom.
 -- SP the JDBC suite authenticates as: 76d5804d-d302-4014-a1d3-d846f02c84ef
@@ -45,8 +50,8 @@ CREATE SCHEMA IF NOT EXISTS abac_tpcds.abac_udf;
 CREATE OR REPLACE TABLE abac_tpcds.abac_udf.arity (id BIGINT, ts TIMESTAMP);
 INSERT INTO abac_tpcds.abac_udf.arity
   SELECT id, timestamp(date_add(DATE'2020-01-01', CAST(id AS INT))) FROM range(1, 21);
-ALTER TABLE abac_tpcds.abac_udf.arity ALTER COLUMN id SET TAGS ('abac_udf_id' = 'true');
-ALTER TABLE abac_tpcds.abac_udf.arity ALTER COLUMN ts SET TAGS ('abac_udf_ts' = 'true');
+ALTER TABLE abac_tpcds.abac_udf.arity ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
+ALTER TABLE abac_tpcds.abac_udf.arity ALTER COLUMN ts SET TAGS ('abac_column_org' = 'true');
 
 -- UC1: the UDF declares TWO params; the commented-out policy below would supply only ONE.
 CREATE OR REPLACE FUNCTION abac_tpcds.abac_udf.two_param(id BIGINT, extra STRING)
@@ -64,7 +69,7 @@ RETURNS BOOLEAN RETURN id <= 10;
 -- ROW FILTER abac_tpcds.abac_udf.two_param
 -- TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
 -- FOR TABLES
--- MATCH COLUMNS has_tag('abac_udf_id') AS id
+-- MATCH COLUMNS has_tag('abac_column_id') AS id
 -- USING COLUMNS (id);
 -- =====================================================================================
 
@@ -77,7 +82,7 @@ ON TABLE abac_tpcds.abac_udf.arity
 ROW FILTER abac_tpcds.abac_udf.date_param
 TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
 FOR TABLES
-MATCH COLUMNS has_tag('abac_udf_ts') AS ts
+MATCH COLUMNS has_tag('abac_column_org') AS ts
 USING COLUMNS (ts);
 
 GRANT USE SCHEMA ON SCHEMA abac_tpcds.abac_udf TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;

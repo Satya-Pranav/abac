@@ -332,7 +332,7 @@ public final class Cases {
         //      SCHEMA-level policy cannot reach any main-suite table. These tables live in a
         //      DIFFERENT schema than the rest of the suite, so they are referenced by literal
         //      qualified name below, NOT via e.qualify() (which prefixes abac_tpcds.tpcds_1_delta).
-        //      scope_schema_policy (ON SCHEMA) binds has_tag('abac_scope_id') -> scope_filter
+        //      scope_schema_policy (ON SCHEMA) binds has_tag('abac_column_id') -> scope_filter
         //      (id <= 10 of 20 fixed rows) across every tagged table in the schema:
         //        SC1 = scoped_a      -- the first table it governs.
         //        SC2 = scoped_c      -- a THIRD, otherwise-unrelated table with the SAME tag and
@@ -376,7 +376,7 @@ public final class Cases {
 
         cs.add(new Case("SC3", "SC",
             "A table with no matching tag is NOT governed -- returns ALL rows",
-            "`ungoverned` sits inside the policy's ON SCHEMA scope but has no abac_scope_id tag on "
+            "`ungoverned` sits inside the policy's ON SCHEMA scope but has no abac_column_id tag on "
           + "any column, so MATCH COLUMNS finds nothing for this table and the policy silently does "
           + "not apply. This is the documented dangerous case: a BROKEN policy fails CLOSED (errors, "
           + "or blocks everything); a NON-MATCHING one fails OPEN -- unfiltered access, no error at all.",
@@ -403,31 +403,41 @@ public final class Cases {
         //      tables live in a DIFFERENT schema than the rest of the suite, so they are referenced
         //      by literal qualified name below, NOT via e.qualify() (which prefixes
         //      abac_tpcds.tpcds_1_delta).
-        //        TG1 = tagval:  two columns (id, other) both carry abac_role, but with DIFFERENT tag
-        //                       VALUES ('filter' vs 'ignore'). has_tag_value('abac_role','filter')
-        //                       must bind ONLY `id`. Discriminating power: id <= 10 of 20 rows -> 10;
-        //                       the same predicate mistakenly applied to `other` (values
-        //                       10,20,...,200 = id*10) would keep only other <= 10 -> exactly 1 row
-        //                       (id=1) -- a different, unambiguous count that would expose a wrong
-        //                       binding.
-        //        TG2 = dualtag: TWO columns (a, b) carry the IDENTICAL tag -- the alias binding is
-        //                       genuinely ambiguous. Both possible bindings give the SAME row COUNT
-        //                       (10), so this case selects `a` itself: the observed id values reveal
-        //                       which column Databricks actually bound. UNKNOWN until observed --
-        //                       ships as INFO; the observed answer becomes the oracle e6data must
-        //                       later reproduce.
-        //        TG3 = notag:   MATCH COLUMNS matches NO column (no tags at all on `notag`). The
-        //                       policy is created successfully but silently DOES NOT APPLY -- all 20
-        //                       rows are visible. THE DANGER: a broken policy fails CLOSED; a
-        //                       non-matching one fails OPEN -- unfiltered, no error at all.
+        //        TG1 = tagval:  two columns (id, other) both carry abac_column_id, but with
+        //                       DIFFERENT tag VALUES ('filter' vs 'ignore').
+        //                       has_tag_value('abac_column_id','filter') must bind ONLY `id`.
+        //                       Discriminating power: id <= 10 of 20 rows -> 10; the same predicate
+        //                       mistakenly applied to `other` (values 10,20,...,200 = id*10) would
+        //                       keep only other <= 10 -> exactly 1 row (id=1) -- a different,
+        //                       unambiguous count that would expose a wrong binding.
+        //        TG2 = dualtag: TWO columns (a, b) carry the IDENTICAL tag (abac_column_id) -- the
+        //                       alias binding is genuinely ambiguous. Both possible bindings give the
+        //                       SAME row COUNT (10), so this case selects `a` itself: the observed id
+        //                       values reveal which column Databricks actually bound. UNKNOWN until
+        //                       observed -- ships as INFO; the observed answer becomes the oracle
+        //                       e6data must later reproduce.
+        //        TG3 = notag:   *** CORRECTED SEMANTIC *** MATCH COLUMNS keys on abac_column_org (a
+        //                       REGISTERED governed tag, see sql/07) -- but `notag` carries that tag
+        //                       on NO column, so the expression matches nothing. The policy is
+        //                       created successfully but silently DOES NOT APPLY -- all 20 rows are
+        //                       visible. Contrast this with an UNREGISTERED tag key (e.g. this case's
+        //                       earlier abac_nonexistent_tag draft, and sql/17's abac_scope_id before
+        //                       the fix): that fails CLOSED, loudly, at CREATE POLICY (DDL) time with
+        //                       UC_INVALID_POLICY_CONDITION / "Unknown tag policy key" -- it never
+        //                       even reaches a queryable state. THE DANGER this case actually proves:
+        //                       a broken policy (or an unregistered tag) fails CLOSED; a policy whose
+        //                       MATCH COLUMNS matches zero columns on a REGISTERED tag fails OPEN --
+        //                       unfiltered, no error at all. See sql/18 for the operator's verbatim
+        //                       CREATE POLICY error and the full before/after writeup.
         final String TAGS_S = "abac_tpcds.abac_tags.";
 
         cs.add(new Case("TG1", "TG",
             "has_tag_value() binds only the column whose tag VALUE matches",
-            "Both columns carry abac_role, but with different values. has_tag_value('abac_role','filter') "
-          + "must bind `id` (values 1..20, filter id <= 10 -> 10 rows) and NOT `other` (values 10..200 "
-          + "= id*10; the same predicate applied to `other` would keep only other <= 10, i.e. exactly "
-          + "1 row -- id=1). A count of 10 (not 1) proves the right column was bound.",
+            "Both columns carry abac_column_id, but with different values. "
+          + "has_tag_value('abac_column_id','filter') must bind `id` (values 1..20, filter id <= 10 "
+          + "-> 10 rows) and NOT `other` (values 10..200 = id*10; the same predicate applied to "
+          + "`other` would keep only other <= 10, i.e. exactly 1 row -- id=1). A count of 10 (not 1) "
+          + "proves the right column was bound.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + TAGS_S + "tagval",
             Expect.exact(10),
@@ -435,8 +445,8 @@ public final class Cases {
 
         cs.add(new Case("TG2", "TG",
             "Two columns sharing one tag -- the alias binding is ambiguous",
-            "a = 1..20 and b = 21-a (20..1) both carry abac_dual. tag_filter keeps <= 10, so binding "
-          + "`a` keeps rows 1..10, binding `b` keeps rows where b <= 10 (a in 11..20) -- a DIFFERENT "
+            "a = 1..20 and b = 21-a (20..1) both carry abac_column_id. tag_filter keeps <= 10, so "
+          + "binding `a` keeps rows 1..10, binding `b` keeps rows where b <= 10 (a in 11..20) -- a DIFFERENT "
           + "set of 10 rows with the SAME count either way, so row count alone cannot tell them apart. "
           + "Selecting `a` itself exposes which column was actually bound. INFO first: record the "
           + "observed id list (or whether Databricks errors on the ambiguity instead), then convert to "
@@ -448,10 +458,15 @@ public final class Cases {
 
         cs.add(new Case("TG3", "TG",
             "A MATCH COLUMNS that matches nothing makes the policy SILENTLY not apply",
-            "notag_policy references a tag no column on `notag` carries. The policy is created "
-          + "successfully -- no DDL error -- and the table returns ALL 20 rows unfiltered. This is "
-          + "the most dangerous failure mode in the whole model: a BROKEN policy fails CLOSED, but a "
-          + "NON-MATCHING one fails OPEN.",
+            "notag_policy keys MATCH COLUMNS on abac_column_org -- a REGISTERED governed tag (see "
+          + "sql/07) -- but no column on `notag` carries it, so the expression matches nothing. "
+          + "CREATE POLICY succeeds -- no DDL error -- and the table returns ALL 20 rows unfiltered. "
+          + "Contrast this with an UNREGISTERED tag key (this case's earlier abac_nonexistent_tag "
+          + "draft, and sql/17's original abac_scope_id before that fix): that fails CLOSED, loudly, "
+          + "at CREATE POLICY (DDL) time with UC_INVALID_POLICY_CONDITION / 'Unknown tag policy key' "
+          + "-- it never reaches a queryable state at all. This case proves the OTHER failure mode: a "
+          + "policy on a REGISTERED tag whose MATCH COLUMNS matches zero columns fails OPEN instead "
+          + "-- silently, with no error.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + TAGS_S + "notag",
             Expect.exact(20),

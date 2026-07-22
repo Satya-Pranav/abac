@@ -33,6 +33,11 @@
 -- Creates an ISOLATED schema (abac_tpcds.abac_xmech) so neither mechanism can reach any
 -- main-suite table (abac_tpcds.tpcds_1_delta.*).
 --
+-- PREREQUISITE: Uses only the already-registered governed tag keys abac_column_id / abac_column_org
+-- (see sql/07). Do NOT introduce a new tag key without registering it first in Settings > Catalog >
+-- Governed tags -- an unregistered key fails at CREATE POLICY time with UC_INVALID_POLICY_CONDITION
+-- 'Unknown tag policy key'.
+--
 -- Apply as OWNER / metastore admin. Prerequisites: none beyond catalog abac_tpcds already
 -- existing (sql/01). Teardown at the bottom.
 -- SP the JDBC suite authenticates as: 76d5804d-d302-4014-a1d3-d846f02c84ef
@@ -42,7 +47,7 @@ CREATE SCHEMA IF NOT EXISTS abac_tpcds.abac_xmech;
 
 CREATE OR REPLACE TABLE abac_tpcds.abac_xmech.both (id BIGINT);
 INSERT INTO abac_tpcds.abac_xmech.both SELECT id FROM range(1, 21);
-ALTER TABLE abac_tpcds.abac_xmech.both ALTER COLUMN id SET TAGS ('abac_xmech_id' = 'true');
+ALTER TABLE abac_tpcds.abac_xmech.both ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
 
 CREATE OR REPLACE FUNCTION abac_tpcds.abac_xmech.abac_fn(id BIGINT)
 RETURNS BOOLEAN RETURN id <= 10;                -- ABAC policy predicate: keeps 10 of 20 rows
@@ -56,7 +61,7 @@ ON TABLE abac_tpcds.abac_xmech.both
 ROW FILTER abac_tpcds.abac_xmech.abac_fn
 TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
 FOR TABLES
-MATCH COLUMNS has_tag('abac_xmech_id') AS id
+MATCH COLUMNS has_tag('abac_column_id') AS id
 USING COLUMNS (id);
 
 -- Mechanism 2: classic table-managed RLS, bound directly to the column (no tag, no policy).

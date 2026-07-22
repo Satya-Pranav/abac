@@ -7,7 +7,7 @@
 --   SC2 = scoped_c:    a THIRD table in the same schema, carrying the SAME governance tag and covered
 --                      by NOTHING but the schema-level policy -> proves schema scope governs EVERY
 --                      matching member, not just the first one it happened to bind.
---   SC3 = ungoverned:  sits inside the policy's ON SCHEMA scope but has NO abac_scope_id tag on any
+--   SC3 = ungoverned:  sits inside the policy's ON SCHEMA scope but has NO abac_column_id tag on any
 --                      column -> MATCH COLUMNS matches nothing for this table, so the policy silently
 --                      does not apply -> ALL rows are visible. This is the dangerous case: a BROKEN
 --                      policy fails CLOSED (errors, or blocks everything); a NON-MATCHING one fails
@@ -25,13 +25,18 @@
 -- EVERY query against scoped_b fail with UC_ABAC_MULTIPLE_ROW_FILTERS -- including SC2's, forcing a
 -- two-stage apply (verify SC1-SC3, THEN apply SC4's policy, at which point SC2 flips to an error).
 -- That is a bad property for a suite that must be re-runnable in one pass. Fixed structurally: a THIRD
--- table, `scoped_c`, same shape/data as scoped_a/scoped_b, same abac_scope_id tag on its id column,
+-- table, `scoped_c`, same shape/data as scoped_a/scoped_b, same abac_column_id tag on its id column,
 -- covered by the SCHEMA-level policy and by NOTHING else. SC2 now queries scoped_c (still proving
 -- schema scope covers every matching member); scoped_b exists SOLELY to carry SC4's schema+table
 -- conflict. Result: all four SC cases hold SIMULTANEOUSLY, and this whole script applies in ONE pass.
 --
 -- Creates an ISOLATED schema (abac_tpcds.abac_scope) so the schema-level policy cannot reach any of
 -- the main suite's tables (abac_tpcds.tpcds_1_delta.*).
+--
+-- PREREQUISITE: Uses only the already-registered governed tag keys abac_column_id / abac_column_org
+-- (see sql/07). Do NOT introduce a new tag key without registering it first in Settings > Catalog >
+-- Governed tags -- an unregistered key fails at CREATE POLICY time with UC_INVALID_POLICY_CONDITION
+-- 'Unknown tag policy key'.
 --
 -- Apply as OWNER / metastore admin. Prerequisites: none beyond catalog abac_tpcds already existing
 -- (sql/01). Teardown at the bottom.
@@ -62,9 +67,9 @@ CREATE OR REPLACE TABLE abac_tpcds.abac_scope.ungoverned (id BIGINT);
 INSERT INTO abac_tpcds.abac_scope.ungoverned SELECT id FROM range(1, 21);
 
 -- Governance tag: scoped_a / scoped_b / scoped_c carry it; `ungoverned` deliberately does not.
-ALTER TABLE abac_tpcds.abac_scope.scoped_a ALTER COLUMN id SET TAGS ('abac_scope_id' = 'true');
-ALTER TABLE abac_tpcds.abac_scope.scoped_b ALTER COLUMN id SET TAGS ('abac_scope_id' = 'true');
-ALTER TABLE abac_tpcds.abac_scope.scoped_c ALTER COLUMN id SET TAGS ('abac_scope_id' = 'true');
+ALTER TABLE abac_tpcds.abac_scope.scoped_a ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
+ALTER TABLE abac_tpcds.abac_scope.scoped_b ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
+ALTER TABLE abac_tpcds.abac_scope.scoped_c ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
 
 CREATE OR REPLACE FUNCTION abac_tpcds.abac_scope.scope_filter(id BIGINT)
 RETURNS BOOLEAN RETURN id <= 10;
@@ -76,7 +81,7 @@ ON SCHEMA abac_tpcds.abac_scope
 ROW FILTER abac_tpcds.abac_scope.scope_filter
 TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
 FOR TABLES
-MATCH COLUMNS has_tag('abac_scope_id') AS id
+MATCH COLUMNS has_tag('abac_column_id') AS id
 USING COLUMNS (id);
 
 GRANT USE SCHEMA ON SCHEMA abac_tpcds.abac_scope TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;
@@ -99,7 +104,7 @@ ON TABLE abac_tpcds.abac_scope.scoped_b
 ROW FILTER abac_tpcds.abac_scope.scope_filter_tbl
 TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
 FOR TABLES
-MATCH COLUMNS has_tag('abac_scope_id') AS id
+MATCH COLUMNS has_tag('abac_column_id') AS id
 USING COLUMNS (id);
 
 GRANT EXECUTE ON FUNCTION abac_tpcds.abac_scope.scope_filter_tbl TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;
