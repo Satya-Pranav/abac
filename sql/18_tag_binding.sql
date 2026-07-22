@@ -3,8 +3,8 @@
 -- MATCH COLUMNS tag BINDING: does has_tag_value() bind only the column whose tag VALUE matches (not
 -- just any column carrying the tag key), what happens when TWO columns carry the SAME tag (the alias
 -- binding is ambiguous), and what happens when a MATCH COLUMNS expression matches NO column at all.
---   TG1 = tagval:  two columns (id, other) both carry abac_column_id, but with DIFFERENT tag values
---                  ('filter' vs 'ignore'). has_tag_value('abac_column_id','filter') must bind ONLY
+--   TG1 = tagval:  id carries abac_column_id='true'; other carries a DIFFERENT registered key
+--                  (abac_column_tenant='true'). has_tag_value('abac_column_id','true') must bind ONLY
 --                  `id` (the column whose tag VALUE is 'filter'), not `other`. Discriminating power:
 --                  id <= 10 of 20 rows -> exactly 10; the SAME predicate mistakenly applied to `other`
 --                  (values 10,20,...,200 = id*10) would keep only other <= 10 -> exactly 1 row
@@ -61,8 +61,17 @@ CREATE SCHEMA IF NOT EXISTS abac_tpcds.abac_tags;
 -- TG1: has_tag_value() -- match on a tag's VALUE, not just its presence.
 CREATE OR REPLACE TABLE abac_tpcds.abac_tags.tagval (id BIGINT, other BIGINT);
 INSERT INTO abac_tpcds.abac_tags.tagval SELECT id, id * 10 FROM range(1, 21);
-ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN id    SET TAGS ('abac_column_id' = 'filter');
-ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN other SET TAGS ('abac_column_id' = 'ignore');
+-- OBSERVED 2026-07-22: a governed tag key constrains its ALLOWED VALUES. Setting a value outside
+-- that list is rejected:
+--   [INVALID_PARAMETER_VALUE] Tag value filter is not an allowed value for tag policy key
+--   abac_column_id. Allowed values: [true]
+-- All four registered keys (abac_column_id, abac_column_org, abac_column_type, abac_column_tenant)
+-- allow only 'true'. So SAME-KEY / DIFFERENT-VALUE discrimination is NOT testable here without
+-- first registering a new governed tag key that permits multiple values.
+-- What IS testable, and what TG1 now does: has_tag_value() must match on KEY *and* VALUE, binding
+-- only the column carrying that pair and ignoring a column tagged with a DIFFERENT registered key.
+ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN id    SET TAGS ('abac_column_id' = 'true');
+ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN other SET TAGS ('abac_column_tenant' = 'true');
 
 CREATE OR REPLACE FUNCTION abac_tpcds.abac_tags.tag_filter(id BIGINT)
 RETURNS BOOLEAN RETURN id <= 10;
@@ -74,7 +83,7 @@ ON TABLE abac_tpcds.abac_tags.tagval
 ROW FILTER abac_tpcds.abac_tags.tag_filter
 TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
 FOR TABLES
-MATCH COLUMNS has_tag_value('abac_column_id', 'filter') AS id
+MATCH COLUMNS has_tag_value('abac_column_id', 'true') AS id
 USING COLUMNS (id);
 
 -- TG2: TWO columns carrying the SAME tag -- what does the alias bind to?
