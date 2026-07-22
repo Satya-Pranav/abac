@@ -448,16 +448,18 @@ public final class Cases {
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
         cs.add(new Case("TG2", "TG",
-            "Two columns sharing one tag -- the alias binding is ambiguous",
-            "a = 1..20 and b = 21-a (20..1) both carry abac_column_id. tag_filter keeps <= 10, so "
-          + "binding `a` keeps rows 1..10, binding `b` keeps rows where b <= 10 (a in 11..20) -- a DIFFERENT "
-          + "set of 10 rows with the SAME count either way, so row count alone cannot tell them apart. "
-          + "Selecting `a` itself exposes which column was actually bound. INFO first: record the "
-          + "observed id list (or whether Databricks errors on the ambiguity instead), then convert to "
-          + "a hard assertion -- the observed answer is the oracle e6data must reproduce.",
+            "Two columns sharing one tag -- Databricks REFUSES to choose, it does not bind the first",
+            "OBSERVED 2026-07-22 (shipped as INFO, now a hard assertion). `a` and `b` both carry "
+          + "abac_column_id, so the USING COLUMNS alias `c` resolves to TWO columns. Databricks does "
+          + "NOT silently bind the first -- the QUERY FAILS with UC_ABAC_AMBIGUOUS_COLUMN_MATCH. "
+          + "Note the trap: that error shares SQLSTATE 42KDJ with UC_ABAC_MULTIPLE_ROW_FILTERS, a "
+          + "DIFFERENT condition, so match on the ERROR CLASS, never on the SQLSTATE alone. "
+          + "Row count could not have settled this: binding `a` keeps a in 1..10 and binding `b` keeps "
+          + "a in 11..20 -- 10 rows either way. Selecting `a` was chosen precisely so the projected "
+          + "ids would expose which column bound; in the event neither did, because it errors.",
             DISABLE_CLAIM,
             "SELECT a FROM " + TAGS_S + "dualtag ORDER BY a",
-            Expect.info(),
+            Expect.errorContains("UC_ABAC_AMBIGUOUS_COLUMN_MATCH"),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
         cs.add(new Case("TG3", "TG",
@@ -519,15 +521,16 @@ public final class Cases {
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
         cs.add(new Case("UC2", "UC",
-            "Declared DATE param vs bound TIMESTAMP column",
-            "date_param(d DATE) is bound via USING COLUMNS to the TIMESTAMP column ts. Rows are "
-          + "2020-01-02..2020-01-21 and the filter keeps d < 2020-01-11, i.e. 9 of 20 rows, IF "
-          + "Databricks coerces TIMESTAMP -> DATE at bind time. If it instead rejects the type "
-          + "mismatch, the query errors. Both are legitimate findings. INFO first; convert to a hard "
-          + "assertion (Expect.exact or Expect.errorContains) once observed.",
+            "Declared DATE param vs bound TIMESTAMP column -- Databricks COERCES, it does not reject",
+            "OBSERVED 2026-07-22 (shipped as INFO, now a hard assertion). date_param(d DATE) is bound "
+          + "via USING COLUMNS to the TIMESTAMP column ts. Databricks coerces TIMESTAMP -> DATE at "
+          + "bind time rather than rejecting the mismatch: rows are 2020-01-02..2020-01-21, the filter "
+          + "keeps d < 2020-01-11, and 9 of 20 rows survive. So a declared-type / column-type mismatch "
+          + "is silently accepted. That matters for a planner replicating this: it must coerce the "
+          + "same way, and a widening/narrowing difference would silently change which rows are visible.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + UDF_S + "arity",
-            Expect.info(),
+            Expect.exact(9),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
         // ---- XT. CROSS-MECHANISM conflict (sql/20): the FOURTH isolated schema
