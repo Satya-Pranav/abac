@@ -432,17 +432,16 @@ public final class Cases {
         final String TAGS_S = "abac_tpcds.abac_tags.";
 
         cs.add(new Case("TG1", "TG",
-            "has_tag_value() binds only the column carrying the matching key+value",
-            "`id` carries abac_column_id='true'; `other` carries a DIFFERENT registered key, "
-          + "abac_column_org='true'. has_tag_value('abac_column_id','true') must bind `id` "
-          + "(values 1..20, filter id <= 10 -> 10 rows) and NOT `other` (values 10..200 = id*10; the "
-          + "same predicate on `other` keeps only other <= 10, i.e. exactly 1 row -- id=1). A count "
-          + "of 10 (not 1) proves the right column was bound. "
-          + "SCOPE LIMIT (observed 2026-07-22): this tests KEY+value matching, not same-key/"
-          + "different-value discrimination -- only abac_column_id and abac_column_org are usable "
-          + "and each allows exactly one value ('true'); abac_column_type/tenant are registered "
-          + "with EMPTY allowed-value lists. Two distinct values on one key cannot be created "
-          + "without widening a tag key's allowed values.",
+            "has_tag_value() binds only the column whose tag VALUE matches"
+          , "Both columns carry the SAME key abac_column_id, differing only by VALUE: `id` is "
+          + "'filter', `other` is 'ignore'. Only value-matching can tell them apart, so this "
+          + "isolates has_tag_value's VALUE semantics rather than mere key presence. "
+          + "has_tag_value('abac_column_id','filter') must bind `id` (values 1..20, filter "
+          + "id <= 10 -> 10 rows) and NOT `other` (values 10..200 = id*10; the same predicate "
+          + "on `other` keeps only other <= 10, i.e. exactly 1 row -- id=1). A count of 10 "
+          + "(not 1, not 20) proves the right column was bound. NOTE: this required adding "
+          + "'filter'/'ignore' to abac_column_id's allowed values -- a governed tag key "
+          + "constrains its permitted values, and the other registered keys allow none.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + TAGS_S + "tagval",
             Expect.exact(10),
