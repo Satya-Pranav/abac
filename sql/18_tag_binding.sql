@@ -4,7 +4,7 @@
 -- just any column carrying the tag key), what happens when TWO columns carry the SAME tag (the alias
 -- binding is ambiguous), and what happens when a MATCH COLUMNS expression matches NO column at all.
 --   TG1 = tagval:  id carries abac_column_id='true'; other carries a DIFFERENT registered key
---                  (abac_column_tenant='true'). has_tag_value('abac_column_id','true') must bind ONLY
+--                  (abac_column_org='true'). has_tag_value('abac_column_id','true') must bind ONLY
 --                  `id` (the column whose tag VALUE is 'filter'), not `other`. Discriminating power:
 --                  id <= 10 of 20 rows -> exactly 10; the SAME predicate mistakenly applied to `other`
 --                  (values 10,20,...,200 = id*10) would keep only other <= 10 -> exactly 1 row
@@ -65,13 +65,18 @@ INSERT INTO abac_tpcds.abac_tags.tagval SELECT id, id * 10 FROM range(1, 21);
 -- that list is rejected:
 --   [INVALID_PARAMETER_VALUE] Tag value filter is not an allowed value for tag policy key
 --   abac_column_id. Allowed values: [true]
--- All four registered keys (abac_column_id, abac_column_org, abac_column_type, abac_column_tenant)
--- allow only 'true'. So SAME-KEY / DIFFERENT-VALUE discrimination is NOT testable here without
--- first registering a new governed tag key that permits multiple values.
+-- Of the four registered keys, only TWO are usable at all:
+--   abac_column_id   -> Allowed values: [true]
+--   abac_column_org  -> Allowed values: [true]
+--   abac_column_type    \ registered but with an EMPTY allowed-value list, so NOTHING can be
+--   abac_column_tenant  / assigned to them. Observed 2026-07-22:
+--     "Tag value true is not an allowed value for tag policy key abac_column_tenant. Allowed values: []"
+-- Since each usable key permits exactly ONE value, SAME-KEY / DIFFERENT-VALUE discrimination is
+-- NOT testable here. It would require adding extra allowed values to a governed tag key.
 -- What IS testable, and what TG1 now does: has_tag_value() must match on KEY *and* VALUE, binding
 -- only the column carrying that pair and ignoring a column tagged with a DIFFERENT registered key.
 ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN id    SET TAGS ('abac_column_id' = 'true');
-ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN other SET TAGS ('abac_column_tenant' = 'true');
+ALTER TABLE abac_tpcds.abac_tags.tagval ALTER COLUMN other SET TAGS ('abac_column_org' = 'true');
 
 CREATE OR REPLACE FUNCTION abac_tpcds.abac_tags.tag_filter(id BIGINT)
 RETURNS BOOLEAN RETURN id <= 10;

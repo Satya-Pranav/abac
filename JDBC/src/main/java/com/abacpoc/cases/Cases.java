@@ -434,14 +434,15 @@ public final class Cases {
         cs.add(new Case("TG1", "TG",
             "has_tag_value() binds only the column carrying the matching key+value",
             "`id` carries abac_column_id='true'; `other` carries a DIFFERENT registered key, "
-          + "abac_column_tenant='true'. has_tag_value('abac_column_id','true') must bind `id` "
+          + "abac_column_org='true'. has_tag_value('abac_column_id','true') must bind `id` "
           + "(values 1..20, filter id <= 10 -> 10 rows) and NOT `other` (values 10..200 = id*10; the "
           + "same predicate on `other` keeps only other <= 10, i.e. exactly 1 row -- id=1). A count "
           + "of 10 (not 1) proves the right column was bound. "
           + "SCOPE LIMIT (observed 2026-07-22): this tests KEY+value matching, not same-key/"
-          + "different-value discrimination -- every registered governed tag key here allows only "
-          + "the value 'true', so two distinct values on one key cannot be created. Testing that "
-          + "would require registering a new governed tag key permitting multiple values.",
+          + "different-value discrimination -- only abac_column_id and abac_column_org are usable "
+          + "and each allows exactly one value ('true'); abac_column_type/tenant are registered "
+          + "with EMPTY allowed-value lists. Two distinct values on one key cannot be created "
+          + "without widening a tag key's allowed values.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + TAGS_S + "tagval",
             Expect.exact(10),
