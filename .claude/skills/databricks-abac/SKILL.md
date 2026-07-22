@@ -76,9 +76,22 @@ UDF                      = the BOOLEAN filter / masking logic run per row/value 
 | **At most ONE row filter per table** (`UC_ABAC_MULTIPLE_ROW_FILTERS`, SQLSTATE `42KDJ`) | both `CREATE POLICY` **succeed**; the query **errors at evaluation** — **table-wide**, independent of the `USING COLUMNS` columns. Encode all logic in ONE filter |
 | **One distinct mask per column**; different masks on different columns coexist | conflicting distinct masks on the same column → error, not chained |
 | **Every `MATCH COLUMNS` expression must match ≥1 column** | if one doesn't, the policy **silently does not apply** (no filtering) |
+| **A governed tag KEY must be REGISTERED before any policy references it** (Settings → Catalog → Governed tags). Registering the key is separate from applying it to a column | an unregistered key fails **at `CREATE POLICY` time**, not at query time: `INVALID_PARAMETER_VALUE.UC_INVALID_POLICY_CONDITION` … `Unknown tag policy key \`<key>\`` |
 | **Columns never inherit tags** — table/schema/catalog tags do inherit (different keys accumulate; same key overrides) | tag every target/input column **directly** |
 | **Fail-closed**: deleted UDF/governed tag, conflicting filters, unsupported compute/time-travel | the query is **blocked**, not silently unfiltered |
 | **Owners / metastore admins bypass row filters** | to observe filtering, query **as the target principal** (e.g. the service principal in `TO`) |
+
+**Two failure modes that look alike and are not** (confirmed live, 2026-07-22):
+
+| Situation | When it fails | Direction |
+|---|---|---|
+| Tag key **not registered** as a governed tag | at **`CREATE POLICY`** (DDL) | **fail-CLOSED** — the policy never exists |
+| Tag key registered, but **matches no column** on the table | never — the policy is created and is **inert** | **fail-OPEN** — the table returns ALL rows |
+
+Both present as "my policy isn't filtering." The first is loud and safe; the second is silent and
+dangerous. A planner replicating this must not collapse them into one behaviour. This distinction
+was found the hard way: a POC case meant to test the second condition used an *unregistered* key,
+so it would have hit the first and proved nothing.
 
 **Expectations awaiting a live run (hypotheses, not yet confirmed).** The POC's `sql/17`–`20` write
 the objects for these cases, but as of this writing they have not been applied to a live workspace —
