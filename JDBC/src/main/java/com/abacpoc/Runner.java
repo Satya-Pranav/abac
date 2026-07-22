@@ -11,6 +11,7 @@ import com.abacpoc.engine.Engine;
 import com.abacpoc.scenario.Dr2HotSwap;
 import com.abacpoc.scenario.E6Scenarios;
 import com.abacpoc.scenario.Scenario;
+import com.abacpoc.scenario.ViewPolicySwap;
 import com.abacpoc.util.Jdbc;
 
 import java.sql.Connection;
@@ -101,6 +102,10 @@ public class Runner {
 
         List<Scenario> scenarios = new ArrayList<>();
         scenarios.add(new Dr2HotSwap());
+        // ViewPolicySwap MUST come after Dr2HotSwap: Dr2HotSwap reverts dr2_row_filter to cutoff 10
+        // when it finishes, which is exactly the baseline ViewPolicySwap's VP1 asserts through the
+        // view. Do not reorder.
+        scenarios.add(new ViewPolicySwap());
         scenarios.addAll(E6Scenarios.all());
 
         System.out.println("================================================================");

@@ -555,6 +555,59 @@ public final class Cases {
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
             Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.CLASSIC_RLS)));
 
+        // ---- GAP. EXCEPT clause + DEFAULT UDF parameters (sql/21): the FIFTH isolated schema
+        //      (abac_tpcds.abac_gaps) so these policies cannot reach any main-suite table.
+        //      Referenced by literal qualified name below, NOT via e.qualify() (which prefixes
+        //      abac_tpcds.tpcds_1_delta). sql/21 ALSO carries a prominent "STILL UNVERIFIED" note
+        //      restating sql/19's never-executed arity check (UC1) -- that gap has NO suite case
+        //      (the SP cannot issue CREATE POLICY) and is closed only by a manual operator run.
+        //        EX1 = exempt:   exempt_policy is bound `TO \`account users\` EXCEPT
+        //                        \`76d5804d-...\`` (the SP). except_filter keeps id <= 10 of 20
+        //                        rows for anyone SUBJECT to the policy, but the SP is EXCEPTed --
+        //                        i.e. explicitly NOT subject to it -- so it must see ALL 20 rows.
+        //                        A count of 10 would mean EXCEPT failed to exempt the SP (the
+        //                        finding this case exists to catch); 20 confirms the exemption.
+        //        DP1 = defparam: def_filter(id BIGINT, cutoff BIGINT DEFAULT 10) declares TWO
+        //                        params; defparam_policy's USING COLUMNS supplies ONLY (id),
+        //                        relying on the DEFAULT for cutoff. UNKNOWN until observed: a row
+        //                        filter auto-supplies NO argument of its own (see sql/19's UC1/UC2
+        //                        writeup), so Databricks may still demand all n declared params
+        //                        and REJECT the policy at CREATE POLICY time, or it may honour the
+        //                        DEFAULT and apply cutoff=10 -> 10 of 20 rows. Ships as
+        //                        Expect.info(); convert to a hard assertion once observed (same
+        //                        pattern as TG2/UC2) -- do NOT invent a number.
+        final String GAPS_S = "abac_tpcds.abac_gaps.";
+
+        cs.add(new Case("EX1", "EX",
+            "EXCEPT clause: the excepted principal is NOT subject to the policy -- sees ALL rows",
+            "exempt_policy (sql/21) is bound TO `account users` EXCEPT "
+          + "`76d5804d-d302-4014-a1d3-d846f02c84ef` (the SP the suite authenticates as). "
+          + "except_filter keeps id <= 10 of 20 rows for any SUBJECT principal, but EXCEPT removes "
+          + "the SP from that principal set entirely, so the filter never runs against it -- the SP "
+          + "sees the table exactly as an unfiltered/owner reader would. A count of 10 would mean "
+          + "EXCEPT failed to exempt the SP; 20 confirms the exemption worked. If the `account "
+          + "users` group form is itself rejected at CREATE POLICY time, that is a separate finding "
+          + "recorded verbatim in sql/21 -- see the OPERATOR NOTE there.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + GAPS_S + "exempt",
+            Expect.exact(20),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
+        cs.add(new Case("DP1", "DP",
+            "DEFAULT UDF parameter: does a row filter honour a DEFAULT for an omitted USING COLUMNS arg?",
+            "def_filter(id BIGINT, cutoff BIGINT DEFAULT 10) declares TWO params; defparam_policy's "
+          + "(sql/21) USING COLUMNS supplies ONLY (id), omitting cutoff and relying on its DEFAULT. "
+          + "This is genuinely UNKNOWN: a row filter auto-supplies no argument of its own (sql/19's "
+          + "UC1/UC2), so Databricks may still demand all n declared params and REJECT the policy at "
+          + "CREATE POLICY time regardless of the DEFAULT, or it may honour the DEFAULT and apply "
+          + "cutoff=10, keeping 10 of 20 rows. Ships as Expect.info() -- DO NOT guess a number; the "
+          + "observed answer (a count of 10, or a recorded CREATE POLICY / query error) becomes a "
+          + "hard assertion once run, same pattern as TG2/UC2.",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + GAPS_S + "defparam",
+            Expect.info(),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
         // ---- CL. Malformed / partial IDENTITY CLAIMS against the already-governed `customer` table.
         //      No new objects — only the claim JSON varies. get_user_context() parses the claim via
         //      from_json(current_oauth_custom_identity_claim(),
