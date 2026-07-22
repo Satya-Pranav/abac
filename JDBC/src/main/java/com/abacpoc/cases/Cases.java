@@ -504,22 +504,12 @@ public final class Cases {
         //      and TG2).
         final String UDF_S = "abac_tpcds.abac_udf.";
 
-        cs.add(new Case("UC1", "UC",
-            "USING COLUMNS arity must match the UDF signature",
-            "two_param declares (id BIGINT, extra STRING) but sql/19's commented-out arity_policy "
-          + "supplies only (id) via USING COLUMNS. Row filters auto-supply NO argument, so all n "
-          + "params must be provided -- CREATE POLICY is expected to be REJECTED with an "
-          + "arity-mismatch error, which the operator records verbatim in sql/19 before re-commenting "
-          + "the block. THAT rejection, not a row count, is this case's real assertion: since "
-          + "arity_policy never exists, this table's count reflects only UC2's type_policy (or its "
-          + "absence). Because UC2's coercion-vs-rejection outcome is itself unresolved, this case "
-          + "ships as INFO rather than asserting a count that depends on an unobserved fact; it "
-          + "converts to a hard assertion alongside UC2 once both are observed.",
-            DISABLE_CLAIM,
-            "SELECT count(*) FROM " + UDF_S + "arity",
-            Expect.info(),
-            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
-
+        // UC1 REMOVED 2026-07-22. It ran byte-identical SQL to UC2 against the same table, so it
+        // asserted nothing UC2 did not. Its real subject -- that an arity-mismatched
+        // CREATE POLICY is REJECTED -- is not observable from the SP's query path at all
+        // (only an owner can issue CREATE POLICY). That check lives in sql/19 as a manual,
+        // operator-run step and is STILL UNVERIFIED: the commented arity_policy block has
+        // not been executed. Do not re-add a suite case for it; the suite cannot test it.
         cs.add(new Case("UC2", "UC",
             "Declared DATE param vs bound TIMESTAMP column -- Databricks COERCES, it does not reject",
             "OBSERVED 2026-07-22 (shipped as INFO, now a hard assertion). date_param(d DATE) is bound "
