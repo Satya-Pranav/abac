@@ -652,8 +652,8 @@ git commit -m "feat(onetrust_synth): add deterministic hash-based PySpark column
 - Test: `onetrust_synth/tests/test_main_tables.py`
 
 **Interfaces:**
-- Consumes: `generator.base_row_id_df`, `generator.add_categorical_column`, `generator.add_id_column` (Task 4); `profile_csv.ColumnProfile`, `profile_csv.get_columns` (Task 2); `sample_csv.load_column_values` (Task 3)
-- Produces: `build_generic_table(spark, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame` — builds one column per profiled `ColumnProfile`: an `id`-like string column (name containing "id"/"Id"/"ID" and ndv≈row_count) gets a unique id, low-cardinality string columns (`ndv <= 50`) get `add_categorical_column` seeded from real sample values when available else synthetic placeholders, numeric columns (`int`/`bigint`/`double`) get a deterministic ranged value, `timestamp`/`date` columns get a deterministic date within a fixed 2026 window, everything else (including nested types) is left for Task 6/7 to overwrite.
+- Consumes: `generator.base_row_id_df`, `generator.add_categorical_column`, `generator.add_id_column`, `generator.deterministic_index` (Task 4); `profile_csv.ColumnProfile`, `profile_csv.get_columns` (Task 2); `sample_csv.load_column_values` (Task 3)
+- Produces: `build_generic_table(spark, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame` — builds one column per profiled `ColumnProfile`: an `id`-like string column (name containing "id"/"Id"/"ID" and ndv≈row_count) gets a unique id; low-cardinality string columns (`ndv <= 50`) get `add_categorical_column` seeded from real sample values when available, else a synthetic pool sized toward the column's own `ndv` (not a fixed small placeholder set — a high-cardinality string column with no real samples must not collapse to a handful of values); numeric columns (`int`/`bigint`/`double`/`decimal`) and `timestamp`/`date` columns get a deterministic value **with the column's real `null_rate` applied** (a column that's 100% null in production must come out 100% null here, not fully dense); everything else (including nested types) is left for Task 6/7 to overwrite.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -699,6 +699,38 @@ def test_id_like_column_is_unique(spark):
     df = build_generic_table(spark, "cmb_riskrelatedobjects", 500, cols, sample_lookup=lambda col: [])
     ids = [r["riskId"] for r in df.select("riskId").collect()]
     assert len(ids) == len(set(ids))
+
+
+def test_numeric_and_temporal_columns_respect_real_null_rate(spark):
+    # cmb_controlimplementation.deadline is real null_rate=1.0 (always null in
+    # production); number (bigint) is real null_rate≈0.998. A generator that
+    # ignores null_rate for numeric/temporal columns silently fabricates dense
+    # data the real table doesn't have — caught by a prior task review.
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_controlimplementation")
+    df = build_generic_table(spark, "cmb_controlimplementation", 500, cols, sample_lookup=lambda col: [])
+    deadline_col = next(c for c in cols if c.name == "deadline")
+    assert deadline_col.null_rate == 1.0
+    non_null_deadlines = df.filter(df.deadline.isNotNull()).count()
+    assert non_null_deadlines == 0
+
+    number_col = next(c for c in cols if c.name == "number")
+    assert number_col.null_rate > 0.9
+    non_null_numbers = df.filter(df.number.isNotNull()).count()
+    assert non_null_numbers < 25  # ~0.2% of 500 should be non-null, not all 500
+
+
+def test_high_cardinality_string_column_without_samples_does_not_collapse(spark):
+    # cmb_assessment.templateID has real ndv=2558 with no calibrated sample
+    # values supplied here (sample_lookup returns []). A generator that funnels
+    # every string column through the same low-cardinality categorical path
+    # collapses this to ~10 generic placeholder values regardless of real
+    # cardinality — caught by a prior task review.
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_assessment")
+    df = build_generic_table(spark, "cmb_assessment", 500, cols, sample_lookup=lambda col: [])
+    distinct_template_ids = df.select("templateID").distinct().count()
+    assert distinct_template_ids > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -718,7 +750,7 @@ from onetrust_synth.profile_csv import ColumnProfile
 
 _ID_LIKE_SUFFIXES = ("id", "Id", "ID")
 _LOW_CARDINALITY_MAX = 50
-_PLACEHOLDER_VALUES = [f"value_{i}" for i in range(10)]
+_PLACEHOLDER_POOL_CAP = 200  # cap on a synthetic value pool for a high-cardinality column with no real samples
 _NUMERIC_TYPES = ("int", "bigint", "double", "decimal")  # tuple: str.startswith() requires a tuple, not a set
 _TEMPORAL_TYPES = {"timestamp", "date"}
 
@@ -727,6 +759,23 @@ def _is_id_like(col: ColumnProfile, row_count: int) -> bool:
     name_hits = col.name.endswith(_ID_LIKE_SUFFIXES) or col.name == "id"
     high_cardinality = row_count > 0 and col.ndv >= row_count * 0.9
     return name_hits and high_cardinality
+
+
+def _placeholder_values_for(table: str, col: ColumnProfile) -> list:
+    # Sized toward the column's real cardinality (capped for practicality)
+    # instead of a fixed 10-value pool — a fixed small pool collapses every
+    # high-cardinality column with no real samples to the same handful of
+    # values regardless of how varied the real data actually is.
+    pool_size = min(col.ndv, _PLACEHOLDER_POOL_CAP) if col.ndv else 10
+    return [f"{table}.{col.name}_{i}" for i in range(max(pool_size, 1))]
+
+
+def _with_null_injection(df: DataFrame, col_name: str, value, null_rate: float, salt: str) -> DataFrame:
+    if null_rate > 0:
+        null_marker = F.pmod(F.xxhash64(F.col("_row_id"), F.lit(salt + "_null")), F.lit(10000))
+        threshold = F.lit(int(null_rate * 10000))
+        return df.withColumn(col_name, F.when(null_marker < threshold, F.lit(None)).otherwise(value))
+    return df.withColumn(col_name, value)
 
 
 def build_generic_table(spark: SparkSession, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame:
@@ -744,20 +793,22 @@ def build_generic_table(spark: SparkSession, table: str, row_count: int, columns
             df = add_categorical_column(df, col.name, [True, False], null_rate=col.null_rate, salt=f"{table}.{col.name}")
         elif dtype.startswith(_NUMERIC_TYPES):
             idx = deterministic_index(F.col("_row_id"), f"{table}.{col.name}", 1000)
-            df = df.withColumn(col.name, idx.cast("double" if "double" in dtype or "decimal" in dtype else "long"))
+            value = idx.cast("double" if "double" in dtype or "decimal" in dtype else "long")
+            df = _with_null_injection(df, col.name, value, col.null_rate, f"{table}.{col.name}")
         elif dtype in _TEMPORAL_TYPES:
             idx = deterministic_index(F.col("_row_id"), f"{table}.{col.name}", 90).cast("int")
             base_date = F.to_date(F.lit("2026-03-17"))
             d = F.date_add(base_date, idx)
-            df = df.withColumn(col.name, F.to_timestamp(d) if dtype == "timestamp" else d)
+            value = F.to_timestamp(d) if dtype == "timestamp" else d
+            df = _with_null_injection(df, col.name, value, col.null_rate, f"{table}.{col.name}")
         elif dtype.startswith(("map", "list", "struct", "array")):
             continue  # nested types handled by Task 7's overrides, not here
         else:
             values = sample_lookup(col.name)
             if not values:
-                values = _PLACEHOLDER_VALUES
-            if col.ndv and col.ndv <= _LOW_CARDINALITY_MAX:
-                values = values[: max(col.ndv, 1)] or _PLACEHOLDER_VALUES
+                values = _placeholder_values_for(table, col)
+            elif col.ndv and col.ndv <= _LOW_CARDINALITY_MAX:
+                values = values[: max(col.ndv, 1)] or _placeholder_values_for(table, col)
             df = add_categorical_column(df, col.name, values, null_rate=col.null_rate, salt=f"{table}.{col.name}")
 
     return df.drop("_row_id")
@@ -766,7 +817,7 @@ def build_generic_table(spark: SparkSession, table: str, row_count: int, columns
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_main_tables.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (6 tests)
 
 - [ ] **Step 5: Commit**
 
