@@ -1,0 +1,636 @@
+schema,table,column_name,data_type,row_count,ndv,null_count,non_null_count,min_val,max_val,error
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inventoryID,string,14,14,0.0,14,0ec505f9-ba70-4513-9e29-0768ee6adfac,dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,entityID,string,14,14,0.0,14,0ec505f9-ba70-4513-9e29-0768ee6adfac,dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,entityType,string,14,1,0.0,14,INVENTORY,INVENTORY,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,id,string,14,14,0.0,14,600ec505f9-ba70-4513-9e29-0768ee6adfac,60dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inherentRiskLevel,string,14,4,8.0,6,High,Zero,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inherentRiskLevelID,string,14,4,8.0,6,High,Zero,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inherentRiskScore,double,14,4,8.0,6,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,residualRiskLevel,string,14,4,8.0,6,High,Zero,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,residualRiskLevelID,string,14,4,8.0,6,High,Zero,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,residualRiskScore,double,14,4,8.0,6,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,targetRiskLevel,string,14,0,14.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,targetRiskLevelID,string,14,0,14.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,targetRiskScore,double,14,0,14.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inventoryType,string,14,3,0.0,14,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inventoryTypeID,int,14,3,0.0,14,20,50,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inventoryName,string,14,14,0.0,14,asset_163271,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inventoryNumber,bigint,14,14,0.0,14,1,3360,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,inventoryURL,string,14,14,0.0,14,https://Inventory/assets/0ec505f9-ba70-4513-9e29-0768ee6adfac,https://Inventory/vendors/d8c90ad9-c7d7-4e88-863b-74612835fc94,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,orgID,string,14,1,0.0,14,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,orgName,string,14,1,0.0,14,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummary,parentOrgID,string,14,1,0.0,14,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,riskId,string,1100,1022,0.0,1100,0019b168-aa50-45eb-8ef6-99ba53da1d60,ffcd43e0-1303-4dd4-8a4c-f977a6560ac0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,riskName,string,1100,742,0.0,1100,101,ww_root_risk_summary_884094,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,riskNumber,string,1100,1022,0.0,1100,1,999,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,sourceType,string,1100,5,46.0,1054,ENGAGEMENT,PIA,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,organizationID,string,1100,6,0.0,1100,556d549b-779d-45fb-bf75-63b7595047e4,d77e40f5-c50e-42aa-9fd9-3213c8554596,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,stage,string,1100,9,0.0,1100,Approval Stage1,Treatment,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,stageId,string,1100,9,0.0,1100,Approval Stage1,Treatment,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,workflow,string,1100,11,0.0,1100,Default Risk Workflow,riskWorkflow_9315258,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,workflowId,string,1100,11,0.0,1100,3df881ac-297f-485e-80a6-a4be61065b18,f7310c54-041c-4b4f-b648-07f4fe09c2d2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,entityType,string,1100,9,0.0,1100,DATASETS,projects,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,value,string,1100,849,0.0,1100,!PA-1_2343725,ww_root_asset_884094,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,valueId,string,1100,849,0.0,1100,005917cb-a176-448f-abe4-bb6c07f6a5be,ffe74d79-7de8-4c5b-953d-a59fbc016c02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,entitySubType,string,1100,4,776.0,324,assets,vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,type,string,1100,11,0.0,1100,Asset,Vendor,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,typeId,string,1100,11,0.0,1100,ASSETS,projects,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,typeTranslationKey,string,1100,11,0.0,1100,Asset,Vendor,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,eventTime,timestamp,1100,1058,0.0,1100,2026-03-18T12:47:21.237+00:00,2026-04-06T02:46:05.922+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,recModifiedTime,timestamp,1100,179,0.0,1100,2026-03-18T13:08:07.511+00:00,2026-04-06T02:49:07.128+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,isDeleted,boolean,1100,2,0.0,1100,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_riskrelatedobjects,tenantHash,string,1100,1,0.0,1100,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entityid1,string,1007335,673,0.0,1007335,005a3d1d-0b8f-4075-8f3f-8d063b180b22,ffff3e91-d613-4627-914f-97d8276924a0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entityid1typereference,string,1007335,5,0.0,1007335,ControlTemplate,projects,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entityid2,string,1007335,494,0.0,1007335,0093ed36-dbc3-4f04-bc92-2c5b67911516,fe84b91b-0c44-40a8-b8bb-04df8a8ccc16,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entityid2typereference,string,1007335,4,0.0,1007335,Audit,models,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,id,string,1007335,1693,0.0,1007335,00542cf8-fc54-48a9-b181-135402ae88c8,ffbf5d66-03f3-4ebe-a808-4d54ab37f2cd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,linktypeid,string,1007335,6,0.0,1007335,021f0a22-7101-4d7b-8629-f2db4d5b77f1,f96033a7-a360-47c9-b99a-734f0f3a0828,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdBy,string,1007335,1,955570.0,51765,OneTrust Automation,OneTrust Automation,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedBy,string,1007335,2,29155.0,978180,OneTrust Automation,automated01_3428474 user01_3428474,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,timeZoneID,string,1007335,595,0.0,1007335,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,linkTypeDescription,string,1007335,1,80920.0,926415,Control.Evidence.Link.Description,Control.Evidence.Link.Description,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,linkTypeDescriptionKey,string,1007335,1,80920.0,926415,Control.Evidence.Link.Description,Control.Evidence.Link.Description,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entitytype1toentitytype2linktypename,string,1007335,1,80920.0,926415,control-evidence-mapping,control-evidence-mapping,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entitytype1toentitytype2linktypenamekey,string,1007335,0,1007335.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entitytype2toentitytype1linktypename,string,1007335,1,80920.0,926415,control-evidence-mapping,control-evidence-mapping,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,entitytype2toentitytype1linktypenamekey,string,1007335,0,1007335.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,linkTypeName,string,1007335,1,80920.0,926415,control-evidence-mapping,control-evidence-mapping,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,modulename,string,1007335,1,80920.0,926415,control,control,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,linkTypeNameKey,string,1007335,1,80920.0,926415,Control.Evidence.Link.Name,Control.Evidence.Link.Name,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdDateTime,timestamp,1007335,3307,955570.0,51765,2026-03-17T21:29:25.747+00:00,2026-03-31T07:31:00.657+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdDate,date,1007335,14,955570.0,51765,2026-03-17,2026-03-31,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdYear,int,1007335,1,955570.0,51765,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdMonth,string,1007335,1,955570.0,51765,March,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdMonthNumber,string,1007335,1,955570.0,51765,03,03,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,createdQuarter,string,1007335,1,955570.0,51765,Quarter 1,Quarter 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedDateTime,timestamp,1007335,64334,0.0,1007335,2026-03-17T21:29:25.747+00:00,2026-03-31T07:31:00.657+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedDate,date,1007335,14,0.0,1007335,2026-03-17,2026-03-31,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedYear,int,1007335,1,0.0,1007335,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedMonth,string,1007335,1,0.0,1007335,March,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedMonthNumber,string,1007335,1,0.0,1007335,03,03,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entitylink_v3,updatedQuarter,string,1007335,1,0.0,1007335,Quarter 1,Quarter 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,reportingmoduletoentityreferencemapping_v,reportingModule,string,21,12,0.0,21,AI_GOVERNANCE,WORKPAPER,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,reportingmoduletoentityreferencemapping_v,entityTypeReference,string,21,20,0.0,21,AIAGENTS,WORKPAPER,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,approvalStage,string,4984,8,3843.0,1141,Approval_Stage2_8167495,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,approvalStageID,string,4984,8,3843.0,1141,Approval_Stage2_8167495,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,approvalStageTranslationKey,string,4984,8,3843.0,1141,Approval_Stage2_8167495,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,assessmentSectionReportInformations,"LIST<struct<element:struct<id:string,name:string,respondents:LIST<struct<element:struct<value:string,valueKey:string>>>,sequence:int,statusChangeBy:struct<id:string,name:string,status:string>>>>",4984,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-315-20260722.171207.516: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:42:07.959628+05:30"", grpc_status:13, grpc_message:""Q130099-315-20260722.171207.516: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-316-20260722.171208.145: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-316-20260722.171208.145: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})"", grpc_status:13, created_time:""2026-07-22T22:42:08.522813+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-317-20260722.171208.707: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-317-20260722.171208.707: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})"", grpc_status:13, created_time:""2026-07-22T22:42:09.137676+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,assessmentSubmissionProgress,bigint,4984,25,1754.0,3230,0,100,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,completedDT,timestamp,4984,493,4490.0,494,2026-03-19T16:15:24.000+00:00,2026-04-06T06:06:27.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,createDT,timestamp,4984,3147,1722.0,3262,2026-03-17T19:56:07.000+00:00,2026-04-06T06:06:29.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,createdBy,string,4984,58,1722.0,3262,CustomUser_2278137 assessment,user1fn_1659_9624063 user1ln_1659_9624063,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,creator,string,4984,58,1722.0,3262,CustomUser_2278137 assessment,user1fn_1659_9624063 user1ln_1659_9624063,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,creatorID,string,4984,59,1722.0,3262,05a27abf-0e34-411e-a044-5a26301be8be,ff5c102e-58ee-4457-912b-f814a19cbd91,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,creatorTranslationKey,string,4984,58,1722.0,3262,CustomUser_2278137 assessment,user1fn_1659_9624063 user1ln_1659_9624063,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,deadline,timestamp,4984,56,4922.0,62,2026-03-19T00:00:00.000+00:00,2026-04-10T00:00:00.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,description,string,4984,31,0.0,4984,,updated_description_for_edited_Automated_Assessment_7996341,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,highRisks,int,4984,3,0.0,4984,0,2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,id,string,4984,4984,0.0,4984,001205cf-8fd9-4814-99cc-6bf4ad1bdb49,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,inherentRiskLevel,string,4984,5,1722.0,3262,High,Very High,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,inherentRiskLevelID,string,4984,5,1722.0,3262,High,VeryHigh,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,inherentRiskLevelTranslationKey,string,4984,5,1722.0,3262,High,VeryHigh,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,inherentRiskScore,double,4984,5,0.0,4984,0.0,4.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,lastModifiedBy,string,4984,93,1722.0,3262,CustomUser_1152396 AssessmentApprove,user2_4197915 last_4197915,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,lowRisks,int,4984,2,0.0,4984,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,maturityType,string,4984,1,4972.0,12,BASIC,BASIC,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,mediumRisks,string,4984,2,0.0,4984,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,name,string,4984,3237,1722.0,3262,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,number,int,4984,3263,0.0,4984,0,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,openInfoRequestCount,int,4984,6,0.0,4984,0,7,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,openRiskCount,int,4984,5,0.0,4984,0,4,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,openIssueCount,int,4984,2,0.0,4984,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,orgGroup,string,4984,20,0.0,4984,,sub_organization_I_2293375,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,orgGroupID,string,4984,20,0.0,4984,,febba308-4913-48fe-b927-6d8924bf1a26,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,result,string,4984,18,4490.0,494,Approved,approve_Result_8351532,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,resultID,string,4984,18,4490.0,494,19b4d29d-0382-4034-af32-4e87e51ec4e4,bf78f12e-ee98-456a-a370-c3a03bf3f466,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,resultTranslationKey,string,4984,18,4490.0,494,19b4d29d-0382-4034-af32-4e87e51ec4e4,bf78f12e-ee98-456a-a370-c3a03bf3f466,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,riskScore,double,4984,5,0.0,4984,0.0,4.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,riskSummary,string,4984,5,1722.0,3262,High,Very High,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,riskSummaryID,string,4984,5,1722.0,3262,High,VeryHigh,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,state,string,4984,5,0.0,4984,,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,stateID,string,4984,5,0.0,4984,,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,stateTranslationKey,string,4984,5,0.0,4984,,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,status,string,4984,2,1722.0,3262,Active,Archived,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,statusID,string,4984,2,1722.0,3262,Active,Archived,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,statusTranslationKey,string,4984,2,1722.0,3262,Active,Archived,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,submittedDT,timestamp,4984,1625,3349.0,1635,2026-03-19T16:12:57.000+00:00,2026-04-06T06:06:28.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,targetRiskLevel,string,4984,2,1722.0,3262,Low,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,targetRiskLevelID,string,4984,2,1722.0,3262,Low,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,targetRiskLevelTranslationKey,string,4984,2,1722.0,3262,Low,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,targetRiskScore,double,4984,2,0.0,4984,0.0,1.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,template,string,4984,2558,1722.0,3262,2019 SIG (Human Resource Security) - 1.1 - 1905871,wf_template_8924918,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,templateID,string,4984,2558,1722.0,3262,00432203-fe8d-4fbb-95f6-3f968b7be1fd,ffe3056e-daa4-4322-b616-937322150463,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,templateType,string,4984,11,1722.0,3262,AIGOVERNANCE,VENDOR,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,templateVersion,int,4984,4,0.0,4984,0,3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,thresholdID,string,4984,0,4984.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,totalRisks,int,4984,5,0.0,4984,0,4,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,triggeredByAssessmentID,string,4984,85,4892.0,92,01e1c6b0-16b7-457f-9542-417147fc09a3,fbd05671-024d-4431-ba7a-a7c77309ceee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,updatedDT,timestamp,4984,2850,1722.0,3262,2026-03-17T19:56:07.000+00:00,2026-04-06T06:06:30.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,userAssignmentMode,string,4984,2,1745.0,3239,ASSESSMENT,SECTION,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,userIdsAssociatedWithAssessment,LIST<struct<element:string>>,4984,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-375-20260722.171325.775: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:26.59136+05:30"", grpc_status:13, grpc_message:""Q130099-375-20260722.171325.775: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-376-20260722.171326.765: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:27.215792+05:30"", grpc_status:13, grpc_message:""Q130099-376-20260722.171326.765: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-377-20260722.171327.389: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:27.735528+05:30"", grpc_status:13, grpc_message:""Q130099-377-20260722.171327.389: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,version,bigint,4984,1,0.0,4984,0,0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,veryHighRisks,int,4984,2,0.0,4984,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,workflow,string,4984,10,1722.0,3262,Default Assessment Workflow,workflow_9541679,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,workflowID,string,4984,10,1722.0,3262,15c5acbe-bf5e-4c3a-ac8f-1daeeda27f56,c9f33a9d-ef62-42fa-bb65-f40c4c3a9b49,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,workflowTranslationKey,string,4984,10,1722.0,3262,DefaultAssessmentWorkflow,workflow_9541679,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,attestationCompleted,timestamp,4984,1,4984.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,attestationRequired,boolean,4984,1,0.0,4984,false,false,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,questionMap,"map<unknown,struct<key:string,value:LIST<struct<element:struct<value:string,valueKey:string>>>>>",4984,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-386-20260722.171339.082: 	java.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR key, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey) ARRAY value) key_value) to type VARCHAR""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:39.201007+05:30"", grpc_status:13, grpc_message:""Q130099-386-20260722.171339.082: \tjava.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR key, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey) ARRAY value) key_value) to type VARCHAR""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-387-20260722.171339.375: 	{RUNTIME ERROR} Unexpected Error During Query Execution!""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:39.7203+05:30"", grpc_status:13, grpc_message:""Q130099-387-20260722.171339.375: \t{RUNTIME ERROR} Unexpected Error During Query Execution!""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-388-20260722.171339.894: 	class io.e6x.engine.pipelined.columnar.vectors.MapVector cannot be cast to class io.e6x.engine.pipelined.columnar.vectors.GroupVector (io.e6x.engine.pipelined.columnar.vectors.MapVector and io.e6x.engine.pipelined.columnar.vectors.GroupVector are in unnamed module of loader 'app')""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:40.701362+05:30"", grpc_status:13, grpc_message:""Q130099-388-20260722.171339.894: \tclass io.e6x.engine.pipelined.columnar.vectors.MapVector cannot be cast to class io.e6x.engine.pipelined.columnar.vectors.GroupVector (io.e6x.engine.pipelined.columnar.vectors.MapVector and io.e6x.engine.pipelined.columnar.vectors.GroupVector are in unnamed module of loader \'app\')""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,questionRootMap,"map<unknown,struct<key:string,value:struct<questionType:string,dataType:string,state:string,maturityScaleAllowed:boolean,questionDetailedInfo:string,responses:LIST<struct<element:struct<value:string,valueKey:string>>>,responseType:string>>>",4984,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-389-20260722.171340.881: 	java.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR key, RecordType:peek_no_expand(VARCHAR questionType, VARCHAR dataType, VARCHAR state, BOOLEAN maturityScaleAllowed, VARCHAR questionDetailedInfo, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey) ARRAY responses, VARCHAR responseType) value) key_value) to type VARCHAR""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:41.105338+05:30"", grpc_status:13, grpc_message:""Q130099-389-20260722.171340.881: \tjava.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR key, RecordType:peek_no_expand(VARCHAR questionType, VARCHAR dataType, VARCHAR state, BOOLEAN maturityScaleAllowed, VARCHAR questionDetailedInfo, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey) ARRAY responses, VARCHAR responseType) value) key_value) to type VARCHAR""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-390-20260722.171341.278: 	{RUNTIME ERROR} Unexpected Error During Query Execution!""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-390-20260722.171341.278: \t{RUNTIME ERROR} Unexpected Error During Query Execution!"", grpc_status:13, created_time:""2026-07-22T22:43:41.635052+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-391-20260722.171341.827: 	class io.e6x.engine.pipelined.columnar.vectors.MapVector cannot be cast to class io.e6x.engine.pipelined.columnar.vectors.GroupVector (io.e6x.engine.pipelined.columnar.vectors.MapVector and io.e6x.engine.pipelined.columnar.vectors.GroupVector are in unnamed module of loader 'app')""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:43:42.748524+05:30"", grpc_status:13, grpc_message:""Q130099-391-20260722.171341.827: \tclass io.e6x.engine.pipelined.columnar.vectors.MapVector cannot be cast to class io.e6x.engine.pipelined.columnar.vectors.GroupVector (io.e6x.engine.pipelined.columnar.vectors.MapVector and io.e6x.engine.pipelined.columnar.vectors.GroupVector are in unnamed module of loader \'app\')""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,eventTime,timestamp,4984,4984,0.0,4984,2026-03-18T13:00:31.541+00:00,2026-04-06T06:06:50.294+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,recModifiedTime,timestamp,4984,365,0.0,4984,2026-03-18T13:16:50.923+00:00,2026-04-06T06:21:20.473+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,isDeleted,boolean,4984,2,0.0,4984,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_assessment,tenantHash,string,4984,1,0.0,4984,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeID,string,236810,31,0.0,236810,createdBy,workflowStage,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeName,string,236810,31,0.0,236810,createdBy,workflowStage,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValue,string,236810,104,0.0,236810,0,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueNumeric,decimal,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-403-20260722.171401.772: 	For input string: ""OneTrust Automation""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-403-20260722.171401.772: \tFor input string: \""OneTrust Automation\"""", grpc_status:13, created_time:""2026-07-22T22:44:03.062753+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-404-20260722.171403.237: 	For input string: ""OneTrust Automation""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-404-20260722.171403.237: \tFor input string: \""OneTrust Automation\"""", grpc_status:13, created_time:""2026-07-22T22:44:04.230518+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-405-20260722.171404.404: 	For input string: ""OneTrust Automation""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:05.496111+05:30"", grpc_status:13, grpc_message:""Q130099-405-20260722.171404.404: \tFor input string: \""OneTrust Automation\""""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDate,date,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-406-20260722.171405.670: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:07.774995+05:30"", grpc_status:13, grpc_message:""Q130099-406-20260722.171405.670: \tDatetime pattern did not match: OneTrust Automation""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-407-20260722.171407.949: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:09.189021+05:30"", grpc_status:13, grpc_message:""Q130099-407-20260722.171407.949: \tDatetime pattern did not match: OneTrust Automation""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-408-20260722.171409.361: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:10.470814+05:30"", grpc_status:13, grpc_message:""Q130099-408-20260722.171409.361: \tDatetime pattern did not match: OneTrust Automation""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDateYear,int,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-409-20260722.171410.663: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:11.719643+05:30"", grpc_status:13, grpc_message:""Q130099-409-20260722.171410.663: \tDatetime pattern did not match: OneTrust Automation""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-410-20260722.171411.897: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-410-20260722.171411.897: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:12.882432+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-411-20260722.171413.054: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-411-20260722.171413.054: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:13.992868+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDateMonth,string,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-412-20260722.171414.165: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:15.304499+05:30"", grpc_status:13, grpc_message:""Q130099-412-20260722.171414.165: \tDatetime pattern did not match: OneTrust Automation""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-413-20260722.171415.476: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:16.741853+05:30"", grpc_status:13, grpc_message:""Q130099-413-20260722.171415.476: \tDatetime pattern did not match: OneTrust Automation""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-414-20260722.171416.914: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:17.895147+05:30"", grpc_status:13, grpc_message:""Q130099-414-20260722.171416.914: \tDatetime pattern did not match: OneTrust Automation""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDateMonthNumber,string,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-415-20260722.171418.067: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-415-20260722.171418.067: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:19.430735+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-416-20260722.171419.602: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-416-20260722.171419.602: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:20.553812+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-417-20260722.171420.725: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-417-20260722.171420.725: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:22.036861+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDateQuarter,string,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-418-20260722.171422.208: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-418-20260722.171422.208: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:23.197037+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-419-20260722.171423.369: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:24.67475+05:30"", grpc_status:13, grpc_message:""Q130099-419-20260722.171423.369: \tDatetime pattern did not match: OneTrust Automation""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-420-20260722.171424.848: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:25.852245+05:30"", grpc_status:13, grpc_message:""Q130099-420-20260722.171424.848: \tDatetime pattern did not match: OneTrust Automation""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDateTime,timestamp,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-421-20260722.171426.024: 	Datetime pattern did not match: Application""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:27.216258+05:30"", grpc_status:13, grpc_message:""Q130099-421-20260722.171426.024: \tDatetime pattern did not match: Application""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-422-20260722.171427.388: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-422-20260722.171427.388: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:28.514902+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-423-20260722.171428.691: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:29.816608+05:30"", grpc_status:13, grpc_message:""Q130099-423-20260722.171428.691: \tDatetime pattern did not match: OneTrust Automation""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDTDate,date,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-424-20260722.171429.989: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-424-20260722.171429.989: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:31.073705+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-425-20260722.171431.246: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:32.296146+05:30"", grpc_status:13, grpc_message:""Q130099-425-20260722.171431.246: \tDatetime pattern did not match: OneTrust Automation""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-426-20260722.171432.469: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:33.548979+05:30"", grpc_status:13, grpc_message:""Q130099-426-20260722.171432.469: \tDatetime pattern did not match: OneTrust Automation""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDTDateYear,int,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-427-20260722.171433.723: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-427-20260722.171433.723: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:34.795193+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-428-20260722.171434.967: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-428-20260722.171434.967: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:35.972597+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-429-20260722.171436.146: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-429-20260722.171436.146: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:37.115564+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDTDateMonth,string,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-430-20260722.171437.287: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:38.376355+05:30"", grpc_status:13, grpc_message:""Q130099-430-20260722.171437.287: \tDatetime pattern did not match: OneTrust Automation""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-431-20260722.171438.550: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-431-20260722.171438.550: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:39.594999+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-432-20260722.171439.769: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:41.117007+05:30"", grpc_status:13, grpc_message:""Q130099-432-20260722.171439.769: \tDatetime pattern did not match: OneTrust Automation""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDTDateMonthNumber,string,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-433-20260722.171441.288: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:42.347965+05:30"", grpc_status:13, grpc_message:""Q130099-433-20260722.171441.288: \tDatetime pattern did not match: OneTrust Automation""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-434-20260722.171442.526: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:43.61131+05:30"", grpc_status:13, grpc_message:""Q130099-434-20260722.171442.526: \tDatetime pattern did not match: OneTrust Automation""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-435-20260722.171443.783: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-435-20260722.171443.783: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:44.823469+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueDTDateQuarter,string,236810,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-436-20260722.171444.995: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-436-20260722.171444.995: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:46.215638+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-437-20260722.171446.388: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T22:44:47.457998+05:30"", grpc_status:13, grpc_message:""Q130099-437-20260722.171446.388: \tDatetime pattern did not match: OneTrust Automation""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-438-20260722.171447.634: 	Datetime pattern did not match: OneTrust Automation""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-438-20260722.171447.634: \tDatetime pattern did not match: OneTrust Automation"", grpc_status:13, created_time:""2026-07-22T22:44:48.584644+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,attributeValueID,string,236810,99,30940.0,205870,0.0,fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryAttributeType,int,236810,7,0.0,236810,0,400,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryID,string,236810,38,0.0,236810,01e9c2d9-7167-4a4b-bcac-03a8c5c93469,fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryType,string,236810,3,0.0,236810,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryTypeID,int,236810,3,0.0,236810,20,50,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,isEnumerated,boolean,236810,2,0.0,236810,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryAttributeID,string,236810,398,0.0,236810,00499495a285aa9af8a91b33363de62e,ff020ed6c4ac2b2aebda21128c7b8ba2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryName,string,236810,38,0.0,236810,Vendor_20260406050626-ssbh77,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryNumber,bigint,236810,38,0.0,236810,1,3360,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,allValues,string,236810,104,0.0,236810,0,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,inventoryURL,string,236810,38,0.0,236810,https://Inventory/assets/0c00a859-e16b-4d41-8786-998095804a54,https://Inventory/vendors/fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,timeZoneID,string,236810,595,0.0,236810,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,orgID,string,236810,1,0.0,236810,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,orgName,string,236810,1,0.0,236810,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryattributevalue_v3,parentOrgID,string,236810,1,0.0,236810,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,createDT,timestamp,5235,2337,2854.0,2381,2026-03-16T06:58:04.000+00:00,2026-04-06T06:06:22.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,createdBy,string,5235,27,2854.0,2381,05a27abf-0e34-411e-a044-5a26301be8be,dfbf5ec9-1caa-460a-903b-ed24e06fc4dd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,description,string,5235,130,2854.0,2381,,基于《中国网络安全法》(CSL)、《中华人民共和国个人信息保护法》(PIPL)、《跨境数据传输安全评估指南》（第二稿）和《出境数据传输安全评估措施》（草案）,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,descriptionID,string,5235,2200,2987.0,2248,00164f19-df81-40f1-82ac-045f46dd1421.description,ffda2702-22d7-47c8-879c-c32efc8809b1.description,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,friendlyName,string,5235,121,5097.0,138,,動的インシデント通知評価 - 26.4.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,friendlyNameID,string,5235,2200,2987.0,2248,00164f19-df81-40f1-82ac-045f46dd1421.friendlyName,ffda2702-22d7-47c8-879c-c32efc8809b1.friendlyName,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,id,string,5235,5235,0.0,5235,00106b01-871c-4392-a2d6-6170f81dcdb4,fff63498-8f36-4d7f-bb85-a65b4695de02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,lastModifiedBy,string,5235,0,5235.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,lastModifiedDate,timestamp,5235,1,5235.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,name,string,5235,2333,2854.0,2381,201 CMR 17.00 Compliance Checklist - 1.0,動的インシデント通知評価 - 26.4.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,nameID,string,5235,2200,2987.0,2248,00164f19-df81-40f1-82ac-045f46dd1421.name,ffda2702-22d7-47c8-879c-c32efc8809b1.name,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,orgGroupID,string,5235,5,2854.0,2381,2e3451db-3042-483e-9179-34be448b258c,f913fe72-c4ff-49c6-bc08-d4f974d16fc3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,publishDate,timestamp,5235,2239,2979.0,2256,2026-03-16T07:01:14.000+00:00,2026-04-06T06:06:24.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,publishedBy,string,5235,27,2979.0,2256,05a27abf-0e34-411e-a044-5a26301be8be,dfbf5ec9-1caa-460a-903b-ed24e06fc4dd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,rootVersionID,string,5235,2333,2854.0,2381,005a27db-daa5-4339-ac73-759d8e558780,ffe3056e-daa4-4322-b616-937322150463,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,status,string,5235,2,2854.0,2381,DRAFT,PUBLISHED,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,type,string,5235,13,2854.0,2381,AIGOVERNANCE,VENDOR,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,updateDT,timestamp,5235,2348,2854.0,2381,2026-03-16T06:58:04.000+00:00,2026-04-06T06:06:24.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,updatedBy,string,5235,27,2854.0,2381,05a27abf-0e34-411e-a044-5a26301be8be,dfbf5ec9-1caa-460a-903b-ed24e06fc4dd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,version,bigint,5235,5,0.0,5235,0,36,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,eventTime,timestamp,5235,5235,0.0,5235,2026-03-16T06:58:23.068+00:00,2026-04-06T06:06:45.130+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,recModifiedTime,timestamp,5235,362,0.0,5235,2026-03-16T07:00:07.383+00:00,2026-04-06T06:11:26.335+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,isDeleted,boolean,5235,2,0.0,5235,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_template,tenantHash,string,5235,1,0.0,5235,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,category,string,2573,2,2568.0,5,Access Control,Personnel Security,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,categoryID,string,2573,2,2568.0,5,76145b8a-1222-48bb-9033-b358f1324cbb,9d844594-0f5a-41ba-96cd-7284e342e66c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,categoryTranslationKey,string,2573,2,2568.0,5,Access Control,Personnel Security,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,control,string,2573,4,2568.0,5, Access Agreements,automated_controlName_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,controlID,string,2573,4,2568.0,5,1cf3cf26-0729-4018-ba2f-3b4883d7df19,c961c592-7ff6-4fe9-8730-43d766d4d068,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,controlTranslationKey,string,2573,4,2568.0,5, Access Agreements,automated_controlName_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,controlStatus,string,2573,1,2568.0,5,Active,Active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,controlStatusID,string,2573,1,2568.0,5,Active,Active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,controlStatusTranslationKey,string,2573,1,2568.0,5,Active,Active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,deadline,timestamp,2573,1,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,description,string,2573,1,2571.0,2,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,effectiveness,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,effectivenessID,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,effectivenessTranslationKey,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,framework,string,2573,1,2568.0,5,FedRAMP,FedRAMP,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,frameworkID,string,2573,1,2568.0,5,8e029b33-7408-4620-a7c3-5053edfbf15b,8e029b33-7408-4620-a7c3-5053edfbf15b,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,frameworkTranslationKey,string,2573,1,2568.0,5,FedRAMP,FedRAMP,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,id,string,2573,2573,0.0,2573,0012792d-0c58-4ea3-a832-a885a2ae74fe,fff104dc-7309-44f3-bd6d-50a917ae8aad,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,identifier,string,2573,4,2568.0,5,AC-2,automated_controlID_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,identifierRank,string,2573,4,2568.0,5,ac-00002,ps-00006,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,lastModifiedDate,timestamp,2573,4,2568.0,5,2026-04-06T02:27:35.000+00:00,2026-04-06T02:27:39.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,masterControlID,string,2573,4,2568.0,5,1cf3cf26-0729-4018-ba2f-3b4883d7df19,c961c592-7ff6-4fe9-8730-43d766d4d068,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,maturity,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,maturityID,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,maturityTranslationKey,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,note,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,number,bigint,2573,5,2568.0,5,2563,2567,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,organization,string,2573,1,2568.0,5,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,organizationID,string,2573,1,2568.0,5,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,organizationTranslationKey,string,2573,1,2568.0,5,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,owner,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,ownerID,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,ownerTranslationKey,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,primaryEntity,string,2573,2,2568.0,5,RiskName_3029572,asset_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,primaryEntityID,string,2573,2,2568.0,5,5eb98ffa-b2b2-4076-b9c4-4906c44fb7fd,d9abd16e-5df1-48ee-b7b9-04e8ffbec31f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,primaryEntityTranslationKey,string,2573,2,2568.0,5,RiskName_3029572,asset_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,primaryEntityType,string,2573,2,2568.0,5,Assets,Risks,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,primaryEntityTypeID,string,2573,2,2568.0,5,Assets,Risks,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,primaryEntityTypeTranslationKey,string,2573,2,2568.0,5,Inventory.AssetControl,Risk.RiskControl,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,scope,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,scopeID,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,scopeTranslationKey,string,2573,0,2573.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,status,string,2573,1,2568.0,5,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,statusID,string,2573,1,2568.0,5,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,statusTranslationKey,string,2573,1,2568.0,5,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,workflowStage,string,2573,1,2568.0,5,PENDING,PENDING,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,workflowStageID,string,2573,1,2568.0,5,PENDING,PENDING,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,workflowStageTranslationKey,string,2573,1,2568.0,5,ControlWorkflow.StagePending,ControlWorkflow.StagePending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,workflow,string,2573,1,2568.0,5,Default Control Workflow,Default Control Workflow,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,workflowID,string,2573,1,2568.0,5,075069de-c608-4765-9775-c7fe426932f7,075069de-c608-4765-9775-c7fe426932f7,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,workflowTranslationKey,string,2573,1,2568.0,5,DefaultControlWorkflow,DefaultControlWorkflow,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,implementationGuidance,string,2573,1,2571.0,2,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,eventTime,timestamp,2573,2573,0.0,2573,2026-03-18T12:56:21.684+00:00,2026-04-06T02:27:58.547+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,recModifiedTime,timestamp,2573,116,0.0,2573,2026-03-18T13:03:18.726+00:00,2026-04-06T02:29:36.146+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,isDeleted,boolean,2573,2,0.0,2573,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,tenantHash,string,2573,1,0.0,2573,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,inventoriesCount,bigint,2573,2,2568.0,5,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_controlimplementation,risksCount,bigint,2573,1,2568.0,5,1,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentID,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentName,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentNumber,int,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentTemplateName,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentApprovalStage,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentStatus,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentResult,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentState,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,assessmentWorkflow,string,7,0,7.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,inventoryID,string,7,7,0.0,7,3f6f740c-f9e2-4a34-b893-5054a5665ad3,dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,inventoryStatus,string,7,1,0.0,7,active,active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,inventoryType,string,7,2,0.0,7,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,inventoryName,string,7,7,0.0,7,asset_163271,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,inventoryNumber,bigint,7,7,0.0,7,1852,3360,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,entityType,string,7,1,0.0,7,INVENTORY,INVENTORY,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,entitySubType,string,7,2,0.0,7,assets,vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,riskID,string,7,7,0.0,7,004a86fe-351b-449b-9700-f6b10ca3af4a,fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,riskName,string,7,7,0.0,7,RiskName_163271,RiskName_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,riskNumber,bigint,7,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-570-20260722.171750.184: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql.plan.expressions.functions.CastImpl (io.e6x.sql.plan.expressions.functions.TryCastImpl and io.e6x.sql.plan.expressions.functions.CastImpl are in unnamed module of loader 'app'), errorCode:EX001, errorMessage:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql...""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-570-20260722.171750.184: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql.plan.expressions.functions.CastImpl (io.e6x.sql.plan.expressions.functions.TryCastImpl and io.e6x.sql.plan.expressions.functions.CastImpl are in unnamed module of loader \'app\'), errorCode:EX001, errorMessage:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql..."", grpc_status:13, created_time:""2026-07-22T22:47:50.618158+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-571-20260722.171750.797: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql.plan.expressions.functions.CastImpl (io.e6x.sql.plan.expressions.functions.TryCastImpl and io.e6x.sql.plan.expressions.functions.CastImpl are in unnamed module of loader 'app'), errorCode:EX001, errorMessage:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql...""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-571-20260722.171750.797: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql.plan.expressions.functions.CastImpl (io.e6x.sql.plan.expressions.functions.TryCastImpl and io.e6x.sql.plan.expressions.functions.CastImpl are in unnamed module of loader \'app\'), errorCode:EX001, errorMessage:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql..."", grpc_status:13, created_time:""2026-07-22T22:47:51.236319+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-572-20260722.171751.417: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql.plan.expressions.functions.CastImpl (io.e6x.sql.plan.expressions.functions.TryCastImpl and io.e6x.sql.plan.expressions.functions.CastImpl are in unnamed module of loader 'app'), errorCode:EX001, errorMessage:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql...""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-572-20260722.171751.417: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql.plan.expressions.functions.CastImpl (io.e6x.sql.plan.expressions.functions.TryCastImpl and io.e6x.sql.plan.expressions.functions.CastImpl are in unnamed module of loader \'app\'), errorCode:EX001, errorMessage:java.lang.ClassCastException: class io.e6x.sql.plan.expressions.functions.TryCastImpl cannot be cast to class io.e6x.sql..."", grpc_status:13, created_time:""2026-07-22T22:47:51.851515+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,stage,string,7,1,0.0,7,Identified,Identified,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,stageID,string,7,1,0.0,7,Identified,Identified,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,workflow,string,7,1,0.0,7,Default Risk Workflow,Default Risk Workflow,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,workflowID,string,7,1,0.0,7,9684290c-6240-4021-b599-a2dd8a864311,9684290c-6240-4021-b599-a2dd8a864311,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,value,string,7,7,0.0,7,asset_163271,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,valueID,string,7,7,0.0,7,3f6f740c-f9e2-4a34-b893-5054a5665ad3,dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,riskURL,string,7,7,0.0,7,https://Risk/Risk/004a86fe-351b-449b-9700-f6b10ca3af4a,https://Risk/Risk/fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,valueURL,string,7,7,0.0,7,https://Inventory/assets/3f6f740c-f9e2-4a34-b893-5054a5665ad3,https://Inventory/vendors/d8c90ad9-c7d7-4e88-863b-74612835fc94,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,orgID,string,7,1,0.0,7,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,orgName,string,7,1,0.0,7,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskrelatedobjects,parentOrgID,string,7,1,0.0,7,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdUser,string,1591030,48,0.0,1591030,CustomUser_3885566 assessment,user1fn_1659_9624063 user1ln_1659_9624063,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdUserID,string,1591030,49,0.0,1591030,05a27abf-0e34-411e-a044-5a26301be8be,f86777b7-12cd-450f-b30c-76472738726e,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,description,string,1591030,28,0.0,1591030,,updated_description_for_edited_Automated_Assessment_5347764,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,highRisks,int,1591030,2,0.0,1591030,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,id,string,1591030,2666,0.0,1591030,00214917-fe2b-4773-a003-56d7f8ff9e1b,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,inherentRiskLevel,string,1591030,3,0.0,1591030,High,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,inherentRiskLevelID,string,1591030,3,0.0,1591030,High,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,inherentRiskLevelTranslationKey,string,1591030,3,0.0,1591030,High,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,inherentRiskScore,double,1591030,3,0.0,1591030,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,lowRisks,int,1591030,2,0.0,1591030,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,mediumRisks,string,1591030,2,0.0,1591030,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,name,string,1591030,2649,0.0,1591030,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,number,int,1591030,2666,0.0,1591030,4,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,openInfoRequestCount,int,1591030,5,0.0,1591030,0,7,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,openRiskCount,int,1591030,3,0.0,1591030,0,2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,riskScore,double,1591030,3,0.0,1591030,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,riskSummary,string,1591030,3,0.0,1591030,High,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,state,string,1591030,4,0.0,1591030,Completed,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,targetRiskLevel,string,1591030,1,0.0,1591030,None,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,targetRiskLevelID,string,1591030,1,0.0,1591030,None,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,targetRiskLevelTranslationKey,string,1591030,1,0.0,1591030,None,None,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,targetRiskScore,double,1591030,1,0.0,1591030,0.0,0.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,templateID,string,1591030,2118,0.0,1591030,005a27db-daa5-4339-ac73-759d8e558780,ffe3056e-daa4-4322-b616-937322150463,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,templateName,string,1591030,2118,0.0,1591030,2020 SIG Core - 2.1 - 4846484,wf_template_8924918,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,totalRisks,int,1591030,3,0.0,1591030,0,2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,veryHighRisks,int,1591030,1,0.0,1591030,0,0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completedDateTime,timestamp,1591030,16264,1330420.0,260610,2026-03-19T04:15:24.000+00:00,2026-04-06T20:06:27.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completedDate,date,1591030,17,1330420.0,260610,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completedDateYear,int,1591030,1,1330420.0,260610,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completedDateMonth,string,1591030,2,1330420.0,260610,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completedDateMonthNumber,string,1591030,2,1330420.0,260610,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completedDateQuarter,string,1591030,2,1330420.0,260610,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,approvalStage,string,1591030,5,1012690.0,578340,Approval_Stage2_8167495,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,approvalStageID,string,1591030,5,1012690.0,578340,Approval_Stage2_8167495,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,approvalStageTranslationKey,string,1591030,5,1012690.0,578340,Approval_Stage2_8167495,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdDateTime,timestamp,1591030,86468,0.0,1591030,2026-03-19T04:12:52.000+00:00,2026-04-06T20:06:29.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdDate,date,1591030,18,0.0,1591030,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdDateYear,int,1591030,1,0.0,1591030,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdDateMonth,string,1591030,2,0.0,1591030,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdDateMonthNumber,string,1591030,2,0.0,1591030,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,createdDateQuarter,string,1591030,2,0.0,1591030,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,deadlineDateTime,timestamp,1591030,2026,1554735.0,36295,2026-03-18T12:00:00.000+00:00,2026-04-10T14:00:00.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,deadlineDate,date,1591030,22,1554735.0,36295,2026-03-18,2026-04-10,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,deadlineDateYear,int,1591030,1,1554735.0,36295,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,deadlineDateMonth,string,1591030,2,1554735.0,36295,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,deadlineDateMonthNumber,string,1591030,2,1554735.0,36295,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,deadlineDateQuarter,string,1591030,2,1554735.0,36295,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,lastModifiedBy,string,1591030,69,0.0,1591030,CustomUser_1152396 AssessmentApprove,user2_4197915 last_4197915,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,maturityType,string,1591030,0,1591030.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,result,string,1591030,17,1330420.0,260610,Approved,approve_Result_8351532,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,resultID,string,1591030,17,1330420.0,260610,19b4d29d-0382-4034-af32-4e87e51ec4e4,bf78f12e-ee98-456a-a370-c3a03bf3f466,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,resultTranslationKey,string,1591030,17,1330420.0,260610,19b4d29d-0382-4034-af32-4e87e51ec4e4,bf78f12e-ee98-456a-a370-c3a03bf3f466,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,status,string,1591030,2,0.0,1591030,Active,Archived,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,statusID,string,1591030,2,0.0,1591030,Active,Archived,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,statusTranslationKey,string,1591030,2,0.0,1591030,Active,Archived,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,submittedDateTime,timestamp,1591030,49949,752080.0,838950,2026-03-19T04:12:57.000+00:00,2026-04-06T20:06:28.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,submittedDate,date,1591030,18,752080.0,838950,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,submittedDateYear,int,1591030,1,752080.0,838950,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,submittedDateMonth,string,1591030,2,752080.0,838950,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,submittedDateMonthNumber,string,1591030,2,752080.0,838950,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,submittedDateQuarter,string,1591030,2,752080.0,838950,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,templateType,string,1591030,7,0.0,1591030,AIGOVERNANCE,VENDOR,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,templateVersion,int,1591030,2,0.0,1591030,1,2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,thresholdID,string,1591030,0,1591030.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,triggeredByAssessmentID,string,1591030,79,1539265.0,51765,01e1c6b0-16b7-457f-9542-417147fc09a3,fbd05671-024d-4431-ba7a-a7c77309ceee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,updatedDateTime,timestamp,1591030,79558,0.0,1591030,2026-03-19T04:13:02.000+00:00,2026-04-06T20:06:30.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,updatedDate,date,1591030,19,0.0,1591030,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,updatedDateYear,int,1591030,1,0.0,1591030,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,updatedDateMonth,string,1591030,2,0.0,1591030,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,updatedDateMonthNumber,string,1591030,2,0.0,1591030,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,updatedDateQuarter,string,1591030,2,0.0,1591030,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,eventTime,timestamp,1591030,2666,0.0,1591030,2026-03-19T16:13:35.967+00:00,2026-04-06T06:06:50.294+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,eventDate,date,1591030,13,0.0,1591030,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,eventDateYear,int,1591030,1,0.0,1591030,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,eventdDateMonth,string,1591030,2,0.0,1591030,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,eventDateMonthNumber,string,1591030,2,0.0,1591030,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,eventDateQuarter,string,1591030,2,0.0,1591030,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,userAssignmentMode,string,1591030,2,0.0,1591030,ASSESSMENT,SECTION,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,version,bigint,1591030,1,0.0,1591030,0,0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,workflow,string,1591030,6,0.0,1591030,Default Assessment Workflow,workflow_9541679,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,workflowID,string,1591030,6,0.0,1591030,15c5acbe-bf5e-4c3a-ac8f-1daeeda27f56,b1e8b0fd-8a7b-4837-b6d0-f6bf67e6c69a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,workflowTranslationKey,string,1591030,6,0.0,1591030,DefaultAssessmentWorkflow,workflow_9541679,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,timeZoneID,string,1591030,595,0.0,1591030,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,completionTime,double,1591030,178,1330420.0,260610,0.0,0.37100694444444443,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,targetMitigation,string,1591030,2,0.0,1591030,Achieved,Not Achieved,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,url,string,1591030,2666,0.0,1591030,https://Assessment/Assessment/00214917-fe2b-4773-a003-56d7f8ff9e1b,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,orgName,string,1591030,3,0.0,1591030,OTAuto02,asset_org_2_child,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,orgID,string,1591030,3,0.0,1591030,2cf501da-b928-4345-ae5a-f27ca9bdc56e,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,parentOrgID,string,1591030,4,0.0,1591030,2cf501da-b928-4345-ae5a-f27ca9bdc56e,ca7d34db-b12a-4ae2-ab00-d474099bc28a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessment_v4,assessmentOpenAge,bigint,1591030,18,0.0,1591030,0,125,
+monitoring,entitygroupconfig,entityType,string,0,0,,0,,,
+monitoring,entitygroupconfig,numberOfGroups,int,0,0,,0,,,
+monitoring,entitygroupconfig,groupThreshold,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,id,string,8750,8750,0.0,8750,0017b494-1173-41a5-93be-22e66d21ddf6,fff8aaf7-cae1-4270-8922-65764d911584,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,name,string,8750,38,8712.0,38,Vendor_20260406050626-ssbh77,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,number,bigint,8750,38,8712.0,38,1,3360,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,inventoryType,string,8750,3,8712.0,38,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,inventoryTypeID,int,8750,4,0.0,8750,0,50,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,inventoryStatus,string,8750,1,8712.0,38,active,active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,inventoryStatusID,string,8750,1,8712.0,38,active,active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,inventoryStatusTranslationKey,string,8750,1,8712.0,38,InventoryActiveStatus,InventoryActiveStatus,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,createDate,timestamp,8750,37,8712.0,38,2026-03-16T12:49:03.000+00:00,2026-04-06T06:06:22.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,lastModifiedDate,timestamp,8750,36,8712.0,38,2026-03-16T12:49:03.000+00:00,2026-04-06T06:06:22.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,orgGroupID,string,8750,1,8712.0,38,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,riskScore,double,8750,4,8744.0,6,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,targetRiskScore,double,8750,0,8750.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,attributes,"map<unknown,struct<key:string,value:LIST<struct<element:struct<value:string,valueKey:string,translationKey:string>>>>>",8750,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-741-20260722.175154.352: 	java.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR key, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey, VARCHAR translationKey) ARRAY value) key_value) to type VARCHAR""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-741-20260722.175154.352: \tjava.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR key, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey, VARCHAR translationKey) ARRAY value) key_value) to type VARCHAR"", grpc_status:13, created_time:""2026-07-22T23:21:54.458352+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-742-20260722.175154.602: 	{RUNTIME ERROR} Unexpected Error During Query Execution!""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T23:21:54.953848+05:30"", grpc_status:13, grpc_message:""Q130099-742-20260722.175154.602: \t{RUNTIME ERROR} Unexpected Error During Query Execution!""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-743-20260722.175155.098: 	class io.e6x.engine.pipelined.columnar.vectors.MapVector cannot be cast to class io.e6x.engine.pipelined.columnar.vectors.GroupVector (io.e6x.engine.pipelined.columnar.vectors.MapVector and io.e6x.engine.pipelined.columnar.vectors.GroupVector are in unnamed module of loader 'app')""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-743-20260722.175155.098: \tclass io.e6x.engine.pipelined.columnar.vectors.MapVector cannot be cast to class io.e6x.engine.pipelined.columnar.vectors.GroupVector (io.e6x.engine.pipelined.columnar.vectors.MapVector and io.e6x.engine.pipelined.columnar.vectors.GroupVector are in unnamed module of loader \'app\')"", grpc_status:13, created_time:""2026-07-22T23:21:56.014091+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,eventTime,timestamp,8750,8750,0.0,8750,2026-03-18T09:36:41.796+00:00,2026-04-06T06:07:00.654+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,recModifiedTime,timestamp,8750,349,0.0,8750,2026-03-18T09:37:29.119+00:00,2026-04-06T06:15:30.587+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,isDeleted,boolean,8750,2,0.0,8750,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,tenantHash,string,8750,1,0.0,8750,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_inventory,personalDataObjects,"LIST<struct<element:struct<attributeValues:map<unknown,struct<key:string,value:LIST<struct<element:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>>>>>,dataCategory:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>,dataCategoryDescription:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>,dataClassifications:LIST<struct<element:struct<translationKey:string,value:string,valueKey:string>>>,dataClassificationsDescriptions:LIST<struct<element:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>>>,dataElement:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>,dataElementDescription:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>,dataSubjectType:struct<translationKey:string,value:string,valueKey:string>,dataSubjectTypeDescription:struct<contexts:LIST<struct<element:struct<contextKey:string,contextValue:string>>>,translationKey:string,value:string,valueKey:string>,sourceType:struct<translationKey:string,value:string,valueKey:string>,dateLinked:timestamp>>>",8750,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-750-20260722.175203.258: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-750-20260722.175203.258: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})"", grpc_status:13, created_time:""2026-07-22T23:22:03.633112+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-751-20260722.175203.777: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q130099-751-20260722.175203.777: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})"", grpc_status:13, created_time:""2026-07-22T23:22:04.119113+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q130099-752-20260722.175204.263: 	QueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-22T23:22:04.717728+05:30"", grpc_status:13, grpc_message:""Q130099-752-20260722.175204.263: \tQueryExecutionException(querySubPhase:OPEN, reason:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorCode:EX001, errorMessage:java.lang.UnsupportedOperationException: Type: ArrayType not supported, errorMetadata:{})""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,rootOrgId,string,183,1,0.0,183,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,rootOrgName,string,183,1,0.0,183,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,orgId,string,183,68,0.0,183,013cf75c-cd8e-4f11-b2bd-689b8a6b3f85,f2d3fcfe-b9fc-4c70-9454-7923fe22975f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,orgName,string,183,62,0.0,183,OTAuto02,vrm_org_2_child_1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,parentOrgId,string,183,68,0.0,183,013cf75c-cd8e-4f11-b2bd-689b8a6b3f85,f2d3fcfe-b9fc-4c70-9454-7923fe22975f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,parentOrgName,string,183,62,0.0,183,OTAuto02,vrm_org_2_child_1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,eventTime,timestamp,183,1,0.0,183,2026-04-03T12:57:47.813+00:00,2026-04-03T12:57:47.813+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,recModifiedTime,timestamp,183,1,0.0,183,2026-04-03T13:11:35.198+00:00,2026-04-03T13:11:35.198+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,isDeleted,boolean,183,1,0.0,183,false,false,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,orghierarchy,tenantHash,string,183,1,0.0,183,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,

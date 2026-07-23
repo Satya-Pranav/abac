@@ -2,46 +2,35 @@
 -- 21_except_and_defaults.sql   (RUN IN THE DBR SQL EDITOR AS OWNER / METASTORE ADMIN)
 --
 -- ############################################################################
--- ##   STILL UNVERIFIED -- RUN THIS SEPARATELY. DO NOT SKIP THIS SECTION.   ##
+-- ##   CONFIRMED FINDING (2026-07-23): row-filter UDF ARITY is STRICT.       ##
 -- ############################################################################
 --
--- THE ARITY CHECK (sql/19's UC1) HAS NEVER BEEN EXECUTED.
+-- The DP1 CREATE POLICY below (a UDF declaring TWO params, one with a DEFAULT, bound via a policy
+-- whose USING COLUMNS supplies only ONE) was applied live and REJECTED with:
 --
--- sql/19 contains a commented-out `arity_policy` block: a row-filter UDF (two_param) declaring
--- TWO params, bound via a policy whose USING COLUMNS supplies only ONE (id). It is EXPECTED to
--- be REJECTED by CREATE POLICY with an arity-mismatch error -- because a row filter auto-supplies
--- NO argument of its own, unlike a column mask's ON COLUMN (see sql/19's header and Cases.java's
--- UC comment). But that expectation is a HYPOTHESIS, not a confirmed fact: nobody has run it.
+--   ErrorClass=INVALID_PARAMETER_VALUE.INVALID_PARAMETER_VALUE
+--   "The policy definition requires 1 argument(s), but the referred function 'def_filter'
+--    takes 2 argument(s)"
 --
--- The suite's own service principal CANNOT test this -- issuing CREATE POLICY requires
--- owner / metastore-admin privileges the SP does not have -- so there is no suite case for it,
--- and there never can be one with this SP's grants. This file does NOT close that gap. It is
--- closed ONLY by an operator running these 4 steps, BY THEMSELVES, separately from any scripted
--- apply of this file or of sql/19:
+-- This settles BOTH open questions at once:
+--   * DEFAULT parameters (gap 2 / DP1): a DEFAULT does NOT let you omit the argument. USING COLUMNS
+--     must supply exactly as many arguments as the UDF declares. The default is never reached.
+--   * ARITY (gap 3 / sql/19's UC1): confirmed, and MORE strongly than UC1's plain-arity case --
+--     even WITH a DEFAULT on the omitted param, the mismatch is rejected. sql/19's separate
+--     arity_policy run is now redundant; leave it commented. A row filter auto-supplies NO
+--     argument of its own (unlike a column mask's ON COLUMN), so all N declared params are
+--     mandatory in USING COLUMNS.
 --
---   1. Apply everything ELSE first (this whole file end-to-end, and sql/19 as already applied
---      with its UC1 block still commented out). That part is safe and idempotent.
---   2. Uncomment ONLY the `CREATE OR REPLACE POLICY arity_policy ...` statement in sql/19 (under
---      the header "UC1 -- DO NOT UNCOMMENT AS PART OF A NORMAL APPLY OF THIS SCRIPT") and run
---      that ONE statement ALONE, in isolation from the rest of sql/19.
---   3. Record the EXACT error text VERBATIM -- the full message AND the SQLSTATE -- in
---      docs/testing/jdbc-cases.md. That verbatim error, not a row count, IS the finding.
---   4. Re-comment the block IMMEDIATELY afterward, so any future re-apply of sql/19 never
---      re-attempts the doomed CREATE POLICY.
---
--- Until an operator does this, "a row filter demands all N declared params, no partial binding
--- is possible" remains an assumption carried by DP1 below (and by UC2's writeup in sql/19), not
--- a verified fact. DP1 in this file is a DIFFERENT, related, and separately-unverified question
--- (does a DEFAULT on the omitted param change the outcome?) -- it does NOT substitute for
--- running sql/19's arity check.
+-- Because this is a CREATE-POLICY-time (DDL) rejection, the suite's service principal cannot
+-- observe it (only an owner issues CREATE POLICY; the SP's SELECT would just see an ungoverned
+-- table returning all rows -- a fail-open masquerade). There is therefore NO suite case for DP1;
+-- it was dropped, exactly as UC1 was. The DP1 block below is kept COMMENTED OUT as a reproducible
+-- demonstration only -- do NOT uncomment it in a normal apply; it will fail by design.
 -- ############################################################################
 --
--- This file closes two further functional-coverage gaps, neither of which touches sql/19's UDF:
+-- What this file DOES still test live, via the service principal:
 --   EX1 = EXCEPT:  does `CREATE POLICY ... TO <principal> EXCEPT <principal>` actually exempt the
 --                  excepted principal from the row filter it would otherwise be subject to?
---   DP1 = DEFAULT: does a row filter honour a DEFAULT value for a UDF parameter omitted from
---                  USING COLUMNS, or does Databricks still demand all N declared params
---                  regardless of the DEFAULT?
 --
 -- Creates an ISOLATED schema (abac_tpcds.abac_gaps) so these policies cannot reach any
 -- main-suite table (abac_tpcds.tpcds_1_delta.*).
@@ -97,53 +86,68 @@ GRANT SELECT   ON TABLE  abac_tpcds.abac_gaps.exempt      TO `76d5804d-d302-4014
 GRANT EXECUTE  ON FUNCTION abac_tpcds.abac_gaps.except_filter TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;
 
 -- =========================================================
--- DP1 -- DEFAULT UDF parameters: honoured, or still demanded in full?
--- =========================================================
--- 20 fixed rows (id 1..20). A SEPARATE table from `exempt` (its own policy binds the SP directly
--- via TO, not TO ... EXCEPT the SP, so the SP IS subject to it -- needed to observe whether
--- cutoff's DEFAULT is honoured at all).
-CREATE OR REPLACE TABLE abac_tpcds.abac_gaps.defparam (id BIGINT);
-INSERT INTO abac_tpcds.abac_gaps.defparam SELECT id FROM range(1, 21);
-ALTER TABLE abac_tpcds.abac_gaps.defparam ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
+-- EX2 -- the CONTROL for EX1. Same table shape, same filter (id <= 10), same broad TO principal,
+-- but NO EXCEPT clause -- so the SP IS subject to the filter here. This disambiguates EX1:
+--   * EX1 returns 20 (all rows). That alone is ambiguous -- it could mean "EXCEPT exempted the SP"
+--     OR "the SP was never in `account users`, so the policy never applied to it" (a fail-open
+--     masquerade). EX1 cannot tell those apart.
+--   * EX2 pins it down. If EX2 returns 10, the SP IS in `account users` and IS filtered by the
+--     broad grant -- so EX1's 20 is attributable ONLY to the EXCEPT clause. EXCEPT proven.
+--   * If EX2 instead returns 20, then `account users` does NOT scope this service principal at all
+--     (SPs may not be members), EX1 is INCONCLUSIVE, and both cases must be rebound to a custom
+--     group that the SP is explicitly added to. A FAILing EX2 is that signal -- record it and stop.
+CREATE OR REPLACE TABLE abac_tpcds.abac_gaps.subject (id BIGINT);
+INSERT INTO abac_tpcds.abac_gaps.subject SELECT id FROM range(1, 21);
+ALTER TABLE abac_tpcds.abac_gaps.subject ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
 
--- TWO params; the SECOND has a DEFAULT. USING COLUMNS below supplies ONLY (id).
-CREATE OR REPLACE FUNCTION abac_tpcds.abac_gaps.def_filter(id BIGINT, cutoff BIGINT DEFAULT 10)
-RETURNS BOOLEAN RETURN id <= cutoff;
-
--- UNKNOWN until observed: a row filter auto-supplies NO argument of its own (see sql/19's UC1/UC2
--- writeup and the STILL-UNVERIFIED section above), so Databricks may still demand BOTH declared
--- params and REJECT this CREATE POLICY outright (the same arity-mismatch failure UC1
--- hypothesizes), or it may honour cutoff's DEFAULT and accept the policy with cutoff=10. If this
--- statement itself errors, THAT is DP1's finding -- record the verbatim error + SQLSTATE. Do NOT
--- add `cutoff` to USING COLUMNS to force it to succeed; that would test a different (explicit,
--- non-default) binding, not this one.
-CREATE OR REPLACE POLICY defparam_policy
-ON TABLE abac_tpcds.abac_gaps.defparam
-ROW FILTER abac_tpcds.abac_gaps.def_filter
-TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
+CREATE OR REPLACE POLICY subject_policy
+ON TABLE abac_tpcds.abac_gaps.subject
+ROW FILTER abac_tpcds.abac_gaps.except_filter
+TO `account users`
 FOR TABLES
 MATCH COLUMNS has_tag('abac_column_id') AS id
 USING COLUMNS (id);
 
-GRANT SELECT  ON TABLE    abac_tpcds.abac_gaps.defparam    TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;
-GRANT EXECUTE ON FUNCTION abac_tpcds.abac_gaps.def_filter  TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;
+GRANT SELECT ON TABLE abac_tpcds.abac_gaps.subject TO `76d5804d-d302-4014-a1d3-d846f02c84ef`;
+
+-- =========================================================
+-- DP1 -- DEFAULT UDF parameters: ANSWERED, kept commented as a reproducible demo (see banner).
+-- =========================================================
+-- DO NOT UNCOMMENT IN A NORMAL APPLY. Running the CREATE POLICY below fails BY DESIGN with:
+--   INVALID_PARAMETER_VALUE.INVALID_PARAMETER_VALUE
+--   "The policy definition requires 1 argument(s), but the referred function 'def_filter'
+--    takes 2 argument(s)"
+-- confirming that a DEFAULT does not permit omitting the argument (see the banner at the top).
+-- To reproduce: uncomment this whole block, run the CREATE POLICY alone, observe the error,
+-- re-comment. No suite case depends on it (DP1 was dropped -- a DDL rejection is not observable
+-- from the SP's query path).
+--
+-- CREATE OR REPLACE TABLE abac_tpcds.abac_gaps.defparam (id BIGINT);
+-- INSERT INTO abac_tpcds.abac_gaps.defparam SELECT id FROM range(1, 21);
+-- ALTER TABLE abac_tpcds.abac_gaps.defparam ALTER COLUMN id SET TAGS ('abac_column_id' = 'true');
+-- CREATE OR REPLACE FUNCTION abac_tpcds.abac_gaps.def_filter(id BIGINT, cutoff BIGINT DEFAULT 10)
+-- RETURNS BOOLEAN RETURN id <= cutoff;
+-- CREATE OR REPLACE POLICY defparam_policy
+-- ON TABLE abac_tpcds.abac_gaps.defparam
+-- ROW FILTER abac_tpcds.abac_gaps.def_filter
+-- TO `76d5804d-d302-4014-a1d3-d846f02c84ef`
+-- FOR TABLES
+-- MATCH COLUMNS has_tag('abac_column_id') AS id
+-- USING COLUMNS (id);          -- <-- 1 arg supplied, 2 declared -> REJECTED here
 
 -- Expect (as the SP via the suite):
---   EX1: SELECT count(*) FROM abac_tpcds.abac_gaps.exempt    ->  20 (ALL rows). The SP is
---        EXCEPTed from exempt_policy, so it is NOT subject to except_filter at all. If EX1
---        instead returns 10, EXCEPT failed to exempt the SP -- a significant finding, not a test
---        bug. If the `account users` TO form itself is rejected at CREATE POLICY time, see the
---        OPERATOR NOTE above -- record and report that verbatim, do not substitute.
---   DP1: SELECT count(*) FROM abac_tpcds.abac_gaps.defparam  ->  INFO. Either 10 (the DEFAULT was
---        honoured, cutoff=10 applied) or a CREATE POLICY / query ERROR (all N params still
---        required regardless of the DEFAULT). DO NOT guess a number -- ship as Expect.info() and
---        convert to a hard assertion (Expect.exact(10) or Expect.errorContains(...)) once
---        observed, same pattern as TG2/UC2.
+--   EX2: SELECT count(*) FROM abac_tpcds.abac_gaps.subject   ->  10 (CONTROL). The SP is subject to
+--        subject_policy (TO account users, no EXCEPT), so except_filter (id <= 10) applies. A
+--        result of 10 proves the SP is in `account users` -- WITHOUT which EX1 proves nothing.
+--        If EX2 returns 20, `account users` does not scope the SP; rebind both to a custom group.
+--   EX1: SELECT count(*) FROM abac_tpcds.abac_gaps.exempt    ->  20 (ALL rows), MEANINGFUL ONLY IF
+--        EX2 == 10. The SP is EXCEPTed from exempt_policy, so except_filter does not apply. If EX1
+--        returns 10, EXCEPT failed to exempt the SP. If the `account users` TO form is rejected at
+--        CREATE POLICY time, see the OPERATOR NOTE above -- record verbatim, do not substitute.
+--   DP1: dropped (DEFAULT question answered at DDL; not suite-observable -- see banner).
 
 -- ---- TEARDOWN ----
 -- Order matters: policies before functions/tables, then the schema CASCADE.
 --   DROP POLICY IF EXISTS exempt_policy   ON TABLE abac_tpcds.abac_gaps.exempt;
---   DROP POLICY IF EXISTS defparam_policy ON TABLE abac_tpcds.abac_gaps.defparam;
 --   DROP FUNCTION IF EXISTS abac_tpcds.abac_gaps.except_filter;
---   DROP FUNCTION IF EXISTS abac_tpcds.abac_gaps.def_filter;
---   DROP SCHEMA IF EXISTS abac_tpcds.abac_gaps CASCADE;
+--   DROP SCHEMA IF EXISTS abac_tpcds.abac_gaps CASCADE;   -- also removes defparam if you demo'd DP1

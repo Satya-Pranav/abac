@@ -578,6 +578,20 @@ public final class Cases {
         //                        pattern as TG2/UC2) -- do NOT invent a number.
         final String GAPS_S = "abac_tpcds.abac_gaps.";
 
+        cs.add(new Case("EX2", "EX",
+            "CONTROL for EX1: the SP IS subject to a broad TO with no EXCEPT -- filtered to 10",
+            "subject_policy (sql/21) is bound TO `account users` with NO EXCEPT, over the same "
+          + "except_filter (id <= 10) as EX1. This is the control that makes EX1 meaningful: EX1's "
+          + "20 is ambiguous on its own (EXCEPT worked, OR the SP was never in `account users` so "
+          + "the policy never applied). A count of 10 HERE proves the SP IS in `account users` and "
+          + "IS filtered by the broad grant -- so EX1's 20 is attributable only to EXCEPT. If EX2 "
+          + "returns 20, `account users` does not scope this SP, EX1 is inconclusive, and both must "
+          + "be rebound to a custom group (this FAIL is that signal, not a test bug).",
+            DISABLE_CLAIM,
+            "SELECT count(*) FROM " + GAPS_S + "subject",
+            Expect.exact(10),
+            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+
         cs.add(new Case("EX1", "EX",
             "EXCEPT clause: the excepted principal is NOT subject to the policy -- sees ALL rows",
             "exempt_policy (sql/21) is bound TO `account users` EXCEPT "
@@ -585,28 +599,23 @@ public final class Cases {
           + "except_filter keeps id <= 10 of 20 rows for any SUBJECT principal, but EXCEPT removes "
           + "the SP from that principal set entirely, so the filter never runs against it -- the SP "
           + "sees the table exactly as an unfiltered/owner reader would. A count of 10 would mean "
-          + "EXCEPT failed to exempt the SP; 20 confirms the exemption worked. If the `account "
-          + "users` group form is itself rejected at CREATE POLICY time, that is a separate finding "
-          + "recorded verbatim in sql/21 -- see the OPERATOR NOTE there.",
+          + "EXCEPT failed to exempt the SP; 20 confirms the exemption worked, BUT ONLY IF EX2 == 10 "
+          + "(otherwise the SP was never in scope and this 20 proves nothing about EXCEPT). If the "
+          + "`account users` group form is itself rejected at CREATE POLICY time, that is a separate "
+          + "finding recorded verbatim in sql/21 -- see the OPERATOR NOTE there.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + GAPS_S + "exempt",
             Expect.exact(20),
             Set.of(Capability.POLICY_DDL, Capability.TAGS)));
 
-        cs.add(new Case("DP1", "DP",
-            "DEFAULT UDF parameter: does a row filter honour a DEFAULT for an omitted USING COLUMNS arg?",
-            "def_filter(id BIGINT, cutoff BIGINT DEFAULT 10) declares TWO params; defparam_policy's "
-          + "(sql/21) USING COLUMNS supplies ONLY (id), omitting cutoff and relying on its DEFAULT. "
-          + "This is genuinely UNKNOWN: a row filter auto-supplies no argument of its own (sql/19's "
-          + "UC1/UC2), so Databricks may still demand all n declared params and REJECT the policy at "
-          + "CREATE POLICY time regardless of the DEFAULT, or it may honour the DEFAULT and apply "
-          + "cutoff=10, keeping 10 of 20 rows. Ships as Expect.info() -- DO NOT guess a number; the "
-          + "observed answer (a count of 10, or a recorded CREATE POLICY / query error) becomes a "
-          + "hard assertion once run, same pattern as TG2/UC2.",
-            DISABLE_CLAIM,
-            "SELECT count(*) FROM " + GAPS_S + "defparam",
-            Expect.info(),
-            Set.of(Capability.POLICY_DDL, Capability.TAGS)));
+        // DP1 REMOVED 2026-07-23. It asked whether a row-filter UDF's DEFAULT lets USING COLUMNS
+        // omit that argument. ANSWERED live: no -- CREATE POLICY is REJECTED
+        // ("The policy definition requires 1 argument(s), but the referred function 'def_filter'
+        // takes 2 argument(s)", INVALID_PARAMETER_VALUE). Like UC1, that is a CREATE-POLICY-time
+        // rejection the SP cannot observe: with no policy created, the SELECT would just return 20
+        // (fail-open masquerade), proving nothing. The finding lives in sql/21's banner. This also
+        // confirms the arity rule (gap 3) more strongly than sql/19's UC1 -- even a DEFAULT does
+        // not rescue an under-supplied USING COLUMNS. Do not re-add a suite case; it is not testable.
 
         // ---- CL. Malformed / partial IDENTITY CLAIMS against the already-governed `customer` table.
         //      No new objects — only the claim JSON varies. get_user_context() parses the claim via
