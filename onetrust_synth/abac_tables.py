@@ -56,3 +56,75 @@ def build_abac_assignment_permission(spark: SparkSession, assignment_df: DataFra
     df = df.withColumn("tenantHash", F.lit("e40yx52dkbjpcqazimno9yvh4k"))
     df = df.withColumn("isDeleted", F.lit(False))
     return df.drop("_row_id")
+
+
+def build_abac_entity_subject_assignment(
+    spark: SparkSession, assignment_df: DataFrame, entity_registry: DataFrame,
+    org_registry: DataFrame, subject_registry: DataFrame, row_count: int,
+) -> DataFrame:
+    # Only entities whose objectType is actually represented in assignment_df
+    # can ever be picked here — the later join against assignment_df is an
+    # inner join on objectType, so anything else would be silently dropped,
+    # undershooting row_count. Two real cases land in "anything else":
+    #  1. entity_registry rows with objectType IS NULL — the ~35% of rows
+    #     harvested from cmb_inventory, mirroring that column's real 99.57%
+    #     null rate (see Task 11). NULL never equals a real assignment
+    #     objectType.
+    #  2. entity_registry rows with objectType == "TEMPLATE" — cmb_template is
+    #     harvested with the static type TEMPLATE (see config.ENTITY_SOURCE_TABLES),
+    #     but TEMPLATE is NOT one of the 20 real entityTypeReference values
+    #     (verified against reportingmoduletoentityreferencemapping_v's sample
+    #     data), so it never appears in assignment_df.objectType, which is
+    #     drawn from that same 20-value vocabulary. This isn't a sampling
+    #     fluke fixable by a bigger assignment_df — TEMPLATE structurally has
+    #     no ABAC assignment in the real system.
+    # Filtering to the objectTypes assignment_df actually has (rather than a
+    # hardcoded IS NOT NULL) handles both cases generically and adapts to
+    # whatever assignment_df is passed in.
+    assignment_object_types = [r["objectType"] for r in assignment_df.select("objectType").distinct().collect()]
+    entity_registry = entity_registry.filter(F.col("objectType").isin(assignment_object_types))
+
+    entity_reg_indexed = entity_registry.withColumn(
+        "_e_idx", F.row_number().over(Window.orderBy("entityId")) - 1
+    )
+    n_entities = entity_registry.count()
+
+    subj_reg_indexed = subject_registry.withColumn(
+        "_s_idx", F.row_number().over(Window.orderBy("subjectId")) - 1
+    )
+    n_subjects = subject_registry.count()
+
+    org_ids = [r["orgId"] for r in org_registry.select("orgId").distinct().collect()]
+
+    df = base_row_id_df(spark, row_count)
+    df = df.withColumn("_e_idx", deterministic_index(F.col("_row_id"), "esa.entity", n_entities))
+    df = df.join(entity_reg_indexed, on="_e_idx", how="inner").drop("_e_idx")
+
+    df = df.withColumn("_s_idx", deterministic_index(F.col("_row_id"), "esa.subject", n_subjects))
+    df = df.join(subj_reg_indexed.withColumnRenamed("subjectId", "_subjectId").withColumnRenamed("subjectType", "_subjectType"), on="_s_idx", how="inner").drop("_s_idx")
+    df = df.withColumnRenamed("_subjectId", "subjectId").withColumnRenamed("_subjectType", "subjectType")
+
+    # pick an assignment whose objectType matches this row's entity objectType
+    assignment_by_type = assignment_df.select(F.col("id").alias("assignmentId"), "objectType")
+    df = df.join(assignment_by_type, on="objectType", how="inner")
+    # a broadcast join on objectType can multiply rows if several assignments share
+    # a type; pick one deterministically per source row instead of keeping all matches
+    df = df.withColumn(
+        "_pick",
+        F.row_number().over(Window.partitionBy("_row_id").orderBy(F.xxhash64(F.col("_row_id"), F.col("assignmentId")))),
+    )
+    df = df.filter(F.col("_pick") == 1).drop("_pick")
+
+    org_array = F.array(*[F.lit(o) for o in org_ids]) if org_ids else F.array(F.lit(None).cast("string"))
+    org_idx = deterministic_index(F.col("_row_id"), "esa.org", max(len(org_ids), 1))
+    df = df.withColumn("entityOrganizationId", F.element_at(org_array, (org_idx + F.lit(1)).cast("int")))
+
+    df = df.withColumn("policyId", F.lit(None).cast("long"))
+    df = df.withColumn("updateDT", F.to_timestamp(F.lit("2026-04-01 00:00:00")))
+    df = df.withColumn("eventTime", F.col("updateDT"))
+    df = df.withColumn("recModifiedTime", F.col("updateDT"))
+    df = df.withColumn("tenantHash", F.lit("e40yx52dkbjpcqazimno9yvh4k"))
+    del_marker = F.pmod(F.xxhash64(F.col("_row_id"), F.lit("esa.isDeleted_rare")), F.lit(20))
+    df = df.withColumn("isDeleted", del_marker < 1)
+
+    return df.drop("_row_id", "orgId")
