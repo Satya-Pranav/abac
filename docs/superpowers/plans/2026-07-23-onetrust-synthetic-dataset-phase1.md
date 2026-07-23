@@ -840,7 +840,7 @@ git commit -m "feat(onetrust_synth): add profile-driven generic table builder"
 
 **Interfaces:**
 - Consumes: output `DataFrame` from `main_tables.build_generic_table` (Task 5)
-- Produces: `attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame` (adds well-typed, real `questionRootMap` + `userIdsAssociatedWithAssessment`, plus mostly-null placeholders for `assessmentSectionReportInformations`/`questionMap`), `attach_cmb_inventory_nested_columns(df: DataFrame) -> DataFrame` (mostly-null placeholders for `attributes`/`personalDataObjects`)
+- Produces: `attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame` (adds well-typed, real `questionRootMap` + `userIdsAssociatedWithAssessment` — the latter's values must be UUID-shaped strings, deterministically derived not randomly generated, matching design doc section 5.3 — plus mostly-null placeholders for `assessmentSectionReportInformations`/`questionMap`), `attach_cmb_inventory_nested_columns(df: DataFrame) -> DataFrame` (mostly-null placeholders for `attributes`/`personalDataObjects`)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -885,6 +885,48 @@ def test_cmb_inventory_nested_columns_present_and_mostly_null(spark):
     assert "personalDataObjects" in df.columns
     null_rate = df.filter(df.attributes.isNull()).count() / 1000
     assert null_rate > 0.9
+
+
+def test_user_ids_associated_with_assessment_are_uuid_shaped(spark):
+    # Design doc section 5.3 explicitly requires "a real LIST<STRING> of
+    # UUID-shaped values per row" for this column — a prior review caught an
+    # earlier version generating "user_0".."user_1999" instead. Deterministic
+    # (not a real random UUID, which would break this project's core
+    # reproducibility guarantee — see generator.py), but must look like a
+    # UUID: 36 chars, 4 hyphens at the standard positions.
+    df = add_id_column(base_row_id_df(spark, 200), "id", prefix="assess_")
+    df = attach_cmb_assessment_nested_columns(df)
+    rows = df.select("userIdsAssociatedWithAssessment").collect()
+    all_ids = [uid for r in rows for uid in r["userIdsAssociatedWithAssessment"]]
+    assert len(all_ids) > 0
+    for uid in all_ids:
+        assert len(uid) == 36
+        assert uid[8] == "-" and uid[13] == "-" and uid[18] == "-" and uid[23] == "-"
+
+
+def test_question_root_map_is_queryable_via_element_at_at_sql_level(spark):
+    # The whole point of NOT null-placeholder-ing this column is that real
+    # compatible queries call element_at(questionRootMap, '<uuid>') in a
+    # SELECT list. A test that only inspects values already collected into
+    # the Python driver doesn't verify this — it must be checked as an
+    # actual Spark SQL expression, the same way the real queries use it.
+    from pyspark.sql import functions as F
+
+    df = add_id_column(base_row_id_df(spark, 500), "id", prefix="assess_")
+    df = attach_cmb_assessment_nested_columns(df)
+    for key in ["a2d09d79-b6e2-42d7-a04d-a5726a062738", "d82a01e9-276b-4499-8b47-7d5068536f4f", "f3c1a0aa-1234-4a1b-9c3d-9a1b2c3d4e5f"]:
+        matched = df.filter(F.element_at(F.col("questionRootMap"), F.lit(key)).isNotNull()).count()
+        assert matched > 0, f"element_at never resolved for key {key}"
+
+
+def test_user_ids_associated_with_assessment_is_array_contains_queryable_at_sql_level(spark):
+    from pyspark.sql import functions as F
+
+    df = add_id_column(base_row_id_df(spark, 500), "id", prefix="assess_")
+    df = attach_cmb_assessment_nested_columns(df)
+    any_id = df.select(F.element_at(F.col("userIdsAssociatedWithAssessment"), 1).alias("uid")).first()["uid"]
+    matched = df.filter(F.array_contains(F.col("userIdsAssociatedWithAssessment"), any_id)).count()
+    assert matched > 0
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -914,34 +956,61 @@ _QUESTION_KEYS = [
 ]
 _QUESTION_TYPES = ["SINGLE_CHOICE", "MULTI_CHOICE", "TEXT"]
 _RESPONSE_TYPES = ["TEXT", "OPTION"]
+_QUESTION_STATES = ["ANSWERED", "UNANSWERED", "SKIPPED"]
+_QUESTION_DETAILS = [
+    "auto-generated question detail A",
+    "auto-generated question detail B",
+    "auto-generated question detail C",
+]
 
 
 def _null_placeholder(df: DataFrame, col_name: str, spark_type: str) -> DataFrame:
     return df.withColumn(col_name, F.lit(None).cast(spark_type))
 
 
-def attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame:
-    idx = F.pmod(F.xxhash64(F.col("id"), F.lit("questionRootMap")), F.lit(len(_QUESTION_KEYS)))
-    key = F.element_at(F.array(*[F.lit(k) for k in _QUESTION_KEYS]), idx + F.lit(1))
-    qtype_idx = F.pmod(F.xxhash64(F.col("id"), F.lit("qtype")), F.lit(len(_QUESTION_TYPES)))
-    qtype = F.element_at(F.array(*[F.lit(t) for t in _QUESTION_TYPES]), qtype_idx + F.lit(1))
-    rtype_idx = F.pmod(F.xxhash64(F.col("id"), F.lit("rtype")), F.lit(len(_RESPONSE_TYPES)))
-    rtype = F.element_at(F.array(*[F.lit(t) for t in _RESPONSE_TYPES]), rtype_idx + F.lit(1))
+def _pick(id_col, salt: str, values: list):
+    idx = F.pmod(F.xxhash64(id_col, F.lit(salt)), F.lit(len(values)))
+    return F.element_at(F.array(*[F.lit(v) for v in values]), idx + F.lit(1))
 
-    response_struct = F.struct(F.lit("sample response value").alias("value"), F.lit("resp_key_1").alias("valueKey"))
+
+def _deterministic_uuid_shaped(id_col, salt: str):
+    # Deterministic (hash-based, not a real random UUID — a random value
+    # would break this project's reproducibility guarantee, see
+    # generator.py), but formatted to LOOK like one: 8-4-4-4-12 hex groups,
+    # matching the design doc's "UUID-shaped values" requirement.
+    h = F.md5(F.concat(id_col, F.lit(salt)))
+    return F.concat(
+        F.substring(h, 1, 8), F.lit("-"),
+        F.substring(h, 9, 4), F.lit("-"),
+        F.substring(h, 13, 4), F.lit("-"),
+        F.substring(h, 17, 4), F.lit("-"),
+        F.substring(h, 21, 12),
+    )
+
+
+def attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame:
+    key = _pick(F.col("id"), "questionRootMap", _QUESTION_KEYS)
+    qtype = _pick(F.col("id"), "qtype", _QUESTION_TYPES)
+    rtype = _pick(F.col("id"), "rtype", _RESPONSE_TYPES)
+    qstate = _pick(F.col("id"), "qstate", _QUESTION_STATES)
+    qdetail = _pick(F.col("id"), "qdetail", _QUESTION_DETAILS)
+    response_value = _pick(F.col("id"), "resp_value", ["response A", "response B", "response C"])
+    response_key = _pick(F.col("id"), "resp_key", ["resp_key_1", "resp_key_2", "resp_key_3"])
+
+    response_struct = F.struct(response_value.alias("value"), response_key.alias("valueKey"))
     value_struct = F.struct(
         qtype.alias("questionType"),
         F.lit("STRING").alias("dataType"),
-        F.lit("ANSWERED").alias("state"),
+        qstate.alias("state"),
         F.lit(False).alias("maturityScaleAllowed"),
-        F.lit("auto-generated question detail").alias("questionDetailedInfo"),
+        qdetail.alias("questionDetailedInfo"),
         F.array(response_struct).alias("responses"),
         rtype.alias("responseType"),
     )
     df = df.withColumn("questionRootMap", F.create_map(key, value_struct))
 
-    user_id_1 = F.concat(F.lit("user_"), (F.pmod(F.xxhash64(F.col("id"), F.lit("uid1")), F.lit(2000))).cast("string"))
-    user_id_2 = F.concat(F.lit("user_"), (F.pmod(F.xxhash64(F.col("id"), F.lit("uid2")), F.lit(2000))).cast("string"))
+    user_id_1 = _deterministic_uuid_shaped(F.col("id"), "uid1")
+    user_id_2 = _deterministic_uuid_shaped(F.col("id"), "uid2")
     df = df.withColumn("userIdsAssociatedWithAssessment", F.array(user_id_1, user_id_2))
 
     struct_type = "struct<id:struct<id:string>,name:struct<respondents:array<struct<value:string,valueKey:string>>>>"
@@ -959,7 +1028,7 @@ def attach_cmb_inventory_nested_columns(df: DataFrame) -> DataFrame:
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_nested_columns.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (7 tests)
 
 - [ ] **Step 5: Commit**
 
