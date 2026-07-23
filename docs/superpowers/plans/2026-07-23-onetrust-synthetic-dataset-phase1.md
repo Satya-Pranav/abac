@@ -619,7 +619,7 @@ def add_categorical_column(df: DataFrame, col_name: str, values: list, null_rate
     salt = salt or col_name
     values_array = F.array(*[F.lit(v) for v in values])
     idx = deterministic_index(F.col(row_id_col), salt, len(values))
-    base = F.element_at(values_array, idx + F.lit(1))
+    base = F.element_at(values_array, (idx + F.lit(1)).cast("int"))  # element_at's index arg requires INT, not the BIGINT pmod()/xxhash64() produce
     if null_rate > 0:
         null_marker = F.pmod(F.xxhash64(F.col(row_id_col), F.lit(salt + "_null")), F.lit(10000))
         threshold = F.lit(int(null_rate * 10000))
@@ -970,7 +970,7 @@ def _null_placeholder(df: DataFrame, col_name: str, spark_type: str) -> DataFram
 
 def _pick(id_col, salt: str, values: list):
     idx = F.pmod(F.xxhash64(id_col, F.lit(salt)), F.lit(len(values)))
-    return F.element_at(F.array(*[F.lit(v) for v in values]), idx + F.lit(1))
+    return F.element_at(F.array(*[F.lit(v) for v in values]), (idx + F.lit(1)).cast("int"))
 
 
 def _deterministic_uuid_shaped(id_col, salt: str):
@@ -1899,7 +1899,7 @@ def build_abac_entity_subject_assignment(
 
     org_array = F.array(*[F.lit(o) for o in org_ids]) if org_ids else F.array(F.lit(None).cast("string"))
     org_idx = deterministic_index(F.col("_row_id"), "esa.org", max(len(org_ids), 1))
-    df = df.withColumn("entityOrganizationId", F.element_at(org_array, org_idx + F.lit(1)))
+    df = df.withColumn("entityOrganizationId", F.element_at(org_array, (org_idx + F.lit(1)).cast("int")))
 
     df = df.withColumn("policyId", F.lit(None).cast("long"))
     df = df.withColumn("updateDT", F.to_timestamp(F.lit("2026-04-01 00:00:00")))
