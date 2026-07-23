@@ -42,8 +42,8 @@ public class ViewPolicySwap implements Scenario {
         System.out.println();
         System.out.println("---------------- VP view+policy-swap scenario (v_income_band_governed, DR2 ABAC policy through a VIEW) ----------------");
         System.out.println(" Reuses sql/15's dr2_row_filter (SP-owned, swappable) bound via dr2_wrapper by income_band_dr2_policy,");
-        System.out.println(" queried through sql/16's v_income_band_governed VIEW. Change the INNER UDF, wait 10s, re-assert THROUGH THE");
-        System.out.println(" VIEW, then revert. Runs AFTER Dr2HotSwap, which already reverted cutoff to 10, so the baseline below holds.");
+        System.out.println(" queried through sql/16's v_income_band_governed VIEW. Change the INNER UDF, POLL until reflected THROUGH");
+        System.out.println(" THE VIEW (measuring latency), then revert. Runs AFTER Dr2HotSwap, which reverted cutoff to 10, so baseline holds.");
         try {
             e.applyIdentity(c, Cases.DISABLE_CLAIM);   // dr2_wrapper calls get_user_context() -> session must carry a claim
             // VP1 — baseline through the view: original inner cutoff <= 10 -> 10 of 20 rows
@@ -53,18 +53,18 @@ public class ViewPolicySwap implements Scenario {
                      CNT, "10", String.valueOf(a1), ok1);
             if (ok1) pass++; else fail++;
 
-            // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5
-            long t0 = System.nanoTime();
+            // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5, then
+            // POLL the VIEW query until it flips to 5 -- measuring how long the change takes to become
+            // visible THROUGH the view. The value (5) is asserted; the latency is only reported.
             Jdbc.exec(c, Dr2HotSwap.dr2Def(e, 5));
             System.out.println();
-            System.out.println("   [swapped dr2_row_filter -> cutoff <= 5; waiting 10s before re-asserting through the view ...]");
-            sleep(10_000);
-            long a2 = Jdbc.count(c, CNT);
-            long ms = (System.nanoTime() - t0) / 1_000_000;
-            boolean ok2 = (a2 == 5);
-            vpPrint("VP2", "after CREATE OR REPLACE (cutoff <= 5) + 10s delay, THROUGH THE VIEW: 5 of 20 rows"
-                             + "  [swap->reflected in " + ms + " ms incl. the 10s wait]",
-                     CNT, "5", String.valueOf(a2), ok2);
+            System.out.println("   [swapped dr2_row_filter -> cutoff <= 5; polling the VIEW until reflected ...]");
+            long ms = Jdbc.pollUntilCount(c, CNT, 5, 30_000, 250);
+            boolean ok2 = (ms >= 0);
+            vpPrint("VP2", "after CREATE OR REPLACE (cutoff <= 5), THROUGH THE VIEW: 5 of 20 rows"
+                             + (ms >= 0 ? "  [swap->reflected in " + ms + " ms, measured by polling]"
+                                        : "  [DID NOT reflect within 30s -- change never propagated through the view]"),
+                     CNT, "5", ok2 ? "5 (reached)" : "still not 5 after 30s", ok2);
             if (ok2) pass++; else fail++;
 
             // revert the inner UDF to its original definition
@@ -91,9 +91,5 @@ public class ViewPolicySwap implements Scenario {
         System.out.println("   expect : " + expect);
         System.out.println("   actual : " + actual);
         System.out.println("   verdict: " + (ok ? "PASS" : "FAIL"));
-    }
-
-    static void sleep(long ms) {
-        try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
 }

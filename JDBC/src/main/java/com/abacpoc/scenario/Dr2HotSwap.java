@@ -33,7 +33,8 @@ public class Dr2HotSwap implements Scenario {
         System.out.println();
         System.out.println("---------------- DR2 hot-swap scenario (income_band, ABAC has_tag() policy) ----------------");
         System.out.println(" Policy binds dr2_wrapper -> dr2_row_filter (SP-owned, swappable). Change the INNER UDF,");
-        System.out.println(" wait 10s, re-assert, then revert. Tables/UDFs come from sql/15.");
+        System.out.println(" POLL until the change is reflected (measuring real propagation latency), then revert.");
+        System.out.println(" Tables/UDFs come from sql/15.");
         try {
             e.applyIdentity(c, Cases.DISABLE_CLAIM);   // dr2_wrapper calls get_user_context() -> session must carry a claim
             // DR2a — baseline: original inner cutoff <= 10 -> 10 of 20 rows
@@ -43,18 +44,18 @@ public class Dr2HotSwap implements Scenario {
                      CNT, "10", String.valueOf(a1), ok1);
             if (ok1) pass++; else fail++;
 
-            // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5
-            long t0 = System.nanoTime();
+            // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5,
+            // then POLL until the visible count flips to 5 -- measuring the actual propagation delay
+            // rather than waiting a fixed 10s. The value (5) is asserted; the latency is only reported.
             Jdbc.exec(c, dr2Def(e, 5));
             System.out.println();
-            System.out.println("   [swapped dr2_row_filter -> cutoff <= 5; waiting 10s before re-asserting ...]");
-            sleep(10_000);
-            long a2 = Jdbc.count(c, CNT);
-            long ms = (System.nanoTime() - t0) / 1_000_000;
-            boolean ok2 = (a2 == 5);
-            dr2Print("DR2b", "after CREATE OR REPLACE (cutoff <= 5) + 10s delay: 5 of 20 rows"
-                             + "  [swap->reflected in " + ms + " ms incl. the 10s wait]",
-                     CNT, "5", String.valueOf(a2), ok2);
+            System.out.println("   [swapped dr2_row_filter -> cutoff <= 5; polling until reflected ...]");
+            long ms = Jdbc.pollUntilCount(c, CNT, 5, 30_000, 250);
+            boolean ok2 = (ms >= 0);
+            dr2Print("DR2b", "after CREATE OR REPLACE (cutoff <= 5): 5 of 20 rows"
+                             + (ms >= 0 ? "  [swap->reflected in " + ms + " ms, measured by polling]"
+                                        : "  [DID NOT reflect within 30s -- change never propagated]"),
+                     CNT, "5", ok2 ? "5 (reached)" : "still not 5 after 30s", ok2);
             if (ok2) pass++; else fail++;
 
             // revert the inner UDF to its original definition
@@ -90,9 +91,5 @@ public class Dr2HotSwap implements Scenario {
         System.out.println("   expect : " + expect);
         System.out.println("   actual : " + actual);
         System.out.println("   verdict: " + (ok ? "PASS" : "FAIL"));
-    }
-
-    static void sleep(long ms) {
-        try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
 }
