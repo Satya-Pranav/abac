@@ -2,6 +2,7 @@
 from pyspark.sql import functions as F
 from pyspark.sql import SparkSession, DataFrame, Window
 
+from onetrust_synth import config
 from onetrust_synth.generator import base_row_id_df, add_categorical_column, deterministic_index
 from onetrust_synth.sample_csv import load_entity_type_reference_values
 from onetrust_synth.verbatim_tables import build_orghierarchy_df
@@ -160,7 +161,6 @@ def build_org_hierarchy_base(spark: SparkSession) -> DataFrame:
 
 
 def build_org_hierarchy_view_sql() -> str:
-    from onetrust_synth import config
     return (
         f"CREATE OR REPLACE VIEW {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchy AS "
         f"SELECT * FROM {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchyBase "

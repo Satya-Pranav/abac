@@ -1,8 +1,14 @@
 from pyspark.sql import functions as F
 
 from onetrust_synth import config
-from onetrust_synth.abac_schema import ABAC_ASSIGNMENT_COLUMNS, ABAC_ASSIGNMENT_PERMISSION_COLUMNS, ABAC_ENTITY_SUBJECT_ASSIGNMENT_COLUMNS
-from onetrust_synth.abac_tables import build_abac_assignment, build_abac_assignment_permission, build_abac_entity_subject_assignment
+from onetrust_synth.abac_schema import (
+    ABAC_ASSIGNMENT_COLUMNS, ABAC_ASSIGNMENT_PERMISSION_COLUMNS, ABAC_ENTITY_SUBJECT_ASSIGNMENT_COLUMNS,
+    USER_GROUP_MEMBERS_COLUMNS, ORG_HIERARCHY_BASE_COLUMNS,
+)
+from onetrust_synth.abac_tables import (
+    build_abac_assignment, build_abac_assignment_permission, build_abac_entity_subject_assignment,
+    build_user_group_members, build_org_hierarchy_base,
+)
 from onetrust_synth.registries import build_org_registry, build_subject_registry, build_entity_registry
 from onetrust_synth.generate_main_tables import build_all_main_tables
 
@@ -87,11 +93,6 @@ def test_esa_assignment_id_object_type_matches_the_assignment(spark):
     )
     mismatches = joined.filter(F.col("objectType") != F.col("a_objectType")).count()
     assert mismatches == 0
-
-
-from onetrust_synth.abac_schema import USER_GROUP_MEMBERS_COLUMNS, ORG_HIERARCHY_BASE_COLUMNS
-from onetrust_synth.abac_tables import build_user_group_members, build_org_hierarchy_base
-from onetrust_synth.registries import build_subject_registry
 
 
 def test_user_group_members_row_count_and_columns(spark):
