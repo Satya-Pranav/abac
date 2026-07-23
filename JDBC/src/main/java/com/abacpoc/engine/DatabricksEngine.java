@@ -51,6 +51,24 @@ public final class DatabricksEngine implements Engine {
         return DriverManager.getConnection(url, props);
     }
 
+    /**
+     * Open a connection that uses {@code accessToken} as a STATIC OAuth bearer, with NO refresh:
+     * {@code Auth_Flow=0} (token pass-through) supplies no client credentials, so the driver cannot
+     * mint or refresh a token — it sends this one as-is. That is exactly what a token-expiry test
+     * needs: an EXPIRED token must be sent unchanged and rejected server-side, not silently swapped
+     * for a fresh one (which the M2M {@link #connectAs} path would do). The token may carry its own
+     * embedded custom_claim; no separate claim injection is used or needed here.
+     */
+    public Connection connectWithAccessToken(String accessToken) throws SQLException {
+        String url = "jdbc:databricks://" + host + ":443/default";
+        Properties props = new Properties();
+        props.put("httpPath", "/sql/1.0/warehouses/" + warehouseId);
+        props.put("AuthMech", "11");
+        props.put("Auth_Flow", "0");                 // 0 = token pass-through (no refresh)
+        props.put("Auth_AccessToken", accessToken);
+        return DriverManager.getConnection(url, props);
+    }
+
     @Override public void applyIdentity(Connection c, String ctxJson) throws SQLException {
         AbacJdbcClient.injectCustomClaim(c, ctxJson);
     }

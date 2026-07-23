@@ -5,3 +5,4 @@ target/
 baseline/*.txt
 .superpowers/
 .DS_Store
+.claude/worktrees/

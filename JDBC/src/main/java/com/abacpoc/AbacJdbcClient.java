@@ -85,6 +85,20 @@ public class AbacJdbcClient {
     public static void injectCustomClaim(Connection connection, String ctxJson) throws SQLException {
         DatabricksConnection dconnection = connection.unwrap(DatabricksConnection.class);
         IDatabricksClient client = dconnection.getSession().getDatabricksClient();
+        client.resetAccessToken(mintCustomClaimToken(connection, ctxJson));
+    }
+
+    /**
+     * Mint a fresh OAuth access token carrying {@code ctxJson} as its custom_claim, and RETURN the
+     * raw token string (without swapping it into the connection). Same provider/flow as
+     * {@link #injectCustomClaim}; that method is now {@code resetAccessToken(mintCustomClaimToken(...))}.
+     * Used by the token-expiry scenario to obtain a known-VALID token to run through the static
+     * pass-through path as a control (proving that path accepts a good token, so a rejection there
+     * is attributable to expiry, not a broken mechanism).
+     */
+    public static String mintCustomClaimToken(Connection connection, String ctxJson) throws SQLException {
+        DatabricksConnection dconnection = connection.unwrap(DatabricksConnection.class);
+        IDatabricksClient client = dconnection.getSession().getDatabricksClient();
         IDatabricksConnectionContext ctx = client.getConnectionContext();
         DatabricksConfig config = client.getDatabricksConfig();
 
@@ -122,8 +136,7 @@ public class AbacJdbcClient {
         newProvider.configure(config);
         config.setCredentialsProvider(newProvider);
 
-        Token token = newProvider.getToken();
-        client.resetAccessToken(token.getAccessToken());
+        return newProvider.getToken().getAccessToken();
     }
 
     private static void runStatement(Connection connection, String sql) throws SQLException {

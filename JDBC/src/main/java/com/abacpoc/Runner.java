@@ -13,6 +13,7 @@ import com.abacpoc.scenario.E6Scenarios;
 import com.abacpoc.scenario.Scenario;
 import com.abacpoc.scenario.SecondPrincipal;
 import com.abacpoc.scenario.SecretInvariance;
+import com.abacpoc.scenario.TokenExpiry;
 import com.abacpoc.scenario.ViewPolicySwap;
 import com.abacpoc.util.Jdbc;
 
@@ -112,6 +113,7 @@ public class Runner {
         // its own env vars are unset, so a normal run without them stays green.
         scenarios.add(new SecretInvariance());
         scenarios.add(new SecondPrincipal());
+        scenarios.add(new TokenExpiry());
         scenarios.addAll(E6Scenarios.all());
 
         System.out.println("================================================================");
