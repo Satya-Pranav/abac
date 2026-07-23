@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession, DataFrame
 from onetrust_synth import config
 from onetrust_synth.verbatim_tables import build_orghierarchy_df
 from onetrust_synth.generator import base_row_id_df, add_id_column
+from onetrust_synth.sample_csv import load_entity_type_reference_values
 
 
 def build_org_registry(spark: SparkSession) -> DataFrame:
@@ -18,10 +19,6 @@ def build_subject_registry(spark: SparkSession) -> DataFrame:
     groups = groups.withColumn("subjectType", F.lit("USER_GROUP")).drop("_row_id")
 
     return users.unionByName(groups)
-
-
-from onetrust_synth.sample_csv import load_entity_type_reference_values
-from onetrust_synth.generator import base_row_id_df as _base_row_id_df, add_id_column as _add_id_column
 
 
 def _inventory_type_to_object_type_column():
@@ -72,8 +69,8 @@ def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
 
     standalone_pieces = []
     for object_type in uncovered_types:
-        df = _add_id_column(
-            _base_row_id_df(spark, config.STANDALONE_ENTITIES_PER_TYPE),
+        df = add_id_column(
+            base_row_id_df(spark, config.STANDALONE_ENTITIES_PER_TYPE),
             "entityId",
             prefix=f"{object_type.lower()}_",
         )
