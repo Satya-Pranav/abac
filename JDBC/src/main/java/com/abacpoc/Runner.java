@@ -11,6 +11,8 @@ import com.abacpoc.engine.Engine;
 import com.abacpoc.scenario.Dr2HotSwap;
 import com.abacpoc.scenario.E6Scenarios;
 import com.abacpoc.scenario.Scenario;
+import com.abacpoc.scenario.SecondPrincipal;
+import com.abacpoc.scenario.SecretInvariance;
 import com.abacpoc.scenario.ViewPolicySwap;
 import com.abacpoc.util.Jdbc;
 
@@ -106,6 +108,10 @@ public class Runner {
         // when it finishes, which is exactly the baseline ViewPolicySwap's VP1 asserts through the
         // view. Do not reorder.
         scenarios.add(new ViewPolicySwap());
+        // Databricks-auth-specific scenarios (2nd secret / 2nd principal); each SKIPs cleanly when
+        // its own env vars are unset, so a normal run without them stays green.
+        scenarios.add(new SecretInvariance());
+        scenarios.add(new SecondPrincipal());
         scenarios.addAll(E6Scenarios.all());
 
         System.out.println("================================================================");

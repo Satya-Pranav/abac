@@ -30,6 +30,17 @@ public final class DatabricksEngine implements Engine {
     @Override public boolean supports(Capability c) { return true; }
 
     @Override public Connection connect() throws SQLException {
+        return connectAs(clientId, clientSecret);
+    }
+
+    /**
+     * Open a NEW Databricks JDBC connection against the SAME host/httpPath/warehouse as
+     * {@link #connect()}, but authenticating with the GIVEN OAuth clientId/clientSecret instead of
+     * the env-derived defaults. Lets a scenario open a second, independently-authenticated
+     * connection (a different secret for this SP, or a wholly different service principal)
+     * without duplicating the URL/props construction.
+     */
+    public Connection connectAs(String clientId, String clientSecret) throws SQLException {
         String url = "jdbc:databricks://" + host + ":443/default";
         Properties props = new Properties();
         props.put("httpPath", "/sql/1.0/warehouses/" + warehouseId);
