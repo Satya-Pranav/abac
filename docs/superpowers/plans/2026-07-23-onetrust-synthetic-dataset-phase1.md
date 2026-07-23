@@ -336,8 +336,12 @@ git commit -m "feat(onetrust_synth): add profile CSV reader"
 - Test: `onetrust_synth/tests/test_sample_csv.py`
 
 **Interfaces:**
-- Consumes: `config.SAMPLE_DATA_DIR` (Task 1)
-- Produces: `sample_file_path(table: str) -> str`, `load_column_values(table: str, column: str) -> list[str]` (distinct non-null real values for a column, for weighted-categorical seeding), `load_entity_type_reference_values() -> list[tuple[str, str]]` (the (reportingModule, entityTypeReference) pairs, handling the misaligned header — see below), `load_rows(table: str) -> list[dict]` (full rows, for near-verbatim small-table copying in Task 6).
+- Consumes: `config.SAMPLE_DATA_DIR` (Task 1); `profile_csv.load_table_profile`, `profile_csv.get_columns` (Task 2)
+- Produces: `sample_file_path(table: str) -> str`, `load_column_values(table: str, column: str) -> list[str]` (distinct non-null real values for a column, for weighted-categorical seeding), `load_entity_type_reference_values() -> list[tuple[str, str]]` (the (reportingModule, entityTypeReference) pairs), `load_rows(table: str) -> list[dict]` (full rows, for near-verbatim small-table copying in Task 7)
+
+**Confirmed data defect — every `sample_auto_qa_*.csv` file's header row is corrupted.** All 9 of the tenant-schema sample files (`cmb_assessment`, `cmb_controlimplementation`, `cmb_inventory`, `cmb_riskrelatedobjects`, `cmb_template`, `cmb_v_assessment_v4`, `entitylink_v3`, `orghierarchy`, `reportingmoduletoentityreferencemapping_v`) share the byte-identical header line (MD5 `d7ec75a45d96290f05b8db9dacd2ebe8`) — it is `cmb_v_inventoryaggregatedrisksummary`'s own 21-column header, pasted onto every other file's data rows. Only `cmb_v_inventoryaggregatedrisksummary` itself (the true source of that header) and `entitygroupconfig` (a separate export under the `monitoring` schema) are unaffected.
+
+The DATA rows are intact, not corrupted: every affected table's row field-count matches its own real profiled column count exactly (verified: `cmb_assessment`=70, `cmb_controlimplementation`=58, `cmb_riskrelatedobjects`=20, `cmb_template`=24, `cmb_v_assessment_v4`=90, `entitylink_v3`=30, `orghierarchy`=10, `cmb_inventory`=19, `reportingmoduletoentityreferencemapping_v`=2 — all matching `onetrust_table_profile_results.csv`), and a positional spot-check confirms the real column *order* from that profile CSV lines up with the data (`cmb_assessment`'s `id` column, at profiled position 14, recovers a genuine UUID `035e1c48-5e60-4640-ac18-4557cd49828f`; `isDeleted` at position 68 recovers `'True'`). So: **never trust a sample file's own header row.** `load_rows` must always reconstruct each row by zipping the raw CSV fields positionally against the real column order from `profile_csv.get_columns()` for that (schema, table) — this uniformly and correctly recovers all 11 tables with one mechanism, including `cmb_inventory` (previously miscategorized as unrecoverable in an earlier draft of this task — it isn't; recovered real `inventoryType` values are `{"Assets", "Vendors", "Processing Activities"}`, exactly matching `config.INVENTORY_TYPE_TO_OBJECT_TYPE`'s keys) and `reportingmoduletoentityreferencemapping_v` (whose real schema is exactly the 2 columns `reportingModule`, `entityTypeReference`, so the general mechanism subsumes what previously needed special-case positional handling).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -358,11 +362,7 @@ def test_load_column_values_returns_real_distinct_values():
     assert set(values) == {"Active", "Archived"}
 
 
-def test_load_entity_type_reference_values_handles_misaligned_header():
-    # The sample file's header row is a stale copy from a different table's export;
-    # the real (reportingModule, entityTypeReference) pairs are the first two columns
-    # positionally. This must return the real 21 pairs / 20 distinct types, not the
-    # misleading header-named columns (inventoryID/entityID/etc, which are all empty).
+def test_load_entity_type_reference_values_recovers_real_pairs():
     pairs = load_entity_type_reference_values()
     assert len(pairs) == 21
     assert ("ASSESSMENT", "ASSESSMENT") in pairs
@@ -373,24 +373,42 @@ def test_load_entity_type_reference_values_handles_misaligned_header():
     assert "VENDORS" in distinct_types
 
 
-def test_load_rows_returns_full_dicts_for_small_table():
+def test_load_rows_recovers_real_columns_for_orghierarchy_despite_corrupted_header():
+    # orghierarchy's own sample-file header is corrupted (it's actually
+    # cmb_v_inventoryaggregatedrisksummary's header, pasted on by the export
+    # tool — confirmed via MD5, identical across 9 of the 11 sample files).
+    # load_rows must recover the REAL columns (rootOrgId/orgId/parentOrgId,
+    # from onetrust_table_profile_results.csv), not the corrupted header's
+    # field names (inventoryID/entityID/orgID/parentOrgID).
     rows = load_rows("orghierarchy")
     assert len(rows) == 183
-    assert set(rows[0].keys()) >= {"rootOrgId", "orgId", "parentOrgId"}
+    assert set(rows[0].keys()) == {
+        "rootOrgId", "rootOrgName", "orgId", "orgName", "parentOrgId",
+        "parentOrgName", "eventTime", "recModifiedTime", "isDeleted", "tenantHash",
+    }
+    assert rows[0]["orgId"]
+    assert rows[0]["isDeleted"] in ("True", "False")
 
 
-def test_cmb_inventory_sample_file_is_flagged_as_known_bad():
-    # Verified: sample_..._cmb_inventory.csv's header is a 21-column copy of
-    # cmb_v_inventoryaggregatedrisksummary's header, but the data rows have 19
-    # fields matching cmb_inventory's REAL (different) schema — the header simply
-    # does not describe its own file's data. Unlike
-    # reportingmoduletoentityreferencemapping_v (misaligned but recoverable by
-    # reading positionally), there's no reliable way to recover real column values
-    # here since we don't know the true positional order. Calling code must not
-    # silently trust this file.
-    import pytest
-    with pytest.raises(ValueError, match="known-bad"):
-        load_column_values("cmb_inventory", "inventoryType")
+def test_load_rows_recovers_real_columns_for_cmb_inventory():
+    # Previously miscategorized as unrecoverable — it isn't. cmb_inventory's
+    # data rows have exactly 19 fields, matching its own real profiled column
+    # count, and recover correctly via the same positional mechanism.
+    rows = load_rows("cmb_inventory")
+    assert len(rows) == 500
+    inventory_types = {r["inventoryType"] for r in rows if r.get("inventoryType")}
+    assert inventory_types <= {"Assets", "Vendors", "Processing Activities"}
+    assert len(inventory_types) > 0
+
+
+def test_load_column_values_works_for_every_affected_table_not_just_two():
+    # Regression guard: an earlier version of this reader only special-cased
+    # cmb_inventory and reportingmoduletoentityreferencemapping_v, silently
+    # returning wrong/empty values for the other 7 corrupted-header tables.
+    # cmb_assessment.id must recover real UUID-shaped values.
+    ids = load_column_values("cmb_assessment", "id")
+    assert len(ids) > 0
+    assert all(len(i) == 36 and i.count("-") == 4 for i in ids)  # UUID shape
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -402,15 +420,28 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'onetrust_synth.sample
 
 ```python
 # onetrust_synth/sample_csv.py
+"""
+Every sample_auto_qa_*.csv file's header row is corrupted: it is literally
+cmb_v_inventoryaggregatedrisksummary's own 21-column header, pasted onto
+every other table's data rows by the export tool (confirmed: identical MD5
+across 9 of the 11 sample files). The data itself is intact — each affected
+table's row field-count matches ITS OWN real profiled column count exactly,
+and the real column ORDER (from onetrust_table_profile_results.csv) lines up
+positionally with the data (spot-checked: cmb_assessment's `id` column
+recovers a real UUID). So this module never trusts a sample file's own
+header — it always reconstructs each row using the real column order from
+profile_csv.get_columns(), zipped positionally against the raw CSV fields.
+This uniformly recovers all 11 tables with one mechanism.
+"""
 import csv
 import os
 
 from onetrust_synth import config
+from onetrust_synth.profile_csv import load_table_profile, get_columns
 
 # Maps our table names to the real sample-file basenames (they don't follow a
 # single naming rule: some carry the schema hash, one lives under a different
-# schema prefix, and this is the sample_*.csv inventory from the design doc's
-# section 3 — not derivable by string formatting alone).
+# schema prefix).
 _SAMPLE_FILES = {
     "cmb_assessment": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_assessment.csv",
     "cmb_controlimplementation": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_controlimplementation.csv",
@@ -425,26 +456,25 @@ _SAMPLE_FILES = {
     "entitygroupconfig": "sample_monitoring_entitygroupconfig.csv",
 }
 
-
-# cmb_inventory's sample file header (21 columns) is a copy of
-# cmb_v_inventoryaggregatedrisksummary's header and does not describe its own
-# data rows (which have 19 fields, matching cmb_inventory's real, different
-# schema). There's no reliable positional recovery here — unlike
-# reportingmoduletoentityreferencemapping_v — so calling code must not use
-# DictReader-based column lookups against this file.
-_KNOWN_BAD_SAMPLE_FILES = {"cmb_inventory"}
+_TARGET_TENANT_SCHEMA = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
 
 
 def sample_file_path(table: str) -> str:
     return os.path.join(config.SAMPLE_DATA_DIR, _SAMPLE_FILES[table])
 
 
+def _profile_schema_for(table: str) -> str:
+    return config.MONITORING_SCHEMA if table in config.MONITORING_TABLES else _TARGET_TENANT_SCHEMA
+
+
 def load_rows(table: str) -> list[dict]:
-    if table in _KNOWN_BAD_SAMPLE_FILES:
-        raise ValueError(f"{table}'s sample file header is known-bad (does not match its own data) — see _KNOWN_BAD_SAMPLE_FILES")
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    real_columns = [c.name for c in get_columns(profile, _profile_schema_for(table), table)]
+
     with open(sample_file_path(table), newline="", encoding="utf-8", errors="replace") as f:
-        reader = csv.DictReader(f)
-        return list(reader)
+        reader = csv.reader(f)
+        next(reader, None)  # skip the file's own (corrupted) header row — never trust it
+        return [dict(zip(real_columns, raw)) for raw in reader]
 
 
 def load_column_values(table: str, column: str) -> list[str]:
@@ -455,26 +485,23 @@ def load_column_values(table: str, column: str) -> list[str]:
 
 def load_entity_type_reference_values() -> list[tuple[str, str]]:
     """
-    reportingmoduletoentityreferencemapping_v's sample CSV has a misaligned header
-    (a stale header from a different table's export — every column after the first
-    two is empty). The real data is (reportingModule, entityTypeReference) as the
-    first two columns, read positionally rather than by header name.
+    reportingmoduletoentityreferencemapping_v's real schema is exactly the 2
+    columns (reportingModule, entityTypeReference) — load_rows already
+    recovers these correctly via the general positional-recovery mechanism
+    above, so this just re-shapes them as (key, value) pairs.
     """
-    path = sample_file_path("reportingmoduletoentityreferencemapping_v")
-    pairs = []
-    with open(path, newline="", encoding="utf-8", errors="replace") as f:
-        reader = csv.reader(f)
-        next(reader)  # skip the (misaligned) header row
-        for row in reader:
-            if len(row) >= 2 and row[0] and row[1]:
-                pairs.append((row[0], row[1]))
-    return pairs
+    rows = load_rows("reportingmoduletoentityreferencemapping_v")
+    return [
+        (r["reportingModule"], r["entityTypeReference"])
+        for r in rows
+        if r.get("reportingModule") and r.get("entityTypeReference")
+    ]
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_sample_csv.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (6 tests)
 
 - [ ] **Step 5: Commit**
 
