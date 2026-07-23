@@ -49,13 +49,14 @@ Only when output changes intentionally. There is exactly one sanctioned regenera
 > `Runner`/`Cases`/`Dr2HotSwap`. The pre-refactor output is preserved verbatim as
 > `pre-refactor-baseline.txt` — that file is the only remaining record of it.
 
-To run the suite as it exists now (a superset: 60 cases + 8 scenarios):
+To run the suite as it exists now (a superset: 61 cases + 9 scenarios):
 
 ```bash
 java -cp JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
   com.abacpoc.Runner > /tmp/run.txt 2>&1
 ```
 Requires `CLIENT_ID`, `CLIENT_SECRET`, `WORKSPACE_HOST`, `WAREHOUSE_ID`, and `sql/01`–`sql/15`
-applied (`sql/16`–`20` add the newer groups). Takes ~2 min (DR2 sleeps 10s deliberately).
+applied (`sql/16`–`21` add the newer groups, all confirmed live 2026-07-23). Takes ~2 min (DR2 and
+VP each sleep 10s deliberately).
 
 `ENGINE=e6data` selects the other engine; see `docs/deployment/runbook.md`.

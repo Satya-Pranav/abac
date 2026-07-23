@@ -19,10 +19,10 @@ Reference material under this skill:
   e6data planner-side view): full `CREATE POLICY` grammar, argument binding, tag inheritance, conflict
   rules, limits, fail-closed. **Read this for "how does Databricks ABAC actually behave?"**
 - **`references/poc-playbook.md`** — the concrete POC on TPC-DS: the deployed 3-branch row filter, the
-  OAuth `custom_claim` hot-swap, the deploy order, and the 60-case + 8-scenario JDBC test methodology
+  OAuth `custom_claim` hot-swap, the deploy order, and the 61-case + 9-scenario JDBC test methodology
   (classic-RLS/live-UDF-swap cases, views, policy scope, tag binding, the UDF contract,
-  cross-mechanism conflicts, malformed claims, and e6data-engine scenario placeholders). **Read this
-  for "how do I author/deploy/test one of these end to end?"**
+  cross-mechanism conflicts, the `EXCEPT` clause, malformed claims, and e6data-engine scenario
+  placeholders). **Read this for "how do I author/deploy/test one of these end to end?"**
 - **`references/unity-catalog-governance.md`** — the broader Unity Catalog governance model (RBAC,
   ABAC, RLS/CLS, workspace–catalog bindings, storage credentials) and how these row-filter/column-mask
   policies coexist with RBAC. **Read this for "where does ABAC sit among Databricks' other governance
@@ -80,30 +80,34 @@ UDF                      = the BOOLEAN filter / masking logic run per row/value 
 | **A governed tag key constrains its ALLOWED VALUES** | setting a value outside the list is rejected at `ALTER … SET TAGS`: `Tag value <v> is not an allowed value for tag policy key <key>. Allowed values: [true]`. If every key permits one value, `has_tag_value()` can only discriminate by **key**, not by value |
 | **Plain column tags ≠ governed tags** | `ALTER … SET TAGS ('anything'='x')` succeeds for *any* key and shows up in `system.information_schema.column_tags`. That says nothing about whether the key is usable in `has_tag()` — only a registered tag **policy** is. A tag can exist on the column and still fail the policy |
 | **Columns never inherit tags** — table/schema/catalog tags do inherit (different keys accumulate; same key overrides) | tag every target/input column **directly** |
+| **Row-filter UDF arity is STRICT — a `DEFAULT` does not let you omit the argument** | `USING COLUMNS` must supply exactly as many arguments as the UDF declares, even if the omitted param has a `DEFAULT`. `CREATE POLICY` is rejected: `INVALID_PARAMETER_VALUE` … "The policy definition requires N argument(s), but the referred function `<fn>` takes M argument(s)". (A column mask differs: `ON COLUMN` auto-binds arg 1.) |
+| **Two columns sharing one tag make the `USING COLUMNS` alias ambiguous — Databricks REFUSES to bind, it does not pick the first column** | query errors `UC_ABAC_AMBIGUOUS_COLUMN_MATCH`. **Trap:** this shares SQLSTATE `42KDJ` with `UC_ABAC_MULTIPLE_ROW_FILTERS`, a *different* condition — match on the error **class**, never on the SQLSTATE alone |
+| **A declared-type UDF param bound (via `USING COLUMNS`) to a column of a different type is silently COERCED, not rejected** | e.g. a `DATE` param bound to a `TIMESTAMP` column: Databricks coerces TIMESTAMP → DATE at bind time and the filter applies with no error. A planner replicating this must coerce the same way — a widening/narrowing difference would silently change which rows are visible |
+| **`TO <principal> EXCEPT <principal>` is valid syntax and actually exempts** | the excepted principal is removed from the policy's subject set entirely — the row filter never runs against it, same as an unfiltered/owner read |
 | **Fail-closed**: deleted UDF/governed tag, conflicting filters, unsupported compute/time-travel | the query is **blocked**, not silently unfiltered |
 | **Owners / metastore admins bypass row filters** | to observe filtering, query **as the target principal** (e.g. the service principal in `TO`) |
 
-**Two failure modes that look alike and are not** (confirmed live, 2026-07-22):
+**Two failure modes that look alike and are not** (confirmed live, 2026-07-22 and 2026-07-23):
 
 | Situation | When it fails | Direction |
 |---|---|---|
 | Tag key **not registered** as a governed tag | at **`CREATE POLICY`** (DDL) | **fail-CLOSED** — the policy never exists |
-| Tag key registered, but **matches no column** on the table | never — the policy is created and is **inert** | **fail-OPEN** — the table returns ALL rows |
+| Tag key registered, but **matches no column** on the table | never — the policy is created and is **inert** | **fail-OPEN** — the table returns ALL rows (confirmed by POC cases SC3 and TG3, both `sql/17`/`sql/18`) |
 
 Both present as "my policy isn't filtering." The first is loud and safe; the second is silent and
 dangerous. A planner replicating this must not collapse them into one behaviour. This distinction
 was found the hard way: a POC case meant to test the second condition used an *unregistered* key,
 so it would have hit the first and proved nothing.
 
-**Expectations awaiting a live run (hypotheses, not yet confirmed).** The POC's `sql/17`–`20` write
-the objects for these cases, but as of this writing they have not been applied to a live workspace —
-so the rows below are *predictions*, phrased as such, not settled facts like the table above:
+**The one-row-filter-per-table limit is not scoped to "table-level ABAC vs table-level ABAC" — it is
+broader, confirmed on two more axes live 2026-07-23:**
 
-| Rule (hypothesis — not yet confirmed) | Consequence if confirmed |
+| Situation | Confirms |
 |---|---|
-| A **schema-level (`ON SCHEMA`) + a table-level (`ON TABLE`) row filter on the SAME table** are *expected* to hit the identical one-row-filter-per-table conflict two table-level policies hit — **not** "the more specific (table) policy wins". *POC case SC4, `sql/17` — pending a live run.* | Don't rely on scope granularity as a precedence mechanism; design one filter per table regardless of the scope it's attached at. |
-| A **`MATCH COLUMNS` tag that exists on NO column anywhere on a table** is *expected* to fail OPEN the same way a tag that only partially matches does. *POC case TG3, `sql/18` — pending a live run.* | A policy referencing a nonexistent tag key is created successfully (no DDL error) and silently never applies — the same fail-open danger as the general `MATCH COLUMNS` rule above, reached via a different route (zero matches anywhere, not a near-miss). |
-| The **one-row-filter-per-table limit is expected to span BOTH mechanisms** — classic `ALTER TABLE ... SET ROW FILTER` **and** an ABAC `CREATE POLICY` row filter on the same table. *POC case XT1, `sql/20` — pending a live run.* | Mixing the two attachment mechanisms on one table would also error `UC_ABAC_MULTIPLE_ROW_FILTERS`; a non-error count instead would mean the two mechanisms are tracked independently (or ANDed) — see `docs/testing/jdbc-cases.md`'s XT1 decode table for how to read whichever outcome shows up. |
+| A **schema-level (`ON SCHEMA`) + a table-level (`ON TABLE`) row filter on the SAME table** (POC case SC4, `sql/17`) | hits the identical `UC_ABAC_MULTIPLE_ROW_FILTERS` (SQLSTATE `42KDJ`) conflict two table-level policies hit — **not** "the more specific (table) policy wins". Scope granularity is not a precedence mechanism; design one filter per table regardless of the scope it's attached at |
+| A **classic `ALTER TABLE ... SET ROW FILTER` + an ABAC `CREATE POLICY` row filter on the SAME table** (POC case XT1, `sql/20`) | also errors `UC_ABAC_MULTIPLE_ROW_FILTERS` — the one-row-filter-per-table limit spans **both attachment mechanisms**, not just ABAC-vs-ABAC |
+
+Full per-case traces and observed values: `docs/testing/jdbc-cases.md`'s SC4 and XT1 sections.
 
 ## The row-filter UDF pattern (as deployed in the POC)
 

@@ -46,9 +46,9 @@ abac/
 ├── .claude/skills/databricks-abac/  ← SKILL: reusable Databricks ABAC semantics + POC playbook
 ├── docs/                            ← deployment / testing / archive docs (see docs/README.md)
 │   ├── deployment/                  ← oauth-jdbc-flow.md, runbook.md
-│   ├── testing/                     ← jdbc-cases.md (60 cases + 8 scenarios), explore-behaviours.md
+│   ├── testing/                     ← jdbc-cases.md (61 cases + 9 scenarios), explore-behaviours.md
 │   └── archive/                     ← abac-tpcds-setup-plan.md (superseded draft plan, see §8)
-├── sql/                             ← the runnable execution plan (00–20, 99)
+├── sql/                             ← the runnable execution plan (00–21, 99)
 ├── JDBC/                            ← JDBC client + Runner suite (see JDBC/README.md)
 └── abac_docs/                       ← SOURCE OF TRUTH: real customer artifacts
     ├── customer_data/                       ← real metadata-table DDLs + sample data & scale estimates (see its README)
@@ -491,7 +491,7 @@ _Resolved: OAuth **active** (token `custom_claim`); masking out of scope; policy
 ## 12. Execution plan (SQL files)
 
 Generated under `sql/` — run in order in a Databricks SQL editor / notebook. **As the owner** for
-`00`–`09` and `11`–`20`; validate `10` **via the service principal + claim** (JDBC/curl — see
+`00`–`09` and `11`–`21`; validate `10` **via the service principal + claim** (JDBC/curl — see
 `docs/testing/jdbc-cases.md`), or owner-direct via `sql/11`.
 
 | File | Purpose |
@@ -512,16 +512,18 @@ Generated under `sql/` — run in order in a Databricks SQL editor / notebook. *
 | `13_onboard_new_tables.sql` | onboard `promotion`/`store`/`call_center`/`ship_mode` under the same wrapper + soft-deleted `orgHierarchy` rows (cases N1–N4, ODEL/OLIVE) |
 | `14_threshold_filter.sql` | a **separate** threshold/range row filter on `inventory` (`>=` instead of `=`) (cases TH1–TH3) |
 | `15_direct_rls.sql` | classic RLS on `reason` (no tags, no policy) + an ABAC `has_tag()` policy on `income_band` whose inner UDF the suite hot-swaps live (case DR1 + the DR2 scenario) |
-| `16_views.sql` | views over the `sql/15`-governed tables — does a view bypass the filter? (cases V1–V3; **not yet applied** — see `docs/testing/jdbc-cases.md`) |
-| `17_policy_scope.sql` | `ON SCHEMA` policy scope, an isolated `abac_scope` schema (cases SC1–SC4; **not yet applied**) |
-| `18_tag_binding.sql` | `MATCH COLUMNS` tag-value binding, an ambiguous dual-tag alias, a no-match fail-open, an isolated `abac_tags` schema (cases TG1–TG3; **not yet applied**) |
-| `19_udf_contract.sql` | `USING COLUMNS` arity + declared-vs-bound type coercion, an isolated `abac_udf` schema (cases UC1–UC2; **not yet applied**) |
-| `20_cross_mechanism.sql` | classic RLS + an ABAC policy on the SAME table, an isolated `abac_xmech` schema (case XT1; **not yet applied**) |
+| `16_views.sql` | views over the `sql/15`-governed tables — does a view bypass the filter? (cases V1–V3; **confirmed live 2026-07-23** — see `docs/testing/jdbc-cases.md`) |
+| `17_policy_scope.sql` | `ON SCHEMA` policy scope, an isolated `abac_scope` schema (cases SC1–SC4; **confirmed live 2026-07-23**) |
+| `18_tag_binding.sql` | `MATCH COLUMNS` tag-value binding, an ambiguous dual-tag alias, a no-match fail-open, an isolated `abac_tags` schema (cases TG1–TG3; **confirmed live 2026-07-23**) |
+| `19_udf_contract.sql` | `USING COLUMNS` arity + declared-vs-bound type coercion, an isolated `abac_udf` schema (case UC2, **confirmed live 2026-07-23**; UC1 **removed** — DDL-time-only finding, not suite-observable) |
+| `20_cross_mechanism.sql` | classic RLS + an ABAC policy on the SAME table, an isolated `abac_xmech` schema (case XT1; **confirmed live 2026-07-23**) |
+| `21_except_and_defaults.sql` | `TO ... EXCEPT ...` principal exemption, an isolated `abac_gaps` schema (cases EX2/EX1; **confirmed live 2026-07-23**); also records (DDL-only, not a suite case) that a `DEFAULT` UDF param does not let `USING COLUMNS` omit an argument |
 | `99_optional_masking.sql` | fidelity-only mask function; **not** part of the test path |
 
 **Recommended checkpoint:** validate through `06` (as owner) before attaching policies (`07`+).
-**Current gap:** `16`–`20` are written but **not yet applied** to a live workspace — see
-`docs/testing/jdbc-cases.md` for the pending-verification cases they unlock.
+`16`–`21` have all been applied to a live workspace and confirmed (2026-07-23) — see
+`docs/testing/jdbc-cases.md` for the observed results. The only remaining gap is the 7 `E6-*`
+scenarios, which stay `SKIP` pending the e6data ABAC identity flow.
 
 ---
 
