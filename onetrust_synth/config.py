@@ -58,10 +58,10 @@ ENTITY_SOURCE_TABLES = {
 # entity IDs — see Task 9.
 STANDALONE_ENTITIES_PER_TYPE = 100
 
-# Real inventoryType values, confirmed from cmb_v_inventoryaggregatedrisksummary's
-# sample data (cmb_inventory's own sample file has a corrupted/mismatched header —
-# see sample_csv.py's _KNOWN_BAD_SAMPLE_FILES — so cmb_inventory reuses this
-# same-domain vocabulary rather than trusting its own sample). Note the mapping is
+# Real inventoryType values, confirmed from both cmb_inventory's and
+# cmb_v_inventoryaggregatedrisksummary's sample data (sample_csv.py recovers
+# both correctly via positional reconstruction against the real profiled
+# column order — see sample_csv.py's module docstring). Note the mapping is
 # NOT a plain .upper(): "Processing Activities" -> "PROCESSING-ACTIVITIES" (hyphenated)
 # in the real entityTypeReference vocabulary, confirmed from the reference table.
 INVENTORY_TYPE_TO_OBJECT_TYPE = {
