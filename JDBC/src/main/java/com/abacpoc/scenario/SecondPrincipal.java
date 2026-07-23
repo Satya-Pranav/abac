@@ -55,31 +55,40 @@ public class SecondPrincipal implements Scenario {
         System.out.println(" service principal (SP-B) with NO claim injected -- the policy should not apply to it at all,");
         System.out.println(" so SP-B should see ALL 20 rows raw (a non-TO principal is simply not governed).");
 
-        Connection connB = null;
+        System.out.println();
+        System.out.println("[MSP1] (MSP) SP-B (not in the policy's TO set) queries income_band, no claim injected");
+        System.out.println("   sql    : " + SQL);
+
+        // Two distinct failure modes need DIFFERENT operator guidance, so connect and query are
+        // caught separately: a failure opening the SESSION means SP-B cannot use the warehouse at
+        // all (a workspace/warehouse-access gap); a failure on the QUERY means it can connect but
+        // lacks SELECT on the table. Conflating them sends the operator to fix the wrong thing.
+        Connection connB;
         try {
             connB = ((DatabricksEngine) e).connectAs(spClientId, spSecret);
+        } catch (SQLException ce) {
+            System.out.println("   actual : <error> " + Jdbc.shortErr(ce.getMessage()));
+            System.out.println("   verdict: ERROR -- SP-B cannot open a session on this warehouse (it failed to CONNECT,"
+                             + " before any query). Grant SP-B workspace access AND `Can use` on the SQL warehouse,"
+                             + " then also GRANT SELECT ON TABLE " + e.qualify(Cases.DR2_TBL) + " TO <SP-B application id>.");
+            return new int[]{0, 0, 0, 1};
+        }
+
+        try {
             long n = Jdbc.count(connB, SQL);
             boolean ok = (n == 20);
-            System.out.println();
-            System.out.println("[MSP1] (MSP) SP-B (not in the policy's TO set) queries income_band, no claim injected");
-            System.out.println("   sql    : " + SQL);
             System.out.println("   expect : 20 (ALL rows, unfiltered -- the policy does not govern SP-B)");
             System.out.println("   actual : " + n
                              + (n == 10 ? "  (SP-B was unexpectedly subject to the filter -- significant)" : ""));
             System.out.println("   verdict: " + (ok ? "PASS" : "FAIL"));
             if (ok) pass++; else fail++;
-        } catch (SQLException ex) {
-            System.out.println();
-            System.out.println("[MSP1] (MSP) SP-B (not in the policy's TO set) queries income_band, no claim injected");
-            System.out.println("   sql    : " + SQL);
-            System.out.println("   actual : <error> " + Jdbc.shortErr(ex.getMessage()));
-            System.out.println("   verdict: ERROR -- SP-B likely lacks SELECT on income_band. Grant it: "
-                             + "GRANT SELECT ON TABLE " + e.qualify(Cases.DR2_TBL) + " TO <SP-B application id>");
+        } catch (SQLException qe) {
+            System.out.println("   actual : <error> " + Jdbc.shortErr(qe.getMessage()));
+            System.out.println("   verdict: ERROR -- SP-B connected but the query failed; it likely lacks SELECT. Grant it:"
+                             + " GRANT SELECT ON TABLE " + e.qualify(Cases.DR2_TBL) + " TO <SP-B application id>");
             error++;
         } finally {
-            if (connB != null) {
-                try { connB.close(); } catch (SQLException ignore) { /* best-effort */ }
-            }
+            try { connB.close(); } catch (SQLException ignore) { /* best-effort */ }
         }
         return new int[]{pass, fail, 0, error};
     }
