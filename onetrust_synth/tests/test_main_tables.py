@@ -60,7 +60,7 @@ def test_numeric_and_temporal_columns_respect_real_null_rate(spark):
 
 
 def test_high_cardinality_string_column_without_samples_does_not_collapse(spark):
-    # cmb_assessment.templateID has real ndv=2558 with no calibrated sample
+    # cmb_assessment.template has real ndv=2558 with no calibrated sample
     # values supplied here (sample_lookup returns []). A generator that funnels
     # every string column through the same low-cardinality categorical path
     # collapses this to ~10 generic placeholder values regardless of real
@@ -68,5 +68,5 @@ def test_high_cardinality_string_column_without_samples_does_not_collapse(spark)
     profile = load_table_profile(config.PROFILE_CSV_PATH)
     cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_assessment")
     df = build_generic_table(spark, "cmb_assessment", 500, cols, sample_lookup=lambda col: [])
-    distinct_template_ids = df.select("templateID").distinct().count()
+    distinct_template_ids = df.select("template").distinct().count()
     assert distinct_template_ids > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
