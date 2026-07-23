@@ -1583,10 +1583,9 @@ def build_abac_assignment(spark: SparkSession, row_count: int) -> DataFrame:
     df = df.withColumn("eventTime", F.col("updateDT"))
     df = df.withColumn("recModifiedTime", F.col("updateDT"))
     df = df.withColumn("tenantHash", F.lit("e40yx52dkbjpcqazimno9yvh4k"))
-    df = add_categorical_column(df, "isDeleted", [False, True], null_rate=0.0, salt="assignment.isDeleted")
-    # bias isDeleted toward False (deleted should be rare) by re-deriving deterministically
+    # isDeleted should be rare (~5%), not an even split — pmod < 1 out of 20 buckets
     del_marker = F.pmod(F.xxhash64(F.col("_row_id"), F.lit("assignment.isDeleted_rare")), F.lit(20))
-    df = df.withColumn("isDeleted", del_marker < 1)  # ~5% deleted
+    df = df.withColumn("isDeleted", del_marker < 1)
     return df.drop("_row_id")
 
 
