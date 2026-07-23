@@ -1930,6 +1930,23 @@ def build_abac_entity_subject_assignment(
     spark: SparkSession, assignment_df: DataFrame, entity_registry: DataFrame,
     org_registry: DataFrame, subject_registry: DataFrame, row_count: int,
 ) -> DataFrame:
+    # Only entities whose objectType is actually represented in assignment_df
+    # can ever be picked here — the later join against assignment_df is an
+    # inner join on objectType, so anything else is silently dropped,
+    # undershooting row_count. Two real cases land in "anything else": (1)
+    # entity_registry rows with objectType IS NULL — ~35% of rows, harvested
+    # from cmb_inventory, mirroring that column's real 99.57% null rate (see
+    # Task 11); (2) entity_registry rows with objectType == "TEMPLATE" —
+    # cmb_template is harvested with the static type TEMPLATE (see
+    # config.ENTITY_SOURCE_TABLES), but TEMPLATE is NOT one of the 20 real
+    # entityTypeReference values, so it never appears in
+    # assignment_df.objectType. Not a sampling fluke fixable by a bigger
+    # assignment_df — TEMPLATE structurally has no ABAC assignment in the
+    # real system. Filtering to the objectTypes assignment_df actually has
+    # (rather than a hardcoded IS NOT NULL) handles both cases generically.
+    assignment_object_types = [r["objectType"] for r in assignment_df.select("objectType").distinct().collect()]
+    entity_registry = entity_registry.filter(F.col("objectType").isin(assignment_object_types))
+
     entity_reg_indexed = entity_registry.withColumn(
         "_e_idx", F.row_number().over(Window.orderBy("entityId")) - 1
     )
