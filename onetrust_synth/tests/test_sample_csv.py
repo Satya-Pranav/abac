@@ -1,4 +1,7 @@
 # onetrust_synth/tests/test_sample_csv.py
+from unittest.mock import patch, MagicMock
+import pytest
+
 from onetrust_synth.sample_csv import (
     sample_file_path, load_column_values, load_entity_type_reference_values, load_rows,
 )
@@ -61,3 +64,37 @@ def test_load_column_values_works_for_every_affected_table_not_just_two():
     ids = load_column_values("cmb_assessment", "id")
     assert len(ids) > 0
     assert all(len(i) == 36 and i.count("-") == 4 for i in ids)  # UUID shape
+
+
+def test_load_rows_raises_on_field_count_mismatch():
+    # Guard: if the CSV row field count ever drifts from the real column count,
+    # load_rows must raise ValueError loudly, not silently truncate via zip().
+    from io import StringIO
+
+    with patch("onetrust_synth.sample_csv.load_table_profile") as mock_profile:
+        # Mock the profile loading
+        mock_profile.return_value = {}
+
+        with patch("onetrust_synth.sample_csv.get_columns") as mock_get_columns:
+            # Mock get_columns to return 3 expected columns
+            mock_col1 = MagicMock()
+            mock_col1.name = "col1"
+            mock_col2 = MagicMock()
+            mock_col2.name = "col2"
+            mock_col3 = MagicMock()
+            mock_col3.name = "col3"
+            mock_get_columns.return_value = [mock_col1, mock_col2, mock_col3]
+
+            with patch("builtins.open", create=True) as mock_open:
+                # Return a StringIO with CSV content: header (skipped), then row with only 1 field
+                csv_content = "header1,header2\ndata1\n"
+                mock_open.return_value.__enter__.return_value = StringIO(csv_content)
+
+                with pytest.raises(ValueError) as exc_info:
+                    load_rows("cmb_assessment")
+
+                error_msg = str(exc_info.value)
+                assert "field count mismatch" in error_msg.lower()
+                assert "cmb_assessment" in error_msg
+                assert "expected 3" in error_msg
+                assert "got 1" in error_msg

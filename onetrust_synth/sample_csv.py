@@ -53,7 +53,14 @@ def load_rows(table: str) -> list[dict]:
     with open(sample_file_path(table), newline="", encoding="utf-8", errors="replace") as f:
         reader = csv.reader(f)
         next(reader, None)  # skip the file's own (corrupted) header row — never trust it
-        return [dict(zip(real_columns, raw)) for raw in reader]
+        rows = []
+        for raw in reader:
+            if len(raw) != len(real_columns):
+                raise ValueError(
+                    f"Row field count mismatch in table '{table}': expected {len(real_columns)} columns, got {len(raw)}"
+                )
+            rows.append(dict(zip(real_columns, raw)))
+        return rows
 
 
 def load_column_values(table: str, column: str) -> list[str]:
