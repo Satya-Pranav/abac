@@ -49,7 +49,7 @@ Only when output changes intentionally. There is exactly one sanctioned regenera
 > `Runner`/`Cases`/`Dr2HotSwap`. The pre-refactor output is preserved verbatim as
 > `pre-refactor-baseline.txt` — that file is the only remaining record of it.
 
-To run the suite as it exists now (a superset: 61 cases + 9 scenarios):
+To run the suite as it exists now (a superset: 61 cases + 12 scenarios):
 
 ```bash
 java -cp JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar \
