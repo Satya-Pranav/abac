@@ -588,13 +588,13 @@ def deterministic_index(row_id_col, salt: str, n: int):
     return F.pmod(F.xxhash64(row_id_col, F.lit(salt)), F.lit(n))
 
 
-def add_categorical_column(df: DataFrame, col_name: str, values: list, null_rate: float = 0.0, salt: str = None) -> DataFrame:
+def add_categorical_column(df: DataFrame, col_name: str, values: list, null_rate: float = 0.0, salt: str = None, row_id_col: str = "_row_id") -> DataFrame:
     salt = salt or col_name
     values_array = F.array(*[F.lit(v) for v in values])
-    idx = deterministic_index(F.col("_row_id"), salt, len(values))
+    idx = deterministic_index(F.col(row_id_col), salt, len(values))
     base = F.element_at(values_array, idx + F.lit(1))
     if null_rate > 0:
-        null_marker = F.pmod(F.xxhash64(F.col("_row_id"), F.lit(salt + "_null")), F.lit(10000))
+        null_marker = F.pmod(F.xxhash64(F.col(row_id_col), F.lit(salt + "_null")), F.lit(10000))
         threshold = F.lit(int(null_rate * 10000))
         return df.withColumn(col_name, F.when(null_marker < threshold, F.lit(None)).otherwise(base))
     return df.withColumn(col_name, base)
@@ -923,7 +923,8 @@ def test_inventory_risk_summary_has_14_real_rows(spark):
     assert df.count() == 14
     assert "inventoryType" in df.columns
     types = {r["inventoryType"] for r in df.select("inventoryType").collect()}
-    assert types <= {"Assets", "Vendors", "Entities"}
+    # verified against the real sample file: {'Assets', 'Processing Activities', 'Vendors'}
+    assert types <= {"Assets", "Vendors", "Processing Activities"}
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1050,6 +1051,15 @@ def test_cmb_assessment_has_nested_columns_attached(spark):
     cols = tables["cmb_assessment"].columns
     assert "questionRootMap" in cols
     assert "userIdsAssociatedWithAssessment" in cols
+
+
+def test_cmb_inventory_inventory_type_uses_real_vocabulary_not_corrupted_sample(spark):
+    # cmb_inventory's own sample file is known-bad (see sample_csv.py); this locks
+    # in that the generator overrides with the real, verified values instead of
+    # whatever build_generic_table's generic placeholder fallback would produce.
+    tables = build_all_main_tables(spark, scale_factor=1.0)
+    seen = {r["inventoryType"] for r in tables["cmb_inventory"].select("inventoryType").collect() if r["inventoryType"] is not None}
+    assert seen <= set(config.INVENTORY_TYPE_TO_OBJECT_TYPE.keys())
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1069,6 +1079,7 @@ from onetrust_synth.sample_csv import load_column_values
 from onetrust_synth.main_tables import build_generic_table
 from onetrust_synth.nested_columns import attach_cmb_assessment_nested_columns, attach_cmb_inventory_nested_columns
 from onetrust_synth.verbatim_tables import build_orghierarchy_df, build_cmb_v_inventoryaggregatedrisksummary_df
+from onetrust_synth.generator import add_categorical_column
 from onetrust_synth.write import write_delta_table
 
 _TARGET_SCHEMA_HASH = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
@@ -1110,6 +1121,7 @@ def build_all_main_tables(spark: SparkSession, scale_factor: float = config.SCAL
                 df, "inventoryType", list(config.INVENTORY_TYPE_TO_OBJECT_TYPE.keys()),
                 null_rate=next((c.null_rate for c in cols if c.name == "inventoryType"), 0.0),
                 salt="cmb_inventory.inventoryType.real_vocab",
+                row_id_col="id",  # _row_id was already dropped by build_generic_table; "id" is unique per row
             )
 
         tables[table_name] = df
@@ -1264,9 +1276,19 @@ def test_entity_registry_inventory_type_comes_from_row_data(spark):
     reg = build_entity_registry(spark, main_tables)
     inv_types = {
         r["objectType"] for r in reg.select("objectType").distinct().collect()
-        if r["objectType"] in ("ASSETS", "VENDORS", "ENTITIES")
+        if r["objectType"] in set(config.INVENTORY_TYPE_TO_OBJECT_TYPE.values())
     }
     assert len(inv_types) > 0
+
+
+def test_entity_registry_inventory_type_mapping_hyphenates_correctly(spark):
+    # regression guard for the F.upper()-is-wrong bug: "Processing Activities" must
+    # map to "PROCESSING-ACTIVITIES" (hyphenated), not "PROCESSING ACTIVITIES"
+    main_tables = build_all_main_tables(spark, scale_factor=1.0)
+    reg = build_entity_registry(spark, main_tables)
+    types = {r["objectType"] for r in reg.select("objectType").distinct().collect()}
+    assert "PROCESSING-ACTIVITIES" in types
+    assert "PROCESSING ACTIVITIES" not in types
 
 
 def test_entity_registry_includes_standalone_entities_for_uncovered_types(spark):
@@ -1299,6 +1321,20 @@ from onetrust_synth.sample_csv import load_entity_type_reference_values
 from onetrust_synth.generator import base_row_id_df as _base_row_id_df, add_id_column as _add_id_column
 
 
+def _inventory_type_to_object_type_column():
+    """
+    inventoryType -> objectType is NOT a plain .upper() — "Processing Activities"
+    hyphenates to "PROCESSING-ACTIVITIES" in the real entityTypeReference
+    vocabulary (config.INVENTORY_TYPE_TO_OBJECT_TYPE, verified against real sample
+    data). Falls back to .upper() for any unmapped value rather than erroring.
+    """
+    mapping = config.INVENTORY_TYPE_TO_OBJECT_TYPE
+    expr = F.upper(F.col("inventoryType"))
+    for raw, mapped in mapping.items():
+        expr = F.when(F.col("inventoryType") == raw, F.lit(mapped)).otherwise(expr)
+    return expr
+
+
 def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
     pieces = []
 
@@ -1309,7 +1345,7 @@ def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
         else:
             piece = df.select(
                 F.col(id_col).alias("entityId"),
-                F.upper(F.col("inventoryType")).alias("objectType"),
+                _inventory_type_to_object_type_column().alias("objectType"),
             )
         pieces.append(piece.withColumn("orgId", F.lit(None).cast("string")))
 
@@ -1318,7 +1354,7 @@ def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
         harvested = harvested.unionByName(p)
 
     covered_types = {t for _, (_, t) in config.ENTITY_SOURCE_TABLES.items() if t is not None}
-    covered_types |= {"ASSETS", "VENDORS", "ENTITIES"}  # the per-row inventory types
+    covered_types |= set(config.INVENTORY_TYPE_TO_OBJECT_TYPE.values())  # the per-row inventory types
     all_types = {t for _, t in load_entity_type_reference_values()}
     uncovered_types = sorted(all_types - covered_types)
 
@@ -1518,7 +1554,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'onetrust_synth.abac_t
 ```python
 # onetrust_synth/abac_tables.py
 from pyspark.sql import functions as F
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession, DataFrame, Window
 
 from onetrust_synth.generator import base_row_id_df, add_categorical_column, deterministic_index
 from onetrust_synth.sample_csv import load_entity_type_reference_values
@@ -1560,7 +1596,7 @@ def build_abac_assignment_permission(spark: SparkSession, assignment_df: DataFra
 
     idx = deterministic_index(F.col("_row_id"), "perm.assignment_pick", assignment_ids.count())
     indexed_assignments = assignment_ids.withColumn(
-        "_pick_idx", F.row_number().over(__import__("pyspark.sql.window", fromlist=["Window"]).Window.orderBy("assignmentId")) - 1
+        "_pick_idx", F.row_number().over(Window.orderBy("assignmentId")) - 1
     )
     df = df.withColumn("_pick_idx", idx).join(indexed_assignments, on="_pick_idx", how="inner").drop("_pick_idx")
 
@@ -1673,7 +1709,7 @@ Expected: FAIL with `ImportError: cannot import name 'build_abac_entity_subject_
 
 ```python
 # append to onetrust_synth/abac_tables.py
-from pyspark.sql import Window
+# (Window already imported at the top of this file — see Task 13)
 
 
 def build_abac_entity_subject_assignment(
@@ -1762,7 +1798,10 @@ from onetrust_synth.registries import build_subject_registry
 def test_user_group_members_row_count_and_columns(spark):
     subj_reg = build_subject_registry(spark)
     ugm = build_user_group_members(spark, subj_reg, 5000)
-    assert ugm.count() == 5000
+    # build_user_group_members dedupes (memberId, groupId) pairs, so with 2000 users x
+    # 300 groups sampled 5000 times, a small number of hash collisions are expected —
+    # count comes in slightly under 5000, not exactly 5000.
+    assert 4800 <= ugm.count() <= 5000
     assert set(USER_GROUP_MEMBERS_COLUMNS) == set(ugm.columns)
 
 
@@ -1874,10 +1913,16 @@ def test_builds_all_5_abac_tables(spark):
 
 
 def test_abac_table_row_counts_match_phase1_targets(spark):
+    from onetrust_synth.validate import validate_row_counts
+
     main_tables = build_all_main_tables(spark, scale_factor=0.1)
     abac_tables = build_all_abac_tables(spark, main_tables)
-    for table, target in config.ABAC_TABLE_ROW_TARGETS.items():
-        assert abac_tables[table].count() == target, f"{table}: expected {target}"
+    built = {table: df.count() for table, df in abac_tables.items()}
+    # UserGroupMembers dedupes (memberId, groupId) pairs, so it can land slightly
+    # under target — validate_row_counts' default 5% tolerance covers that; every
+    # other table hits its target exactly.
+    failures = validate_row_counts(built, config.ABAC_TABLE_ROW_TARGETS, tolerance=0.05)
+    assert failures == []
 ```
 
 ```python
@@ -1933,6 +1978,7 @@ from onetrust_synth.registries import build_org_registry, build_subject_registry
 from onetrust_synth.abac_tables import (
     build_abac_assignment, build_abac_assignment_permission,
     build_abac_entity_subject_assignment, build_user_group_members, build_org_hierarchy_base,
+    build_org_hierarchy_view_sql,
 )
 from onetrust_synth.write import write_delta_table
 
@@ -1974,6 +2020,13 @@ def main():
         partition_by = ["objectType"] if table_name in config.ABAC_PARTITIONED_TABLES else None
         write_delta_table(df, config.CATALOG, config.MAIN_SCHEMA, write_table_name, partition_by=partition_by)
         print(f"Wrote {config.CATALOG}.{config.MAIN_SCHEMA}.{write_table_name}: {df.count()} rows")
+
+    # OrgHierarchyBase is the physical table written above; OrgHierarchy is a view
+    # over it (matches the real DDL — see abac_docs/customer_data/OrgHierarchy.rtf).
+    # Task 17's row-filter UDF reads OrgHierarchy (the view), so this must run before
+    # that UDF is ever invoked.
+    spark.sql(build_org_hierarchy_view_sql())
+    print(f"Created view {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchy over OrgHierarchyBase")
 
 
 if __name__ == "__main__":
@@ -2111,8 +2164,14 @@ RETURN named_struct(
 
 CREATE OR REPLACE FUNCTION abac_onetrust.onetrust_sim.entity_type_to_object_type(entity_type STRING)
 RETURNS STRING
-COMMENT 'Normalizes a raw table/column type value to the canonical ABAC object type'
-RETURN upper(entity_type);
+COMMENT 'Normalizes a raw table/column type value to the canonical ABAC object type. NOT
+a plain upper() -- "Processing Activities" hyphenates to "PROCESSING-ACTIVITIES" in the
+real entityTypeReference vocabulary (verified against real sample data; see
+onetrust_synth/config.py INVENTORY_TYPE_TO_OBJECT_TYPE for the Python-side source of truth).'
+RETURN CASE
+  WHEN upper(entity_type) = 'PROCESSING ACTIVITIES' THEN 'PROCESSING-ACTIVITIES'
+  ELSE upper(entity_type)
+END;
 
 CREATE OR REPLACE FUNCTION abac_onetrust.onetrust_sim.abac_row_filter(
   entity_id   STRING,
