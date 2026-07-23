@@ -1,9 +1,9 @@
 """
 Deterministic, hash-based PySpark synthetic-column generation. Uses xxhash64 of
-(_row_id, salt) rather than F.rand() for value SELECTION, so results are stable
-across Spark re-evaluation/re-partitioning (a well-known F.rand() gotcha) — only
-null-injection uses a seeded F.rand(), which is fine since it doesn't need to be
-correlated with the selected value.
+(row_id, salt) rather than F.rand() for both value SELECTION and null-injection,
+so results are stable across Spark re-evaluation/re-partitioning (a well-known
+F.rand() gotcha) — null-injection hashes on a distinct salt suffix, so it's
+independent of which value would have been selected.
 """
 from pyspark.sql import functions as F
 from pyspark.sql import DataFrame, SparkSession
