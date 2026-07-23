@@ -44,6 +44,7 @@ public class ViewPolicySwap implements Scenario {
         System.out.println(" Reuses sql/15's dr2_row_filter (SP-owned, swappable) bound via dr2_wrapper by income_band_dr2_policy,");
         System.out.println(" queried through sql/16's v_income_band_governed VIEW. Change the INNER UDF, POLL until reflected THROUGH");
         System.out.println(" THE VIEW (measuring latency), then revert. Runs AFTER Dr2HotSwap, which reverted cutoff to 10, so baseline holds.");
+        Thread guard = null;
         try {
             e.applyIdentity(c, Cases.DISABLE_CLAIM);   // dr2_wrapper calls get_user_context() -> session must carry a claim
             // VP1 — baseline through the view: original inner cutoff <= 10 -> 10 of 20 rows
@@ -52,6 +53,9 @@ public class ViewPolicySwap implements Scenario {
             vpPrint("VP1", "baseline THROUGH THE VIEW (ABAC policy; dr2_row_filter cutoff <= 10): 10 of 20 rows",
                      CNT, "10", String.valueOf(a1), ok1);
             if (ok1) pass++; else fail++;
+
+            // Guard the swap..revert window against process termination (see Dr2HotSwap.registerRevertGuard).
+            guard = Dr2HotSwap.registerRevertGuard(e, c);
 
             // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5, then
             // POLL the VIEW query until it flips to 5 -- measuring how long the change takes to become
@@ -80,6 +84,8 @@ public class ViewPolicySwap implements Scenario {
                              + " (CREATE OR REPLACE needs ownership — see sql/15's GRANT CREATE FUNCTION fallback).");
             error++;
             try { Jdbc.exec(c, Dr2HotSwap.dr2Def(e, 10)); } catch (SQLException ignore) { /* best-effort revert */ }
+        } finally {
+            Dr2HotSwap.removeGuard(guard);   // normal path reverted already; drop the hook
         }
         return new int[]{pass, fail, error};
     }

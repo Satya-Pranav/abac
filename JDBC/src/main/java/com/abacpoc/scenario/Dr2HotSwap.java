@@ -35,6 +35,7 @@ public class Dr2HotSwap implements Scenario {
         System.out.println(" Policy binds dr2_wrapper -> dr2_row_filter (SP-owned, swappable). Change the INNER UDF,");
         System.out.println(" POLL until the change is reflected (measuring real propagation latency), then revert.");
         System.out.println(" Tables/UDFs come from sql/15.");
+        Thread guard = null;
         try {
             e.applyIdentity(c, Cases.DISABLE_CLAIM);   // dr2_wrapper calls get_user_context() -> session must carry a claim
             // DR2a — baseline: original inner cutoff <= 10 -> 10 of 20 rows
@@ -43,6 +44,13 @@ public class Dr2HotSwap implements Scenario {
             dr2Print("DR2a", "baseline (ABAC policy; dr2_row_filter cutoff <= 10): 10 of 20 rows",
                      CNT, "10", String.valueOf(a1), ok1);
             if (ok1) pass++; else fail++;
+
+            // From here until the revert, the filter is in the SWAPPED state. Register a JVM
+            // shutdown hook that reverts to cutoff 10, so a process KILL (SIGTERM from a timeout /
+            // Ctrl-C) between the swap and the revert does not leak the swapped state into the next
+            // run (the catch below only covers SQL errors, not process termination). SIGKILL still
+            // can't be caught, but SIGTERM -- the common case -- is handled.
+            guard = registerRevertGuard(e, c);
 
             // change the row-filter definition: CREATE OR REPLACE the inner UDF to cutoff <= 5,
             // then POLL until the visible count flips to 5 -- measuring the actual propagation delay
@@ -71,8 +79,28 @@ public class Dr2HotSwap implements Scenario {
                              + " (CREATE OR REPLACE needs ownership — see sql/15's GRANT CREATE FUNCTION fallback).");
             error++;
             try { Jdbc.exec(c, dr2Def(e, 10)); } catch (SQLException ignore) { /* best-effort revert */ }
+        } finally {
+            removeGuard(guard);   // normal path reverted already; drop the hook so it can't double-fire
         }
         return new int[]{pass, fail, error};
+    }
+
+    /** Register a JVM shutdown hook that best-effort reverts dr2_row_filter to cutoff 10, guarding the
+     *  window between swap and revert against process termination (SIGTERM/Ctrl-C). Returns the hook
+     *  so it can be removed on the normal path. Shared by DR2 and ViewPolicySwap (both swap the same
+     *  UDF). SIGKILL cannot be caught — that residual case is documented and self-heals on the next
+     *  completed run (whose revert restores cutoff 10). */
+    static Thread registerRevertGuard(Engine e, Connection c) {
+        Thread hook = new Thread(() -> {
+            try { Jdbc.exec(c, dr2Def(e, 10)); } catch (Throwable ignore) { /* best-effort during shutdown */ }
+        }, "dr2-revert-guard");
+        try { Runtime.getRuntime().addShutdownHook(hook); } catch (IllegalStateException alreadyShuttingDown) { return null; }
+        return hook;
+    }
+
+    static void removeGuard(Thread hook) {
+        if (hook == null) return;
+        try { Runtime.getRuntime().removeShutdownHook(hook); } catch (IllegalStateException ignore) { /* shutdown in progress */ }
     }
 
     /** CREATE OR REPLACE for the swappable inner DR2 filter — identical signature to sql/15, only the
