@@ -721,16 +721,20 @@ def test_numeric_and_temporal_columns_respect_real_null_rate(spark):
 
 
 def test_high_cardinality_string_column_without_samples_does_not_collapse(spark):
-    # cmb_assessment.templateID has real ndv=2558 with no calibrated sample
-    # values supplied here (sample_lookup returns []). A generator that funnels
-    # every string column through the same low-cardinality categorical path
-    # collapses this to ~10 generic placeholder values regardless of real
-    # cardinality — caught by a prior task review.
+    # cmb_assessment.template has real ndv=2558 with no calibrated sample
+    # values supplied here (sample_lookup returns []). Deliberately NOT
+    # "templateID": that column's name ends in the id-like suffix, so at this
+    # row_count it routes through _is_id_like's unique-id path instead of the
+    # catch-all placeholder-pool path this test targets — a prior review
+    # round caught a test that looked like it covered the fix but silently
+    # exercised the wrong code path instead. "template" has the identical
+    # real ndv (2558) with no id-like name, so it genuinely reaches
+    # _placeholder_values_for.
     profile = load_table_profile(config.PROFILE_CSV_PATH)
     cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_assessment")
     df = build_generic_table(spark, "cmb_assessment", 500, cols, sample_lookup=lambda col: [])
-    distinct_template_ids = df.select("templateID").distinct().count()
-    assert distinct_template_ids > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
+    distinct_templates = df.select("template").distinct().count()
+    assert distinct_templates > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
