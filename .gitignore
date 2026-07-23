@@ -5,3 +5,6 @@ target/
 baseline/*.txt
 .superpowers/
 .DS_Store
+.venv/
+__pycache__/
+*.pyc
