@@ -21,10 +21,10 @@ def build_all_main_tables(spark: SparkSession, scale_factor: float = config.SCAL
     tables["orghierarchy"] = build_orghierarchy_df(spark)
     tables["cmb_v_inventoryaggregatedrisksummary"] = build_cmb_v_inventoryaggregatedrisksummary_df(spark)
 
-    for table_name, real_count in config.MAIN_TABLES.items():
+    for table_name in config.MAIN_TABLES:
         if table_name in tables:
             continue
-        schema_key = "monitoring" if table_name in config.MONITORING_TABLES else _TARGET_SCHEMA_HASH
+        schema_key = config.MONITORING_SCHEMA if table_name in config.MONITORING_TABLES else _TARGET_SCHEMA_HASH
         cols = get_columns(profile, schema_key, table_name)
         row_count = config.scaled_row_count(table_name, scale_factor)
 

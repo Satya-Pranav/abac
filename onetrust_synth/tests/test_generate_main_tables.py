@@ -32,9 +32,13 @@ def test_cmb_assessment_has_nested_columns_attached(spark):
 
 
 def test_cmb_inventory_inventory_type_uses_real_vocabulary_not_corrupted_sample(spark):
-    # cmb_inventory's own sample file is known-bad (see sample_csv.py); this locks
-    # in that the generator overrides with the real, verified values instead of
-    # whatever build_generic_table's generic placeholder fallback would produce.
+    # cmb_inventory's own sample file IS correctly recovered by sample_csv.py's
+    # positional-reconstruction fix (not header-corrupted). But inventoryType is
+    # non-null in only 38/8750 real rows, and the ~500-row sample happens to
+    # capture only 2 of the 3 real categories (missing "Processing Activities")
+    # -- too few observations, not a data-corruption issue. This locks in that
+    # the generator overrides with the full, verified 3-value vocabulary instead
+    # of leaving inventoryType artificially limited to 2 of 3 real categories.
     tables = build_all_main_tables(spark, scale_factor=1.0)
     seen = {r["inventoryType"] for r in tables["cmb_inventory"].select("inventoryType").collect() if r["inventoryType"] is not None}
     assert seen <= set(config.INVENTORY_TYPE_TO_OBJECT_TYPE.keys())
