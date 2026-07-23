@@ -87,3 +87,35 @@ def test_esa_assignment_id_object_type_matches_the_assignment(spark):
     )
     mismatches = joined.filter(F.col("objectType") != F.col("a_objectType")).count()
     assert mismatches == 0
+
+
+from onetrust_synth.abac_schema import USER_GROUP_MEMBERS_COLUMNS, ORG_HIERARCHY_BASE_COLUMNS
+from onetrust_synth.abac_tables import build_user_group_members, build_org_hierarchy_base
+from onetrust_synth.registries import build_subject_registry
+
+
+def test_user_group_members_row_count_and_columns(spark):
+    subj_reg = build_subject_registry(spark)
+    ugm = build_user_group_members(spark, subj_reg, 5000)
+    # build_user_group_members dedupes (memberId, groupId) pairs, so with 2000 users x
+    # 300 groups sampled 5000 times, a small number of hash collisions are expected —
+    # count comes in slightly under 5000, not exactly 5000.
+    assert 4800 <= ugm.count() <= 5000
+    assert set(USER_GROUP_MEMBERS_COLUMNS) == set(ugm.columns)
+
+
+def test_user_group_members_references_real_subjects(spark):
+    subj_reg = build_subject_registry(spark)
+    ugm = build_user_group_members(spark, subj_reg, 3000)
+    valid_members = {r["subjectId"] for r in subj_reg.filter(subj_reg.subjectType == "USER_ID").select("subjectId").collect()}
+    valid_groups = {r["subjectId"] for r in subj_reg.filter(subj_reg.subjectType == "USER_GROUP").select("subjectId").collect()}
+    member_ids = {r["memberId"] for r in ugm.select("memberId").collect()}
+    group_ids = {r["groupId"] for r in ugm.select("groupId").collect()}
+    assert member_ids <= valid_members
+    assert group_ids <= valid_groups
+
+
+def test_org_hierarchy_base_matches_real_data(spark):
+    base = build_org_hierarchy_base(spark)
+    assert base.count() == 183
+    assert set(ORG_HIERARCHY_BASE_COLUMNS) == set(base.columns)

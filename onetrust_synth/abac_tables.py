@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession, DataFrame, Window
 
 from onetrust_synth.generator import base_row_id_df, add_categorical_column, deterministic_index
 from onetrust_synth.sample_csv import load_entity_type_reference_values
+from onetrust_synth.verbatim_tables import build_orghierarchy_df
 
 _STATIC_IDENTIFIERS = ["owner", "viewer", "internal-owner"]
 _ASSIGNMENT_PERMISSION_SUFFIXES = ["basic.view", "advanced.view"]
@@ -128,3 +129,40 @@ def build_abac_entity_subject_assignment(
     df = df.withColumn("isDeleted", del_marker < 1)
 
     return df.drop("_row_id", "orgId")
+
+
+def build_user_group_members(spark: SparkSession, subject_registry: DataFrame, row_count: int) -> DataFrame:
+    users = subject_registry.filter(subject_registry.subjectType == "USER_ID").select(
+        F.col("subjectId").alias("memberId")
+    ).withColumn("_u_idx", F.row_number().over(Window.orderBy("memberId")) - 1)
+    n_users = users.count()
+
+    groups = subject_registry.filter(subject_registry.subjectType == "USER_GROUP").select(
+        F.col("subjectId").alias("groupId")
+    ).withColumn("_g_idx", F.row_number().over(Window.orderBy("groupId")) - 1)
+    n_groups = groups.count()
+
+    df = base_row_id_df(spark, row_count)
+    df = df.withColumn("_u_idx", deterministic_index(F.col("_row_id"), "ugm.member", n_users))
+    df = df.join(users, on="_u_idx", how="inner").drop("_u_idx")
+    df = df.withColumn("_g_idx", deterministic_index(F.col("_row_id"), "ugm.group", n_groups))
+    df = df.join(groups, on="_g_idx", how="inner").drop("_g_idx")
+
+    df = df.withColumn("eventTime", F.to_timestamp(F.lit("2026-04-01 00:00:00")))
+    df = df.withColumn("recModifiedTime", F.col("eventTime"))
+    df = df.withColumn("isDeleted", F.lit(False))
+    df = df.withColumn("tenantHash", F.lit("e40yx52dkbjpcqazimno9yvh4k"))
+    return df.drop("_row_id").dropDuplicates(["memberId", "groupId"])
+
+
+def build_org_hierarchy_base(spark: SparkSession) -> DataFrame:
+    return build_orghierarchy_df(spark)
+
+
+def build_org_hierarchy_view_sql() -> str:
+    from onetrust_synth import config
+    return (
+        f"CREATE OR REPLACE VIEW {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchy AS "
+        f"SELECT * FROM {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchyBase "
+        f"WHERE isDeleted IS NOT TRUE"
+    )
