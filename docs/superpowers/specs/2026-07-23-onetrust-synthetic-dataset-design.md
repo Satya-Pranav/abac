@@ -279,8 +279,16 @@ these numbers were trustworthy (recorded here so the implementation plan doesn't
    `monitoring.entitygroupconfig` exception.
 5. Track column references per in-scope query to flag the 6 nested-type columns.
 6. Rewrite schema-qualified references from the real hashed schema name to
-   `abac_onetrust.onetrust_sim` (and `abac_onetrust.monitoring` for `entitygroupconfig`).
-7. Output the 50 compatible, catalog-rewritten queries as a curated standalone `.sql` file.
+   `abac_onetrust.onetrust_sim` (and `abac_onetrust.monitoring` for `entitygroupconfig`), via
+   `sqlglot` AST mutation (not string replace) — this also normalizes non-standard constructs
+   like ODBC scalar-function escapes (`{ fn locate(...) }` → `LOCATE(...)`) for free.
+7. Output: **implemented and committed** — `onetrust/extract_compatible_queries.py` produces
+   `onetrust/onetrust_sanity_run_annotated.csv` (all 357 source rows, plus `in_scope`, `reason`,
+   `tables_used`, `references_nested_columns`, `modified_query` columns). This supersedes the
+   originally-planned standalone `.sql` file — a CSV with an added column was more useful for
+   auditing *why* each query was included/excluded, and integrates the same information in one
+   place. Verified: all 50 `modified_query` values re-parse cleanly, no leftover ODBC syntax, no
+   leftover schema-hash references outside harmless provenance comments.
 
 Target engine for this phase is **Databricks only**. (The profiling job's own error traces show
 this environment also runs `e6data`, which has documented gaps with array/map/struct types and
