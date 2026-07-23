@@ -3,7 +3,7 @@ import os
 import tempfile
 
 from onetrust_synth import config
-from onetrust_synth.profile_csv import ColumnProfile, load_table_profile, get_columns
+from onetrust_synth.profile_csv import load_table_profile, get_columns
 
 
 def test_parses_real_profile_csv_orghierarchy():

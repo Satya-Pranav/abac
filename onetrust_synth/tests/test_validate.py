@@ -2,7 +2,6 @@ from onetrust_synth.validate import validate_row_counts, validate_referential_in
 from onetrust_synth.generate_main_tables import build_all_main_tables
 from onetrust_synth.generate_abac_tables import build_all_abac_tables
 from onetrust_synth.registries import build_entity_registry, build_subject_registry
-from onetrust_synth import config
 
 
 def test_validate_row_counts_passes_on_exact_match():

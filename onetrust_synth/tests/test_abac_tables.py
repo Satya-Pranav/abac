@@ -1,6 +1,5 @@
 from pyspark.sql import functions as F
 
-from onetrust_synth import config
 from onetrust_synth.abac_schema import (
     ABAC_ASSIGNMENT_COLUMNS, ABAC_ASSIGNMENT_PERMISSION_COLUMNS, ABAC_ENTITY_SUBJECT_ASSIGNMENT_COLUMNS,
     USER_GROUP_MEMBERS_COLUMNS, ORG_HIERARCHY_BASE_COLUMNS,

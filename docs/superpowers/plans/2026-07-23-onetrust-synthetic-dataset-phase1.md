@@ -158,10 +158,10 @@ ENTITY_SOURCE_TABLES = {
 # entity IDs — see Task 9.
 STANDALONE_ENTITIES_PER_TYPE = 100
 
-# Real inventoryType values, confirmed from cmb_v_inventoryaggregatedrisksummary's
-# sample data (cmb_inventory's own sample file has a corrupted/mismatched header —
-# see sample_csv.py's _KNOWN_BAD_SAMPLE_FILES — so cmb_inventory reuses this
-# same-domain vocabulary rather than trusting its own sample). Note the mapping is
+# Real inventoryType values, confirmed from both cmb_inventory's and
+# cmb_v_inventoryaggregatedrisksummary's sample data (sample_csv.py recovers
+# both correctly via positional reconstruction against the real profiled
+# column order — see sample_csv.py's module docstring). Note the mapping is
 # NOT a plain .upper(): "Processing Activities" -> "PROCESSING-ACTIVITIES" (hyphenated)
 # in the real entityTypeReference vocabulary, confirmed from the reference table.
 INVENTORY_TYPE_TO_OBJECT_TYPE = {
@@ -2769,10 +2769,20 @@ git commit -m "feat(onetrust_synth): add runner for the 50 compatible queries ag
 
 ## Phase 1 completion checklist (manual, run on Databricks in order)
 
+**Ordering note (found in final whole-branch review):** `onetrust_synth/write.py` calls
+`saveAsTable("abac_onetrust.onetrust_sim.<table>")`, and Unity Catalog does **not**
+auto-create a catalog/schema on first write — `01_catalog_schema.sql` must run
+*before* any Python generation step, not after. An earlier draft of this checklist
+had the Python steps (2–3) before the SQL steps (4), which would fail step 2
+immediately with a catalog/schema-not-found error. Fixed below: `01_catalog_schema.sql`
+now runs first; `02_tags.sql`–`04_policies.sql` still run after the tables exist
+(tags/policies need real tables and columns to attach to).
+
 1. `python3 -m pytest onetrust_synth/ -v` — all unit tests pass locally (Tasks 1–16).
-2. Run `onetrust_synth/generate_main_tables.py` on a Databricks cluster attached to a Unity Catalog workspace.
-3. Run `onetrust_synth/generate_abac_tables.py`.
-4. Run `sql_onetrust/01_catalog_schema.sql` through `sql_onetrust/04_policies.sql` in order (Tasks 17–18) — substitute the real service principal in `04_policies.sql`.
-5. Run `sql_onetrust/05_seed_test_principals.sql` then `sql_onetrust/06_test_cases.sql` (Task 19) — all 8 `assert_true` statements must pass.
-6. Run `onetrust_synth/run_compatible_queries.py` (Task 20) — 0 failures out of 50.
-7. If all of 1–6 pass: Phase 1 is done. Proceed to Phase 2 planning (full-scale ABAC generation + performance benchmark) per the design doc — a separate plan, not covered here.
+2. Run `sql_onetrust/01_catalog_schema.sql` on a Databricks cluster attached to a Unity Catalog workspace — creates the `abac_onetrust` catalog and its two schemas.
+3. Run `onetrust_synth/generate_main_tables.py`.
+4. Run `onetrust_synth/generate_abac_tables.py`.
+5. Run `sql_onetrust/02_tags.sql` through `sql_onetrust/04_policies.sql` in order (Tasks 17–18) — substitute the real service principal in `04_policies.sql`.
+6. Run `sql_onetrust/05_seed_test_principals.sql` then `sql_onetrust/06_test_cases.sql` (Task 19, same session — both reference session-scoped temporary views) — all 8 `assert_true` statements must pass.
+7. Run `onetrust_synth/run_compatible_queries.py` (Task 20) — 0 failures out of 50.
+8. If all of 1–7 pass: Phase 1 is done. Proceed to Phase 2 planning (full-scale ABAC generation + performance benchmark) per the design doc — a separate plan, not covered here.
