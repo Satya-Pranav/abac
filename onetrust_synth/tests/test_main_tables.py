@@ -65,8 +65,16 @@ def test_high_cardinality_string_column_without_samples_does_not_collapse(spark)
     # every string column through the same low-cardinality categorical path
     # collapses this to ~10 generic placeholder values regardless of real
     # cardinality — caught by a prior task review.
+    #
+    # Deliberately NOT "templateID" (same real ndv=2558): that column's name
+    # ends in the id-like suffix, so at this row_count it routes through
+    # _is_id_like's unique-id path instead of the catch-all
+    # _placeholder_values_for path this test targets — a prior review round
+    # caught a test that looked like it covered this fix but silently
+    # exercised the wrong code path and passed for an unrelated reason. Do
+    # not "simplify" this back to templateID.
     profile = load_table_profile(config.PROFILE_CSV_PATH)
     cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_assessment")
     df = build_generic_table(spark, "cmb_assessment", 500, cols, sample_lookup=lambda col: [])
-    distinct_template_ids = df.select("template").distinct().count()
-    assert distinct_template_ids > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
+    distinct_template_values = df.select("template").distinct().count()
+    assert distinct_template_values > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
