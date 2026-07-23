@@ -1,4 +1,4 @@
-# JDBC test cases — 61 cases + 9 scenarios, ctx/claim tinkering + per-row filter trace
+# JDBC test cases — 61 cases + 12 scenarios, ctx/claim tinkering + per-row filter trace
 
 The runnable case catalog for the JDBC client (`JDBC/`), **merged with the end-to-end per-row
 flow**. Each case is: **purpose → ctx JSON claim → SQL → expected**, plus a trace down to the exact
@@ -8,9 +8,10 @@ equivalent is the same claim in `CUSTOM_CLAIM`, re-minted per
 the counts match.
 
 Read [§0–§2](#0-the-pipeline-every-query-goes-through) once (the shared machinery), then jump to any
-group. The final [one-line summary](#one-line-summary-per-case) lists all 61 cases (plus the 9
-scenarios: the DR2 hot-swap's 3 checks + the VP view+policy-swap's 3 checks + the 7 `E6-*` e6data
-placeholders).
+group. The final [one-line summary](#one-line-summary-per-case) lists all 61 cases (plus the 12
+scenarios: the DR2 hot-swap's 3 checks + the VP view+policy-swap's 3 checks + the SEC secret-invariance
+scenario's 3 checks + the MSP second-principal scenario's 1 check + the EXP token-expiry scenario's 2
+checks + the 7 `E6-*` e6data placeholders).
 
 ```bash
 cd JDBC && mvn -q package        # once
@@ -18,11 +19,13 @@ cd JDBC && mvn -q package        # once
 J() { java -jar target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar "$1" "$2"; }
 ```
 
-> **Run all 61 cases + 9 scenarios at once** with the bundled test suite — it **self-seeds a namespaced fixture**
+> **Run all 61 cases + 12 scenarios at once** with the bundled test suite — it **self-seeds a namespaced fixture**
 > (`suite_a_*` + `SUITE_ORG` / `SUITE_EMPTY`, dropped afterward; needs `MODIFY` per `sql/09`, else it
 > falls back to the existing seed), executes every case below through the real OAuth hot-swap
 > (targeting the **deployed 3-branch filter** — no auto-detect), then runs the DR2 hot-swap, the VP
-> view+policy-swap, and the 7 `E6-*` scenarios, and logs id / purpose / description / claim / SQL /
+> view+policy-swap, the SEC secret-invariance / MSP second-principal / EXP token-expiry scenarios
+> (Databricks-auth-specific; each `SKIP`s cleanly without its env vars — see the SEC/MSP/EXP sections
+> below), and the 7 `E6-*` scenarios, and logs id / purpose / description / claim / SQL /
 > expected / actual / verdict per case with a `SUMMARY -> PASS x FAIL x SKIP x INFO x ERROR x` line:
 > ```bash
 > java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
@@ -220,11 +223,16 @@ Case-group coverage against the deployed filter:
 | **XT** cross-mechanism conflict, isolated `abac_xmech` schema (`sql/20`) | ✅ **confirmed live 2026-07-23** — the conflict spans classic RLS + ABAC |
 | **EX** `TO ... EXCEPT ...` principal exemption, isolated `abac_gaps` schema (`sql/21`) | ✅ **confirmed live 2026-07-23** — EXCEPT works; EX2 is the control that makes EX1 meaningful |
 | **VP** view + live policy-swap (scenario, reuses `sql/15`/`sql/16` objects) | ✅ **confirmed live 2026-07-23** — a policy change is reflected through a view, then reverts |
+| **SEC** secret invariance — same SP-A, 2nd OAuth secret (scenario) | ✅ **confirmed live 2026-07-23** — Databricks-auth-specific, `SKIP`s without `CLIENT_SECRET_ALT` |
+| **MSP** second principal — a non-`TO` principal bypasses the filter (scenario) | ✅ **confirmed live 2026-07-23** — Databricks-auth-specific, `SKIP`s without `SP2_CLIENT_ID`/`SP2_CLIENT_SECRET` |
+| **EXP** token expiry — an expired token fails closed at auth (scenario) | ✅ **confirmed live 2026-07-23** — Databricks-auth-specific, `SKIP`s without `ABAC_EXPIRED_TOKEN` |
 | **E6-\*** e6data scenarios (planner/cache/pool/expiry/retry/breaker/errclass) | `SKIP` on Databricks **by design** — placeholders awaiting the e6data ABAC identity flow |
 
 > **Status:** every row above is now **confirmed live** (2026-07-23) except the `E6-*` placeholders,
 > which stay `SKIP` — the e6data ABAC identity flow does not exist yet, so those seven scenarios
-> remain genuinely untested and must not be read as e6data parity. `UC1` and `DP1` (a `USING COLUMNS`
+> remain genuinely untested and must not be read as e6data parity. SEC/MSP/EXP are additionally
+> Databricks-auth-specific and `SKIP` on a normal run unless their env vars are set (see their
+> sections below) — that `SKIP` is by design, not a gap. `UC1` and `DP1` (a `USING COLUMNS`
 > arity-mismatch CREATE POLICY and a UDF-DEFAULT-parameter CREATE POLICY, respectively) were **dropped**
 > from the suite: both test CREATE-POLICY-time (DDL) rejections that the service principal's query
 > path cannot observe. Their findings were recorded manually and are documented as DDL-level facts —
@@ -1054,6 +1062,110 @@ J '{"tenant":1,"user":"u.analyst1@example.com","org":"100","mode":"ABAC","root":
 
 ---
 
+## SEC. Secret invariance — does authenticating with a DIFFERENT OAuth secret change the ABAC decision? (scenario)
+
+**Confirmed live 2026-07-23.** Databricks-auth-specific (`SecretInvariance.java`, id `SEC`) — `SKIP`s
+if the target engine isn't Databricks, and `SKIP`s cleanly (the expected default state on a normal
+run) unless `CLIENT_SECRET_ALT` — a **second, valid OAuth client secret for the SAME SP-A** — is set.
+No new SQL. The scenario opens a **second** connection authenticating as SP-A (`CLIENT_ID` unchanged)
+via `DatabricksEngine.connectAs(CLIENT_ID, CLIENT_SECRET_ALT)`, then for three probes — one per
+row-filter branch — injects the **identical claim** on both the primary and the alt-secret connection
+and asserts the two counts are **EQUAL**. No specific count is hard-coded as "correct"; only agreement
+between the two connections is asserted.
+
+| Check | Probe (claim / table) | Branch exercised | Assert |
+| --- | --- | --- | --- |
+| **SEC1** | analyst claim, `customer` | 3b per-row assignment | primary == alt-secret — observed: **1 == 1** (`c_customer_sk=2012`) |
+| **SEC2** | analyst claim + `permissions:["Item","StoreSale"]`, `item` | 2 permissions | primary == alt-secret — observed: **54000 == 54000** (ALL items) |
+| **SEC3** | DISABLE claim, `store_sales` | 1 DISABLE | primary == alt-secret — observed: **14400052 == 14400052** (ALL store_sales) |
+
+- *Finding:* the auth **secret is not a policy input**. Rotating, or authenticating with a different
+  valid secret for the same SP, changes nothing about what that SP's identity can see — the row filter
+  only ever sees `CLIENT_ID` (which principal) and the injected `custom_claim` (the effective `ctx.user`
+  it asserts); the secret is purely a credential proving you legitimately ARE that principal, not an
+  input to the ABAC decision.
+- **Requires** a second, valid OAuth secret minted for SP-A (`CLIENT_SECRET_ALT`), else `SKIP`s. Keep
+  it out of the repo/logs exactly like `CLIENT_SECRET` — see the skill's SP-secret gotcha.
+```bash
+export CLIENT_SECRET_ALT="<a second, valid OAuth secret for the SAME SP-A>"
+java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
+```
+
+---
+
+## MSP. Second principal — does a policy protect a principal NOT in its `TO` set? (scenario)
+
+**Confirmed live 2026-07-23.** Databricks-auth-specific (`SecondPrincipal.java`, id `MSP`) — `SKIP`s
+if the target engine isn't Databricks, and `SKIP`s cleanly (the expected default state on a normal
+run) unless `SP2_CLIENT_ID` / `SP2_CLIENT_SECRET` — credentials for a **second, DIFFERENT** service
+principal ("SP-B") — are both set. No new SQL: reuses `sql/15`'s `income_band`, governed by
+`income_band_dr2_policy`, which binds `ROW FILTER … TO` **SP-A only**. The scenario opens a connection
+as SP-B (`connectAs(SP2_CLIENT_ID, SP2_CLIENT_SECRET)`) and queries `income_band` with **no claim
+injected at all** — SP-B is not the policy's subject, so `get_user_context()` never even runs for it.
+
+**MSP1 — SP-B (not in the policy's `TO` set) queries `income_band`, no claim injected.**
+- *Trace:* `income_band_dr2_policy`'s `TO` names SP-A's application id only; SP-B is a different
+  principal entirely (not a member of any group in `TO` either), so Unity Catalog does not evaluate
+  the row filter against SP-B's query at all — the table is returned exactly as an ungoverned table
+  would be.
+- *Expect — confirmed live 2026-07-23:* **20** (ALL rows, unfiltered; observed: 20 — vs. SP-A's
+  filtered **10** via DR2a). A policy protects **only** the principals in its `TO` set; a different
+  principal with `SELECT` (and `Can use` on the warehouse) sees the table completely unfiltered, with
+  no claim required.
+- *Two distinct failure modes are diagnosed separately* (not conflated): a failure to **connect**
+  means SP-B lacks workspace access or `Can use` on the warehouse; a failure on the **query** (after a
+  successful connect) means SP-B lacks `SELECT` on `income_band`. Live run hit the connect-failure
+  branch first (missing `Can use`) — after the operator granted it, SP-B connected in ~3.6s and the
+  query returned 20.
+- **Requires operator setup, beyond the two env vars:** grant SP-B (1) workspace access, (2) `Can use`
+  on the SQL warehouse, and (3) `GRANT SELECT ON TABLE income_band TO <SP-B application id>`.
+```bash
+export SP2_CLIENT_ID="<a DIFFERENT service principal's application id, granted SELECT on income_band>"
+export SP2_CLIENT_SECRET="<that SP's OAuth secret>"
+java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
+```
+
+---
+
+## EXP. Token expiry — does an expired OAuth token fail closed? (scenario)
+
+**Confirmed live 2026-07-23.** Databricks-auth-specific (`TokenExpiry.java`, id `EXP`) — `SKIP`s if
+the target engine isn't Databricks, and `SKIP`s cleanly (the expected default state on a normal run)
+unless `ABAC_EXPIRED_TOKEN` — a raw, already-**expired** OAuth access token for SP-A — is set. No new
+SQL. The token is injected via `DatabricksEngine.connectWithAccessToken`, which uses `Auth_Flow=0`
+(token pass-through, **no refresh**) so the expired token is sent to the server exactly as given,
+instead of the normal M2M path silently minting a fresh one. The probe is deliberately `SELECT 1` —
+pure authentication, touching no governed table — because the expired token's own embedded claim
+(`.view`-style permissions matching nothing; an unassigned user) would return 0 on a governed table
+**whether the token were accepted or not**, making "rejected" and "accepted-but-filtered"
+indistinguishable. `SELECT 1` has no such ambiguity: a returned row means the token authenticated.
+
+**EXP0 — CONTROL: a FRESH, valid token through the SAME pass-through path must authenticate.**
+- *Trace:* mints a fresh token carrying the DISABLE claim, injects it via the identical
+  `Auth_Flow=0` path, runs `SELECT 1`. Without this control, an expired-token rejection below could
+  just as easily be a broken pass-through mechanism (e.g. a 403 regardless of the token) as a genuine
+  expiry rejection — the same rigor EX2 applies to EX1.
+- *Expect — confirmed live 2026-07-23:* **1** (observed: 1). The pass-through mechanism itself
+  accepts a good token.
+
+**EXP1 — the EXPIRED token must be REJECTED at authentication, before any query.**
+- *Trace:* the same `Auth_Flow=0` path, this time with `ABAC_EXPIRED_TOKEN`. If Databricks accepted
+  it, `SELECT 1` would return a row — a security failure regardless of what claim the token carries.
+- *Expect — confirmed live 2026-07-23:* **REJECTED at auth, no row returned** (observed: HTTP
+  **403 Forbidden** at session open / `TOpenSessionReq`, with a server request id present — a genuine
+  server-side rejection, not a client-side refresh short-circuit). The query is never even reached.
+- *Finding:* an **expired** OAuth token fails **CLOSED** at the authentication layer — it is rejected
+  before any query runs and **regardless of the valid `custom_claim` it carries**; the claim is never
+  even evaluated. (Meaningful only because EXP0 passed — same control-then-test structure as EX2→EX1.)
+- **Requires** a raw, already-expired OAuth access token for SP-A in `ABAC_EXPIRED_TOKEN`, else `SKIP`s.
+  An expired token is not a live credential — nothing here is a secret that needs rotation.
+```bash
+export ABAC_EXPIRED_TOKEN="<a raw, EXPIRED OAuth access token for SP-A>"
+java -cp target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
+```
+
+---
+
 ## E6. e6data scenarios — capability-gated placeholders (awaiting the identity flow)
 
 Seven scenarios (`JDBC/src/main/java/com/abacpoc/scenario/E6Scenarios.java`) specify what the suite
@@ -1081,9 +1193,11 @@ e6data ABAC identity flow)`** on both engines today, but for different reasons �
 (which claims to support every capability) because the placeholder body always reports SKIP
 regardless of capability; on e6data because `E6DataEngine.supports()` returns `false` for every
 capability, so the capability gate itself skips them. These 7 remain the **only** genuinely untested
-part of the suite — do not read anything below as e6data parity. Alongside the DR2 hot-swap and the
-VP view+policy-swap scenario (3 checks each), this brings the suite to **9 scenarios total** — the
-header line reads `ABAC JDBC test suite — 61 cases + 9 scenarios`.
+part of the suite — do not read anything below as e6data parity. Alongside the DR2 hot-swap (3
+checks), the VP view+policy-swap scenario (3 checks), the SEC secret-invariance scenario (3 checks),
+the MSP second-principal scenario (1 check), and the EXP token-expiry scenario (2 checks) — the latter
+three Databricks-auth-specific and `SKIP` by default without their env vars — this brings the suite to
+**12 scenarios total**. The header line reads `ABAC JDBC test suite — 61 cases + 12 scenarios`.
 
 ---
 
@@ -1311,6 +1425,12 @@ DROP FUNCTION abac_tpcds.tpcds_1_delta.rf_deny_all;
 | VP1 | baseline through the view (DR2 policy, cutoff `<=10`) | 10 *(confirmed live 2026-07-23)* |
 | VP2 | inner UDF swapped `<=5` through the view (+10s delay) | 5 *(confirmed live 2026-07-23)* |
 | VP3 | inner UDF reverted `<=10` through the view | 10 *(confirmed live 2026-07-23)* |
+| SEC1 | same SP-A, 2nd secret — branch 3b | primary=alt-secret=1 *(confirmed live 2026-07-23; SKIP by default without `CLIENT_SECRET_ALT`)* |
+| SEC2 | same SP-A, 2nd secret — branch 2 | primary=alt-secret=54000 *(confirmed live 2026-07-23; SKIP by default without `CLIENT_SECRET_ALT`)* |
+| SEC3 | same SP-A, 2nd secret — branch 1 DISABLE | primary=alt-secret=14400052 *(confirmed live 2026-07-23; SKIP by default without `CLIENT_SECRET_ALT`)* |
+| MSP1 | SP-B (not in policy's `TO`) queries `income_band`, no claim | 20 (unfiltered) *(confirmed live 2026-07-23; SKIP by default without `SP2_CLIENT_ID`/`SP2_CLIENT_SECRET`)* |
+| EXP0 | CONTROL: fresh token, same pass-through path | 1 *(confirmed live 2026-07-23; SKIP by default without `ABAC_EXPIRED_TOKEN`)* |
+| EXP1 | expired token, same pass-through path | REJECTED at auth (HTTP 403) *(confirmed live 2026-07-23; SKIP by default without `ABAC_EXPIRED_TOKEN`)* |
 | E6-PLANNER | e6data scenario (placeholder) | SKIP |
 | E6-CACHE | e6data scenario (placeholder) | SKIP |
 | E6-POOL | e6data scenario (placeholder) | SKIP |
@@ -1319,22 +1439,34 @@ DROP FUNCTION abac_tpcds.tpcds_1_delta.rf_deny_all;
 | E6-BREAKER | e6data scenario (placeholder) | SKIP |
 | E6-ERRCLASS | e6data scenario (placeholder) | SKIP |
 
-**Confirmed, live, 2026-07-23** — the single result of actually running the suite, not a prediction:
+**Confirmed, live, 2026-07-23** — a clean run with no Databricks-auth-specific env vars set (the
+normal/default state — no `CLIENT_SECRET_ALT`, no `SP2_CLIENT_ID`/`SP2_CLIENT_SECRET`, no
+`ABAC_EXPIRED_TOKEN`), the single result of actually running the suite, not a prediction:
 
 ```
-SUMMARY -> PASS 67   FAIL 0   SKIP 7   INFO 0   ERROR 0
+SUMMARY -> PASS 67   FAIL 0   SKIP 10   INFO 0   ERROR 0
 ```
 
 PASS 67 = **61 cases** (all hard assertions, none `INFO`) **+ 6 scenario sub-checks** (DR2a/b/c +
 VP1/2/3). The 61 cases: the original **43** (pre-refactor baseline, `A`/`B`/`R`/`ODEL`/`OLIVE`/`C`/
 `T`/`O`/`N`/`TH`/`W`/`WP`/`WS`/`DR1` — A3/C6/TH3 are hard assertions against their observed outputs)
 + **CL1–CL4** (4) + **V1–V3** (3) + **SC1–SC4** (4) + **TG1–TG3** (3 — TG2 is now a hard assertion)
-+ **UC2** (1 — UC1 was removed, not converted) + **XT1** (1) + **EX2/EX1** (2) = 61. SKIP 7 = the
-seven `E6-*` placeholders — still genuinely untested, awaiting the e6data ABAC identity flow; this
-is the **only** part of the suite that isn't confirmed. FAIL 0, INFO 0, ERROR 0: every case that used
-to ship `Expect.info()` (A3, C6, TH3 earlier; TG2, UC2 here) has converted to a hard assertion once
-observed, and every case that used to predict an error (SC4, XT1) got exactly the predicted error
-class. Do not read this line as e6data parity — it describes the Databricks engine only.
++ **UC2** (1 — UC1 was removed, not converted) + **XT1** (1) + **EX2/EX1** (2) = 61. SKIP 10 = the
+seven `E6-*` placeholders (still genuinely untested, awaiting the e6data ABAC identity flow — the
+**only** part of the suite that isn't confirmed) **+ SEC + MSP + EXP**, which `SKIP` as whole
+scenarios (not sub-checks) on a normal run because their Databricks-auth-specific env vars aren't
+set. FAIL 0, INFO 0, ERROR 0: every case that used to ship `Expect.info()` (A3, C6, TH3 earlier; TG2,
+UC2 here) has converted to a hard assertion once observed, and every case that used to predict an
+error (SC4, XT1) got exactly the predicted error class. Do not read this line as e6data parity — it
+describes the Databricks engine only.
+
+**With SEC/MSP/EXP's env vars set** (and, for MSP, SP-B provisioned with workspace access, `Can use`
+on the warehouse, and `SELECT` on `income_band`), each has been **individually confirmed live
+2026-07-23**: SEC 3/3 PASS (SEC1/2/3 — see the SEC section), MSP 1/1 PASS (MSP1 — see the MSP
+section), EXP 2/2 PASS (EXP0 control + EXP1 test — see the EXP section). A single run with all three
+env vars set **simultaneously** has not been executed; arithmetically, a fully-provisioned run would
+report `PASS 73  FAIL 0  SKIP 7  INFO 0  ERROR 0` (67 + 3 + 1 + 2 = 73; SKIP drops from 10 to 7 — just
+the `E6-*` placeholders).
 
 ## Cross-checks
 

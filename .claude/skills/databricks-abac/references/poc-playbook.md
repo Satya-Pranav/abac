@@ -128,6 +128,12 @@ self-contained and idempotent, applied **as owner** in numeric order — see `do
 gotchas table and `docs/testing/jdbc-cases.md` for the observed results. The one exception is the
 7 `E6-*` scenarios, which remain `SKIP` pending the e6data ABAC identity flow.
 
+`sql/21` (`EXCEPT`) plus three Databricks-auth-specific scenarios that create **no new SQL** — SEC
+(secret invariance), MSP (second-principal / `TO`-set targeting), EXP (token expiry) — together cover
+principal exemption, multi-secret auth invariance, second-principal targeting, and token expiry; all
+four confirmed live 2026-07-23, each env-gated and `SKIP` by default (see `docs/testing/jdbc-cases.md`'s
+EX, SEC, MSP, and EXP sections).
+
 ## 5. Variations you can build on the same skeleton
 
 - **Threshold / range grant** (`sql/14`, on `inventory`): change 3b's match from `esa.entityID =
@@ -146,7 +152,7 @@ gotchas table and `docs/testing/jdbc-cases.md` for the observed results. The one
   effective identity is `claim.user`, which must equal a seeded `subjectID`. Wrong/empty user → 0.
 - **Owners bypass row filters** — to see filtering you must run as the SP. Owner-side, validate logic
   by calling a *test wrapper* with a literal ctx (`sql/06`, `sql/11`) — no policy needed.
-- **The 61-case JDBC suite + 9 scenarios** (`Runner.java`, cases in `cases/Cases.java`) self-seeds a
+- **The 61-case JDBC suite + 12 scenarios** (`Runner.java`, cases in `cases/Cases.java`) self-seeds a
   namespaced fixture, injects each claim via the OAuth hot-swap, and asserts row counts / error text.
   `ENGINE` (env var) selects the target — `databricks` (default) or `e6data`; capability gating
   (`Capability` + `Engine.supports()`) reports `SKIP`, not a false PASS/FAIL, for any case or
@@ -155,10 +161,15 @@ gotchas table and `docs/testing/jdbc-cases.md` for the observed results. The one
   governed tables), TH (threshold), W/WP/WS (conflict negatives), V (views, `sql/16`), SC (policy
   scope, `sql/17`), TG (tag binding, `sql/18`), UC (UDF contract, `sql/19`), XT (cross-mechanism,
   `sql/20`), EX (`EXCEPT`, `sql/21`), CL (malformed claims). Scenarios: DR2 (hot-swap, `sql/15`), VP
-  (view + live policy-swap, reuses `sql/15`/`sql/16`) + 7 `E6-*` placeholders awaiting the e6data ABAC
-  identity flow. **All Databricks groups are confirmed live** (2026-07-23): `SUMMARY -> PASS 67
-  FAIL 0 SKIP 7 INFO 0 ERROR 0`, where SKIP 7 is the `E6-*` placeholders — the only thing still
-  untested. Full catalog + per-row trace: `docs/testing/jdbc-cases.md`.
+  (view + live policy-swap, reuses `sql/15`/`sql/16`), SEC (secret invariance), MSP (second-principal
+  targeting), EXP (token expiry) — SEC/MSP/EXP are Databricks-auth-specific, create no new SQL, and
+  `SKIP` by default unless their env vars are set (`CLIENT_SECRET_ALT`; `SP2_CLIENT_ID`+
+  `SP2_CLIENT_SECRET`; `ABAC_EXPIRED_TOKEN`) — + 7 `E6-*` placeholders awaiting the e6data ABAC
+  identity flow. **All Databricks groups are confirmed live** (2026-07-23): a clean run (no
+  Databricks-auth env vars set) is `SUMMARY -> PASS 67 FAIL 0 SKIP 10 INFO 0 ERROR 0`, where SKIP 10
+  is the 7 `E6-*` placeholders (the only thing still genuinely untested) plus SEC/MSP/EXP skipping by
+  default; each of SEC/MSP/EXP has been **individually** confirmed live (PASS) with its env vars set.
+  Full catalog + per-row trace: `docs/testing/jdbc-cases.md`.
 - **Deterministic assertions beat data-dependent ones.** E.g. the threshold proof: `count(*) WHERE
   qty < 500` = 0 is guaranteed because the row filter (`qty >= 500`) is ANDed with the query
   predicate — no dependence on the data distribution.

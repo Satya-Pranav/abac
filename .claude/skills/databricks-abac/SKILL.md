@@ -19,10 +19,11 @@ Reference material under this skill:
   e6data planner-side view): full `CREATE POLICY` grammar, argument binding, tag inheritance, conflict
   rules, limits, fail-closed. **Read this for "how does Databricks ABAC actually behave?"**
 - **`references/poc-playbook.md`** — the concrete POC on TPC-DS: the deployed 3-branch row filter, the
-  OAuth `custom_claim` hot-swap, the deploy order, and the 61-case + 9-scenario JDBC test methodology
+  OAuth `custom_claim` hot-swap, the deploy order, and the 61-case + 12-scenario JDBC test methodology
   (classic-RLS/live-UDF-swap cases, views, policy scope, tag binding, the UDF contract,
-  cross-mechanism conflicts, the `EXCEPT` clause, malformed claims, and e6data-engine scenario
-  placeholders). **Read this for "how do I author/deploy/test one of these end to end?"**
+  cross-mechanism conflicts, the `EXCEPT` clause, malformed claims, Databricks-auth scenarios — secret
+  invariance, second-principal targeting, token expiry — and e6data-engine scenario placeholders).
+  **Read this for "how do I author/deploy/test one of these end to end?"**
 - **`references/unity-catalog-governance.md`** — the broader Unity Catalog governance model (RBAC,
   ABAC, RLS/CLS, workspace–catalog bindings, storage credentials) and how these row-filter/column-mask
   policies coexist with RBAC. **Read this for "where does ABAC sit among Databricks' other governance
@@ -86,6 +87,8 @@ UDF                      = the BOOLEAN filter / masking logic run per row/value 
 | **`TO <principal> EXCEPT <principal>` is valid syntax and actually exempts** | the excepted principal is removed from the policy's subject set entirely — the row filter never runs against it, same as an unfiltered/owner read |
 | **Fail-closed**: deleted UDF/governed tag, conflicting filters, unsupported compute/time-travel | the query is **blocked**, not silently unfiltered |
 | **Owners / metastore admins bypass row filters** | to observe filtering, query **as the target principal** (e.g. the service principal in `TO`) |
+| **A row-filter policy governs ONLY the principals in its `TO` set** (confirmed live 2026-07-23) | a **different** principal with `SELECT` (and compute access) on the same table sees it **UNFILTERED** — the policy is simply not applied to it, no claim required. Governance completeness requires **every** SELECT-capable principal to be in `TO` (or a group in it) |
+| **An expired OAuth token fails CLOSED at AUTHENTICATION** (HTTP 403 at session open, confirmed live 2026-07-23) | rejected **before any query**, regardless of the `custom_claim` it carries — it cannot return data. (Relatedly: the auth **secret** is not a policy input; the same SP with a different secret sees identical results, also confirmed live 2026-07-23) |
 
 **Two failure modes that look alike and are not** (confirmed live, 2026-07-22 and 2026-07-23):
 
@@ -108,6 +111,12 @@ broader, confirmed on two more axes live 2026-07-23:**
 | A **classic `ALTER TABLE ... SET ROW FILTER` + an ABAC `CREATE POLICY` row filter on the SAME table** (POC case XT1, `sql/20`) | also errors `UC_ABAC_MULTIPLE_ROW_FILTERS` — the one-row-filter-per-table limit spans **both attachment mechanisms**, not just ABAC-vs-ABAC |
 
 Full per-case traces and observed values: `docs/testing/jdbc-cases.md`'s SC4 and XT1 sections.
+
+**Principal-targeting and expired-token findings above are from three Databricks-auth-specific POC
+scenarios** — SEC (secret invariance), MSP (second-principal / `TO`-set targeting), EXP (token
+expiry) — each gated on env vars and `SKIP`-by-default; all three confirmed live 2026-07-23. Full
+per-check traces, observed values, and setup: `docs/testing/jdbc-cases.md`'s SEC, MSP, and EXP
+sections.
 
 ## The row-filter UDF pattern (as deployed in the POC)
 

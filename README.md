@@ -46,7 +46,7 @@ abac/
 ├── .claude/skills/databricks-abac/  ← SKILL: reusable Databricks ABAC semantics + POC playbook
 ├── docs/                            ← deployment / testing / archive docs (see docs/README.md)
 │   ├── deployment/                  ← oauth-jdbc-flow.md, runbook.md
-│   ├── testing/                     ← jdbc-cases.md (61 cases + 9 scenarios), explore-behaviours.md
+│   ├── testing/                     ← jdbc-cases.md (61 cases + 12 scenarios), explore-behaviours.md
 │   └── archive/                     ← abac-tpcds-setup-plan.md (superseded draft plan, see §8)
 ├── sql/                             ← the runnable execution plan (00–21, 99)
 ├── JDBC/                            ← JDBC client + Runner suite (see JDBC/README.md)

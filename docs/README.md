@@ -25,7 +25,7 @@ packaged as a project skill:
 
 | Doc | What it covers |
 |---|---|
-| [`testing/jdbc-cases.md`](testing/jdbc-cases.md) | The **61-case + 9-scenario** catalog with per-row filter trace: how to run, the tester model, the deployed 3-branch filter, groups A/B/R/C/T-O/M/TH/conflict/DR/V/SC/TG/UC/XT/EX/CL, the DR2 + VP + e6data scenarios, and a one-line summary per case. Every group is **confirmed live** (2026-07-23) except the 7 `E6-*` placeholders, which stay `SKIP` pending the e6data ABAC identity flow |
+| [`testing/jdbc-cases.md`](testing/jdbc-cases.md) | The **61-case + 12-scenario** catalog with per-row filter trace: how to run, the tester model, the deployed 3-branch filter, groups A/B/R/C/T-O/M/TH/conflict/DR/V/SC/TG/UC/XT/EX/CL, the DR2 + VP + SEC + MSP + EXP + e6data scenarios, and a one-line summary per case. Every group is **confirmed live** (2026-07-23) except the 7 `E6-*` placeholders, which stay `SKIP` pending the e6data ABAC identity flow; SEC/MSP/EXP are Databricks-auth-specific and `SKIP` by default unless their env vars are set |
 | [`testing/explore-behaviours.md`](testing/explore-behaviours.md) | Owner-side behaviour sweep (`sql/11`) — ctx/claim/mode/metadata grids, RBAC_ABAC, which filter is live |
 
 ## Design & findings
