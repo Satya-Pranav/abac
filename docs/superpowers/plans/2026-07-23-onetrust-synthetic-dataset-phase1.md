@@ -1046,8 +1046,8 @@ git commit -m "feat(onetrust_synth): generate real questionRootMap/userIdsAssoci
 - Test: `onetrust_synth/tests/test_verbatim_tables.py`
 
 **Interfaces:**
-- Consumes: `sample_csv.load_rows` (Task 3)
-- Produces: `build_orghierarchy_df(spark) -> DataFrame` (all 183 real rows, verbatim — this becomes `org_registry` too, see Task 9), `build_cmb_v_inventoryaggregatedrisksummary_df(spark) -> DataFrame` (all 14 real rows, verbatim)
+- Consumes: `sample_csv.load_rows` (Task 3); `profile_csv.load_table_profile`, `profile_csv.get_columns` (Task 2)
+- Produces: `build_orghierarchy_df(spark) -> DataFrame` (all 183 real rows, verbatim — this becomes `org_registry` too, see Task 9), `build_cmb_v_inventoryaggregatedrisksummary_df(spark) -> DataFrame` (all 14 real rows, verbatim). Both cast every column to its real profiled Spark type (numeric/temporal/boolean), not left as the raw CSV string — `load_rows` only ever returns strings, and leaving numeric columns string-typed silently breaks `ORDER BY` (lexicographic, not numeric).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1076,6 +1076,32 @@ def test_inventory_risk_summary_has_14_real_rows(spark):
     types = {r["inventoryType"] for r in df.select("inventoryType").collect()}
     # verified against the real sample file: {'Assets', 'Processing Activities', 'Vendors'}
     assert types <= {"Assets", "Vendors", "Processing Activities"}
+
+
+def test_inventory_risk_summary_numeric_columns_are_real_typed_not_string(spark):
+    # A prior task review caught that every column coming straight out of a CSV
+    # is string-typed by default, which silently breaks ORDER BY on numeric
+    # columns (lexicographic '10' < '2' instead of numeric 2 < 10). This table
+    # is the single most-queried one in the Phase-1 compatible-query set (39 of
+    # 50 — design doc section 3), so its numeric/temporal columns must be cast
+    # to their real profiled types.
+    df = build_cmb_v_inventoryaggregatedrisksummary_df(spark)
+    schema = {f.name: f.dataType.typeName() for f in df.schema.fields}
+    assert schema["inherentRiskScore"] == "double"
+    assert schema["residualRiskScore"] == "double"
+    assert schema["targetRiskScore"] == "double"
+    assert schema["inventoryTypeID"] == "integer"
+    assert schema["inventoryNumber"] == "long"
+    ordered = [r["inventoryNumber"] for r in df.orderBy("inventoryNumber").select("inventoryNumber").collect()]
+    assert ordered == sorted(ordered)  # numeric order, not lexicographic
+
+
+def test_orghierarchy_temporal_and_boolean_columns_are_real_typed(spark):
+    df = build_orghierarchy_df(spark)
+    schema = {f.name: f.dataType.typeName() for f in df.schema.fields}
+    assert schema["eventTime"] == "timestamp"
+    assert schema["recModifiedTime"] == "timestamp"
+    assert schema["isDeleted"] == "boolean"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1090,27 +1116,65 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'onetrust_synth.verbat
 """
 orghierarchy and cmb_v_inventoryaggregatedrisksummary are small enough (183 and
 14 rows) that the design calls for using the real sample data near-verbatim
-instead of synthesizing — see design doc section 3.
+instead of synthesizing — see design doc section 3. Every value coming out of
+load_rows() is a Python string (CSV has no native types), so numeric/temporal/
+boolean columns are explicitly cast to their real profiled type — a prior task
+review caught that leaving everything string-typed silently breaks ORDER BY on
+numeric columns (lexicographic instead of numeric order), on the table that's
+the single most-queried one in the Phase-1 compatible-query set.
 """
+from pyspark.sql import functions as F
 from pyspark.sql import SparkSession, DataFrame
 
+from onetrust_synth import config
 from onetrust_synth.sample_csv import load_rows
+from onetrust_synth.profile_csv import load_table_profile, get_columns
+
+_TARGET_TENANT_SCHEMA = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
+
+
+def _spark_cast_type(profiled_dtype: str) -> str | None:
+    dtype = profiled_dtype.lower()
+    if dtype.startswith("bigint"):
+        return "bigint"
+    if dtype.startswith("int"):
+        return "int"
+    if dtype.startswith(("double", "decimal")):
+        return "double"
+    if dtype == "boolean":
+        return "boolean"
+    if dtype == "timestamp":
+        return "timestamp"
+    if dtype == "date":
+        return "date"
+    return None  # string and nested types: leave as the CSV's native string
+
+
+def _cast_to_real_types(df: DataFrame, table: str) -> DataFrame:
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    for col in get_columns(profile, _TARGET_TENANT_SCHEMA, table):
+        cast_type = _spark_cast_type(col.data_type)
+        if cast_type and col.name in df.columns:
+            df = df.withColumn(col.name, F.col(col.name).cast(cast_type))
+    return df
 
 
 def build_orghierarchy_df(spark: SparkSession) -> DataFrame:
     rows = load_rows("orghierarchy")
-    return spark.createDataFrame(rows)
+    df = spark.createDataFrame(rows)
+    return _cast_to_real_types(df, "orghierarchy")
 
 
 def build_cmb_v_inventoryaggregatedrisksummary_df(spark: SparkSession) -> DataFrame:
     rows = load_rows("cmb_v_inventoryaggregatedrisksummary")
-    return spark.createDataFrame(rows)
+    df = spark.createDataFrame(rows)
+    return _cast_to_real_types(df, "cmb_v_inventoryaggregatedrisksummary")
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_verbatim_tables.py -v`
-Expected: PASS (3 tests)
+Expected: PASS (5 tests)
 
 - [ ] **Step 5: Commit**
 
