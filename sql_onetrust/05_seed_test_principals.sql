@@ -9,11 +9,14 @@ DELETE FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE tenant
 DELETE FROM abac_onetrust.onetrust_sim.UserGroupMembers WHERE tenantHash = 'phase1-test-seed';
 
 -- one real cmb_assessment id and one real cmb_controlimplementation id, picked
--- from the already-generated data:
+-- from the already-generated data. ORDER BY id makes the pick deterministic:
+-- these views are re-evaluated fresh both here and in 06_test_cases.sql (a
+-- separate script execution), and a plain LIMIT 1 with no ordering gives SQL
+-- no guarantee the same underlying row is returned both times.
 CREATE OR REPLACE TEMPORARY VIEW seed_assessment_entity AS
-  SELECT id AS entity_id FROM abac_onetrust.onetrust_sim.cmb_assessment LIMIT 1;
+  SELECT id AS entity_id FROM abac_onetrust.onetrust_sim.cmb_assessment ORDER BY id LIMIT 1;
 CREATE OR REPLACE TEMPORARY VIEW seed_control_entity AS
-  SELECT id AS entity_id FROM abac_onetrust.onetrust_sim.cmb_controlimplementation LIMIT 1;
+  SELECT id AS entity_id FROM abac_onetrust.onetrust_sim.cmb_controlimplementation ORDER BY id LIMIT 1;
 
 -- assignment 900001: explicit grant on the seeded assessment to u.assessment.owner
 INSERT INTO abac_onetrust.onetrust_sim.ABAC_Assignment

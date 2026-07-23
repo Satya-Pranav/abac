@@ -17,8 +17,7 @@ SELECT assert_true(count(*) = 0, 'T2 FAILED: unassigned assessment should not be
 FROM abac_onetrust.onetrust_sim.cmb_assessment
 WHERE id != (SELECT entity_id FROM seed_assessment_entity)
   AND id NOT IN (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com')
-  AND abac_onetrust.onetrust_sim.abac_row_filter_wrapper(id, 'ASSESSMENT', '100')
-LIMIT 1;
+  AND abac_onetrust.onetrust_sim.abac_row_filter_wrapper(id, 'ASSESSMENT', '100');
 
 -- T3: non-root type, IN permissions array — ALL cmb_template rows visible.
 SELECT
