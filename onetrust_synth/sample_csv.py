@@ -1,13 +1,26 @@
 # onetrust_synth/sample_csv.py
+"""
+Every sample_auto_qa_*.csv file's header row is corrupted: it is literally
+cmb_v_inventoryaggregatedrisksummary's own 21-column header, pasted onto
+every other table's data rows by the export tool (confirmed: identical MD5
+across 9 of the 11 sample files). The data itself is intact — each affected
+table's row field-count matches ITS OWN real profiled column count exactly,
+and the real column ORDER (from onetrust_table_profile_results.csv) lines up
+positionally with the data (spot-checked: cmb_assessment's `id` column
+recovers a real UUID). So this module never trusts a sample file's own
+header — it always reconstructs each row using the real column order from
+profile_csv.get_columns(), zipped positionally against the raw CSV fields.
+This uniformly recovers all 11 tables with one mechanism.
+"""
 import csv
 import os
 
 from onetrust_synth import config
+from onetrust_synth.profile_csv import load_table_profile, get_columns
 
 # Maps our table names to the real sample-file basenames (they don't follow a
 # single naming rule: some carry the schema hash, one lives under a different
-# schema prefix, and this is the sample_*.csv inventory from the design doc's
-# section 3 — not derivable by string formatting alone).
+# schema prefix).
 _SAMPLE_FILES = {
     "cmb_assessment": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_assessment.csv",
     "cmb_controlimplementation": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_controlimplementation.csv",
@@ -22,26 +35,25 @@ _SAMPLE_FILES = {
     "entitygroupconfig": "sample_monitoring_entitygroupconfig.csv",
 }
 
-
-# cmb_inventory's sample file header (21 columns) is a copy of
-# cmb_v_inventoryaggregatedrisksummary's header and does not describe its own
-# data rows (which have 19 fields, matching cmb_inventory's real, different
-# schema). There's no reliable positional recovery here — unlike
-# reportingmoduletoentityreferencemapping_v — so calling code must not use
-# DictReader-based column lookups against this file.
-_KNOWN_BAD_SAMPLE_FILES = {"cmb_inventory"}
+_TARGET_TENANT_SCHEMA = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
 
 
 def sample_file_path(table: str) -> str:
     return os.path.join(config.SAMPLE_DATA_DIR, _SAMPLE_FILES[table])
 
 
+def _profile_schema_for(table: str) -> str:
+    return config.MONITORING_SCHEMA if table in config.MONITORING_TABLES else _TARGET_TENANT_SCHEMA
+
+
 def load_rows(table: str) -> list[dict]:
-    if table in _KNOWN_BAD_SAMPLE_FILES:
-        raise ValueError(f"{table}'s sample file header is known-bad (does not match its own data) — see _KNOWN_BAD_SAMPLE_FILES")
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    real_columns = [c.name for c in get_columns(profile, _profile_schema_for(table), table)]
+
     with open(sample_file_path(table), newline="", encoding="utf-8", errors="replace") as f:
-        reader = csv.DictReader(f)
-        return list(reader)
+        reader = csv.reader(f)
+        next(reader, None)  # skip the file's own (corrupted) header row — never trust it
+        return [dict(zip(real_columns, raw)) for raw in reader]
 
 
 def load_column_values(table: str, column: str) -> list[str]:
@@ -52,17 +64,14 @@ def load_column_values(table: str, column: str) -> list[str]:
 
 def load_entity_type_reference_values() -> list[tuple[str, str]]:
     """
-    reportingmoduletoentityreferencemapping_v's sample CSV has a misaligned header
-    (a stale header from a different table's export — every column after the first
-    two is empty). The real data is (reportingModule, entityTypeReference) as the
-    first two columns, read positionally rather than by header name.
+    reportingmoduletoentityreferencemapping_v's real schema is exactly the 2
+    columns (reportingModule, entityTypeReference) — load_rows already
+    recovers these correctly via the general positional-recovery mechanism
+    above, so this just re-shapes them as (key, value) pairs.
     """
-    path = sample_file_path("reportingmoduletoentityreferencemapping_v")
-    pairs = []
-    with open(path, newline="", encoding="utf-8", errors="replace") as f:
-        reader = csv.reader(f)
-        next(reader)  # skip the (misaligned) header row
-        for row in reader:
-            if len(row) >= 2 and row[0] and row[1]:
-                pairs.append((row[0], row[1]))
-    return pairs
+    rows = load_rows("reportingmoduletoentityreferencemapping_v")
+    return [
+        (r["reportingModule"], r["entityTypeReference"])
+        for r in rows
+        if r.get("reportingModule") and r.get("entityTypeReference")
+    ]
