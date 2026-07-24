@@ -20,6 +20,10 @@ def spark():
         .master("local[2]")
         .appName("onetrust_synth-tests")
         .config("spark.ui.showConsoleProgress", "false")
+        # Databricks Runtime enables ANSI mode by default; local Spark does not.
+        # Matching it here means a malformed cast (e.g. '' -> DOUBLE) fails locally
+        # instead of silently returning NULL and only surfacing on a real cluster run.
+        .config("spark.sql.ansi.enabled", "true")
         .getOrCreate()
     )
     yield session

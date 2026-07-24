@@ -47,3 +47,16 @@ def test_orghierarchy_temporal_and_boolean_columns_are_real_typed(spark):
     assert schema["eventTime"] == "timestamp"
     assert schema["recModifiedTime"] == "timestamp"
     assert schema["isDeleted"] == "boolean"
+
+
+def test_cast_tolerates_empty_string_values(spark):
+    # The real sample data has empty-string values in otherwise-numeric columns
+    # (e.g. inherentRiskScore, residualRiskScore, targetRiskScore on row 0). Under
+    # ANSI mode (Databricks Runtime's default, and this suite's since conftest.py
+    # enables it), a plain cast() on '' raises CAST_INVALID_INPUT instead of
+    # returning NULL -- this failed on a real Databricks run before the fix.
+    df = build_cmb_v_inventoryaggregatedrisksummary_df(spark)
+    rows = df.select("inherentRiskScore", "residualRiskScore", "targetRiskScore").collect()
+    assert any(r["inherentRiskScore"] is None for r in rows)
+    assert any(r["residualRiskScore"] is None for r in rows)
+    assert any(r["targetRiskScore"] is None for r in rows)

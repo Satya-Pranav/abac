@@ -40,7 +40,12 @@ def _cast_to_real_types(df: DataFrame, table: str) -> DataFrame:
     for col in get_columns(profile, _TARGET_TENANT_SCHEMA, table):
         cast_type = _spark_cast_type(col.data_type)
         if cast_type and col.name in df.columns:
-            df = df.withColumn(col.name, F.col(col.name).cast(cast_type))
+            # try_cast, not cast: the real sample data has empty-string values in
+            # otherwise-numeric columns (e.g. inherentRiskScore) that must become NULL.
+            # Plain cast() raises CAST_INVALID_INPUT under ANSI mode, which Databricks
+            # Runtime enables by default (local test Spark sessions do not, so this
+            # only surfaces on a real cluster run -- see test_cast_tolerates_empty_string_values).
+            df = df.withColumn(col.name, F.expr(f"try_cast(`{col.name}` AS {cast_type})"))
     return df
 
 
