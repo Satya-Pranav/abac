@@ -7,7 +7,7 @@
 # MAGIC
 # MAGIC 1. Create the `abac_onetrust` catalog/schemas
 # MAGIC 2. Generate the 11 main tables
-# MAGIC 3. Generate the 5 ABAC tables + the `OrgHierarchy` view
+# MAGIC 3. Generate the 5 ABAC tables + the `ABAC_OrgHierarchy` view
 # MAGIC 4. Tag the 4 governed tables + create the row-filter UDFs
 # MAGIC 5. Create the row-filter policies (needs your service principal — set it in the
 # MAGIC    widget below before running)
@@ -87,7 +87,7 @@ for table_name, df in main_tables.items():
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Step 3 — Generate the 5 ABAC tables + the `OrgHierarchy` view
+# MAGIC ## Step 3 — Generate the 5 ABAC tables + the `ABAC_OrgHierarchy` view
 # MAGIC
 # MAGIC From `onetrust_synth/generate_abac_tables.py`. `ABAC_EntitySubjectAssignment` targets
 # MAGIC 100,000 rows — this is the largest write in Phase 1.
@@ -106,13 +106,13 @@ from onetrust_synth.validate import validate_row_counts, validate_referential_in
 
 abac_tables = build_all_abac_tables(spark, main_tables)
 for table_name, df in abac_tables.items():
-    write_table_name = "OrgHierarchyBase" if table_name == "OrgHierarchy" else table_name
+    write_table_name = "OrgHierarchyBase" if table_name == "ABAC_OrgHierarchy" else table_name
     partition_by = ["objectType"] if table_name in config.ABAC_PARTITIONED_TABLES else None
     write_delta_table(df, config.CATALOG, config.MAIN_SCHEMA, write_table_name, partition_by=partition_by)
     print(f"Wrote {config.CATALOG}.{config.MAIN_SCHEMA}.{write_table_name}: {df.count()} rows")
 
 spark.sql(build_org_hierarchy_view_sql())
-print(f"Created view {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchy over OrgHierarchyBase")
+print(f"Created view {config.CATALOG}.{config.MAIN_SCHEMA}.ABAC_OrgHierarchy over OrgHierarchyBase")
 
 # COMMAND ----------
 
@@ -219,7 +219,7 @@ assert all(v == 1.0 for v in ri_report.values()), f"Referential integrity check 
 # MAGIC       (
 # MAGIC         ctx.mode = 'RBAC_ABAC'
 # MAGIC         AND org_id IN (
-# MAGIC           SELECT orgId FROM abac_onetrust.onetrust_sim.OrgHierarchy
+# MAGIC           SELECT orgId FROM abac_onetrust.onetrust_sim.ABAC_OrgHierarchy
 # MAGIC           WHERE parentOrgId = ctx.org
 # MAGIC         )
 # MAGIC       )

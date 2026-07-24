@@ -162,7 +162,7 @@ def build_org_hierarchy_base(spark: SparkSession) -> DataFrame:
 
 def build_org_hierarchy_view_sql() -> str:
     return (
-        f"CREATE OR REPLACE VIEW {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchy AS "
+        f"CREATE OR REPLACE VIEW {config.CATALOG}.{config.MAIN_SCHEMA}.ABAC_OrgHierarchy AS "
         f"SELECT * FROM {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchyBase "
         f"WHERE isDeleted IS NOT TRUE"
     )

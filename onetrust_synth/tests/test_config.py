@@ -17,7 +17,7 @@ def test_monitoring_table_is_flagged():
 def test_abac_row_targets_phase1():
     assert config.ABAC_TABLE_ROW_TARGETS["ABAC_Assignment"] == 1000
     assert config.ABAC_TABLE_ROW_TARGETS["ABAC_EntitySubjectAssignment"] == 100000
-    assert config.ABAC_TABLE_ROW_TARGETS["OrgHierarchy"] == 183
+    assert config.ABAC_TABLE_ROW_TARGETS["ABAC_OrgHierarchy"] == 183
 
 
 def test_scaled_row_count_applies_multiplier():

@@ -62,13 +62,14 @@ RETURN (
     ctx.root = object_type
     AND (
       -- RBAC_ABAC: show everything in the user's org subtree.
-      -- OrgHierarchy is the view over OrgHierarchyBase filtered to isDeleted IS NOT TRUE
+      -- ABAC_OrgHierarchy is the view over OrgHierarchyBase filtered to isDeleted IS NOT TRUE
       -- (see onetrust_synth/abac_tables.py build_org_hierarchy_view_sql), so no separate
-      -- isDeleted filter is needed here.
+      -- isDeleted filter is needed here. Named ABAC_OrgHierarchy (not OrgHierarchy) to avoid
+      -- a case-insensitive collision with the real "orghierarchy" main table in this schema.
       (
         ctx.mode = 'RBAC_ABAC'
         AND org_id IN (
-          SELECT orgId FROM abac_onetrust.onetrust_sim.OrgHierarchy
+          SELECT orgId FROM abac_onetrust.onetrust_sim.ABAC_OrgHierarchy
           WHERE parentOrgId = ctx.org
         )
       )

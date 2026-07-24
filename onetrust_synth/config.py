@@ -36,7 +36,7 @@ ABAC_TABLE_ROW_TARGETS = {
     "ABAC_AssignmentPermission": 10000,
     "ABAC_EntitySubjectAssignment": 100000,
     "UserGroupMembers": 5000,
-    "OrgHierarchy": 183,
+    "ABAC_OrgHierarchy": 183,
 }
 
 ABAC_PARTITIONED_TABLES = {"ABAC_Assignment", "ABAC_EntitySubjectAssignment"}

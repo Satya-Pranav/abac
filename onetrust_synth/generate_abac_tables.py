@@ -32,7 +32,7 @@ def build_all_abac_tables(spark: SparkSession, main_tables: dict) -> dict:
         "ABAC_AssignmentPermission": assignment_permission,
         "ABAC_EntitySubjectAssignment": esa,
         "UserGroupMembers": user_group_members,
-        "OrgHierarchy": org_hierarchy_base,  # written as OrgHierarchyBase; view created separately, see Task 17
+        "ABAC_OrgHierarchy": org_hierarchy_base,  # written as OrgHierarchyBase; view created separately, see Task 17
     }
 
 
@@ -44,17 +44,19 @@ def main():
     abac_tables = build_all_abac_tables(spark, main_tables)
 
     for table_name, df in abac_tables.items():
-        write_table_name = "OrgHierarchyBase" if table_name == "OrgHierarchy" else table_name
+        write_table_name = "OrgHierarchyBase" if table_name == "ABAC_OrgHierarchy" else table_name
         partition_by = ["objectType"] if table_name in config.ABAC_PARTITIONED_TABLES else None
         write_delta_table(df, config.CATALOG, config.MAIN_SCHEMA, write_table_name, partition_by=partition_by)
         print(f"Wrote {config.CATALOG}.{config.MAIN_SCHEMA}.{write_table_name}: {df.count()} rows")
 
-    # OrgHierarchyBase is the physical table written above; OrgHierarchy is a view
-    # over it (matches the real DDL — see abac_docs/customer_data/OrgHierarchy.rtf).
-    # Task 17's row-filter UDF reads OrgHierarchy (the view), so this must run before
+    # OrgHierarchyBase is the physical table written above; ABAC_OrgHierarchy is a view
+    # over it (named to avoid a case-insensitive collision with the real, separately-generated
+    # lowercase "orghierarchy" main table in the same schema — Unity Catalog identifiers are
+    # case-insensitive, so "OrgHierarchy" and "orghierarchy" are the same name to it).
+    # Task 17's row-filter UDF reads ABAC_OrgHierarchy (the view), so this must run before
     # that UDF is ever invoked.
     spark.sql(build_org_hierarchy_view_sql())
-    print(f"Created view {config.CATALOG}.{config.MAIN_SCHEMA}.OrgHierarchy over OrgHierarchyBase")
+    print(f"Created view {config.CATALOG}.{config.MAIN_SCHEMA}.ABAC_OrgHierarchy over OrgHierarchyBase")
 
 
 if __name__ == "__main__":
