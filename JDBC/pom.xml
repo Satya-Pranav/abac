@@ -34,6 +34,15 @@
       <artifactId>e6-jdbc-driver</artifactId>
       <version>1.0.1</version>
     </dependency>
+
+    <!-- Parses onetrust_sanity_run_annotated.csv for OnetrustCases. The 50 real query texts
+         contain embedded commas, quotes, and newlines, so a proper RFC4180 parser is needed
+         rather than hand-rolled splitting. -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.11.0</version>
+    </dependency>
   </dependencies>
 
   <build>

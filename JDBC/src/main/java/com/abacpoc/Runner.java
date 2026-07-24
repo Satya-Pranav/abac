@@ -3,6 +3,7 @@ package com.abacpoc;
 import com.abacpoc.cases.Case;
 import com.abacpoc.cases.Cases;
 import com.abacpoc.cases.Expect;
+import com.abacpoc.cases.OnetrustCases;
 import com.abacpoc.cases.Expect.Kind;
 import com.abacpoc.engine.Capability;
 import com.abacpoc.engine.DatabricksEngine;
@@ -59,7 +60,14 @@ public class Runner {
         try (c) {
             boolean seeded = setUpFixture(engine, c);
             try {
-                runAll(engine, c, Cases.all(engine), seeded);
+                List<Case> cases = new ArrayList<>(Cases.all(engine));
+                // Opt-in, default off: the OneTrust deployment (abac_onetrust.onetrust_sim) is a
+                // separate catalog/schema from the TPC-DS suite above, requires sql_onetrust/01-07
+                // already applied, and is unrelated to this run's TPC-DS fixture setup/teardown.
+                if (Boolean.parseBoolean(System.getenv().getOrDefault("INCLUDE_ONETRUST", "false"))) {
+                    cases.addAll(OnetrustCases.all());
+                }
+                runAll(engine, c, cases, seeded);
             } finally {
                 if (seeded) {
                     try { dropFixture(engine, c); System.out.println(" Fixture: dropped."); }
