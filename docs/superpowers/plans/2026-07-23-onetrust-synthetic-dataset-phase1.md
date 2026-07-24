@@ -158,10 +158,10 @@ ENTITY_SOURCE_TABLES = {
 # entity IDs — see Task 9.
 STANDALONE_ENTITIES_PER_TYPE = 100
 
-# Real inventoryType values, confirmed from cmb_v_inventoryaggregatedrisksummary's
-# sample data (cmb_inventory's own sample file has a corrupted/mismatched header —
-# see sample_csv.py's _KNOWN_BAD_SAMPLE_FILES — so cmb_inventory reuses this
-# same-domain vocabulary rather than trusting its own sample). Note the mapping is
+# Real inventoryType values, confirmed from both cmb_inventory's and
+# cmb_v_inventoryaggregatedrisksummary's sample data (sample_csv.py recovers
+# both correctly via positional reconstruction against the real profiled
+# column order — see sample_csv.py's module docstring). Note the mapping is
 # NOT a plain .upper(): "Processing Activities" -> "PROCESSING-ACTIVITIES" (hyphenated)
 # in the real entityTypeReference vocabulary, confirmed from the reference table.
 INVENTORY_TYPE_TO_OBJECT_TYPE = {
@@ -336,8 +336,12 @@ git commit -m "feat(onetrust_synth): add profile CSV reader"
 - Test: `onetrust_synth/tests/test_sample_csv.py`
 
 **Interfaces:**
-- Consumes: `config.SAMPLE_DATA_DIR` (Task 1)
-- Produces: `sample_file_path(table: str) -> str`, `load_column_values(table: str, column: str) -> list[str]` (distinct non-null real values for a column, for weighted-categorical seeding), `load_entity_type_reference_values() -> list[tuple[str, str]]` (the (reportingModule, entityTypeReference) pairs, handling the misaligned header — see below), `load_rows(table: str) -> list[dict]` (full rows, for near-verbatim small-table copying in Task 6).
+- Consumes: `config.SAMPLE_DATA_DIR` (Task 1); `profile_csv.load_table_profile`, `profile_csv.get_columns` (Task 2)
+- Produces: `sample_file_path(table: str) -> str`, `load_column_values(table: str, column: str) -> list[str]` (distinct non-null real values for a column, for weighted-categorical seeding), `load_entity_type_reference_values() -> list[tuple[str, str]]` (the (reportingModule, entityTypeReference) pairs), `load_rows(table: str) -> list[dict]` (full rows, for near-verbatim small-table copying in Task 7)
+
+**Confirmed data defect — every `sample_auto_qa_*.csv` file's header row is corrupted.** All 9 of the tenant-schema sample files (`cmb_assessment`, `cmb_controlimplementation`, `cmb_inventory`, `cmb_riskrelatedobjects`, `cmb_template`, `cmb_v_assessment_v4`, `entitylink_v3`, `orghierarchy`, `reportingmoduletoentityreferencemapping_v`) share the byte-identical header line (MD5 `d7ec75a45d96290f05b8db9dacd2ebe8`) — it is `cmb_v_inventoryaggregatedrisksummary`'s own 21-column header, pasted onto every other file's data rows. Only `cmb_v_inventoryaggregatedrisksummary` itself (the true source of that header) and `entitygroupconfig` (a separate export under the `monitoring` schema) are unaffected.
+
+The DATA rows are intact, not corrupted: every affected table's row field-count matches its own real profiled column count exactly (verified: `cmb_assessment`=70, `cmb_controlimplementation`=58, `cmb_riskrelatedobjects`=20, `cmb_template`=24, `cmb_v_assessment_v4`=90, `entitylink_v3`=30, `orghierarchy`=10, `cmb_inventory`=19, `reportingmoduletoentityreferencemapping_v`=2 — all matching `onetrust_table_profile_results.csv`), and a positional spot-check confirms the real column *order* from that profile CSV lines up with the data (`cmb_assessment`'s `id` column, at profiled position 14, recovers a genuine UUID `035e1c48-5e60-4640-ac18-4557cd49828f`; `isDeleted` at position 68 recovers `'True'`). So: **never trust a sample file's own header row.** `load_rows` must always reconstruct each row by zipping the raw CSV fields positionally against the real column order from `profile_csv.get_columns()` for that (schema, table) — this uniformly and correctly recovers all 11 tables with one mechanism, including `cmb_inventory` (previously miscategorized as unrecoverable in an earlier draft of this task — it isn't; recovered real `inventoryType` values are `{"Assets", "Vendors", "Processing Activities"}`, exactly matching `config.INVENTORY_TYPE_TO_OBJECT_TYPE`'s keys) and `reportingmoduletoentityreferencemapping_v` (whose real schema is exactly the 2 columns `reportingModule`, `entityTypeReference`, so the general mechanism subsumes what previously needed special-case positional handling).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -358,11 +362,7 @@ def test_load_column_values_returns_real_distinct_values():
     assert set(values) == {"Active", "Archived"}
 
 
-def test_load_entity_type_reference_values_handles_misaligned_header():
-    # The sample file's header row is a stale copy from a different table's export;
-    # the real (reportingModule, entityTypeReference) pairs are the first two columns
-    # positionally. This must return the real 21 pairs / 20 distinct types, not the
-    # misleading header-named columns (inventoryID/entityID/etc, which are all empty).
+def test_load_entity_type_reference_values_recovers_real_pairs():
     pairs = load_entity_type_reference_values()
     assert len(pairs) == 21
     assert ("ASSESSMENT", "ASSESSMENT") in pairs
@@ -373,24 +373,42 @@ def test_load_entity_type_reference_values_handles_misaligned_header():
     assert "VENDORS" in distinct_types
 
 
-def test_load_rows_returns_full_dicts_for_small_table():
+def test_load_rows_recovers_real_columns_for_orghierarchy_despite_corrupted_header():
+    # orghierarchy's own sample-file header is corrupted (it's actually
+    # cmb_v_inventoryaggregatedrisksummary's header, pasted on by the export
+    # tool — confirmed via MD5, identical across 9 of the 11 sample files).
+    # load_rows must recover the REAL columns (rootOrgId/orgId/parentOrgId,
+    # from onetrust_table_profile_results.csv), not the corrupted header's
+    # field names (inventoryID/entityID/orgID/parentOrgID).
     rows = load_rows("orghierarchy")
     assert len(rows) == 183
-    assert set(rows[0].keys()) >= {"rootOrgId", "orgId", "parentOrgId"}
+    assert set(rows[0].keys()) == {
+        "rootOrgId", "rootOrgName", "orgId", "orgName", "parentOrgId",
+        "parentOrgName", "eventTime", "recModifiedTime", "isDeleted", "tenantHash",
+    }
+    assert rows[0]["orgId"]
+    assert rows[0]["isDeleted"] in ("True", "False")
 
 
-def test_cmb_inventory_sample_file_is_flagged_as_known_bad():
-    # Verified: sample_..._cmb_inventory.csv's header is a 21-column copy of
-    # cmb_v_inventoryaggregatedrisksummary's header, but the data rows have 19
-    # fields matching cmb_inventory's REAL (different) schema — the header simply
-    # does not describe its own file's data. Unlike
-    # reportingmoduletoentityreferencemapping_v (misaligned but recoverable by
-    # reading positionally), there's no reliable way to recover real column values
-    # here since we don't know the true positional order. Calling code must not
-    # silently trust this file.
-    import pytest
-    with pytest.raises(ValueError, match="known-bad"):
-        load_column_values("cmb_inventory", "inventoryType")
+def test_load_rows_recovers_real_columns_for_cmb_inventory():
+    # Previously miscategorized as unrecoverable — it isn't. cmb_inventory's
+    # data rows have exactly 19 fields, matching its own real profiled column
+    # count, and recover correctly via the same positional mechanism.
+    rows = load_rows("cmb_inventory")
+    assert len(rows) == 500
+    inventory_types = {r["inventoryType"] for r in rows if r.get("inventoryType")}
+    assert inventory_types <= {"Assets", "Vendors", "Processing Activities"}
+    assert len(inventory_types) > 0
+
+
+def test_load_column_values_works_for_every_affected_table_not_just_two():
+    # Regression guard: an earlier version of this reader only special-cased
+    # cmb_inventory and reportingmoduletoentityreferencemapping_v, silently
+    # returning wrong/empty values for the other 7 corrupted-header tables.
+    # cmb_assessment.id must recover real UUID-shaped values.
+    ids = load_column_values("cmb_assessment", "id")
+    assert len(ids) > 0
+    assert all(len(i) == 36 and i.count("-") == 4 for i in ids)  # UUID shape
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -402,15 +420,28 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'onetrust_synth.sample
 
 ```python
 # onetrust_synth/sample_csv.py
+"""
+Every sample_auto_qa_*.csv file's header row is corrupted: it is literally
+cmb_v_inventoryaggregatedrisksummary's own 21-column header, pasted onto
+every other table's data rows by the export tool (confirmed: identical MD5
+across 9 of the 11 sample files). The data itself is intact — each affected
+table's row field-count matches ITS OWN real profiled column count exactly,
+and the real column ORDER (from onetrust_table_profile_results.csv) lines up
+positionally with the data (spot-checked: cmb_assessment's `id` column
+recovers a real UUID). So this module never trusts a sample file's own
+header — it always reconstructs each row using the real column order from
+profile_csv.get_columns(), zipped positionally against the raw CSV fields.
+This uniformly recovers all 11 tables with one mechanism.
+"""
 import csv
 import os
 
 from onetrust_synth import config
+from onetrust_synth.profile_csv import load_table_profile, get_columns
 
 # Maps our table names to the real sample-file basenames (they don't follow a
 # single naming rule: some carry the schema hash, one lives under a different
-# schema prefix, and this is the sample_*.csv inventory from the design doc's
-# section 3 — not derivable by string formatting alone).
+# schema prefix).
 _SAMPLE_FILES = {
     "cmb_assessment": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_assessment.csv",
     "cmb_controlimplementation": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_controlimplementation.csv",
@@ -425,26 +456,25 @@ _SAMPLE_FILES = {
     "entitygroupconfig": "sample_monitoring_entitygroupconfig.csv",
 }
 
-
-# cmb_inventory's sample file header (21 columns) is a copy of
-# cmb_v_inventoryaggregatedrisksummary's header and does not describe its own
-# data rows (which have 19 fields, matching cmb_inventory's real, different
-# schema). There's no reliable positional recovery here — unlike
-# reportingmoduletoentityreferencemapping_v — so calling code must not use
-# DictReader-based column lookups against this file.
-_KNOWN_BAD_SAMPLE_FILES = {"cmb_inventory"}
+_TARGET_TENANT_SCHEMA = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
 
 
 def sample_file_path(table: str) -> str:
     return os.path.join(config.SAMPLE_DATA_DIR, _SAMPLE_FILES[table])
 
 
+def _profile_schema_for(table: str) -> str:
+    return config.MONITORING_SCHEMA if table in config.MONITORING_TABLES else _TARGET_TENANT_SCHEMA
+
+
 def load_rows(table: str) -> list[dict]:
-    if table in _KNOWN_BAD_SAMPLE_FILES:
-        raise ValueError(f"{table}'s sample file header is known-bad (does not match its own data) — see _KNOWN_BAD_SAMPLE_FILES")
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    real_columns = [c.name for c in get_columns(profile, _profile_schema_for(table), table)]
+
     with open(sample_file_path(table), newline="", encoding="utf-8", errors="replace") as f:
-        reader = csv.DictReader(f)
-        return list(reader)
+        reader = csv.reader(f)
+        next(reader, None)  # skip the file's own (corrupted) header row — never trust it
+        return [dict(zip(real_columns, raw)) for raw in reader]
 
 
 def load_column_values(table: str, column: str) -> list[str]:
@@ -455,26 +485,23 @@ def load_column_values(table: str, column: str) -> list[str]:
 
 def load_entity_type_reference_values() -> list[tuple[str, str]]:
     """
-    reportingmoduletoentityreferencemapping_v's sample CSV has a misaligned header
-    (a stale header from a different table's export — every column after the first
-    two is empty). The real data is (reportingModule, entityTypeReference) as the
-    first two columns, read positionally rather than by header name.
+    reportingmoduletoentityreferencemapping_v's real schema is exactly the 2
+    columns (reportingModule, entityTypeReference) — load_rows already
+    recovers these correctly via the general positional-recovery mechanism
+    above, so this just re-shapes them as (key, value) pairs.
     """
-    path = sample_file_path("reportingmoduletoentityreferencemapping_v")
-    pairs = []
-    with open(path, newline="", encoding="utf-8", errors="replace") as f:
-        reader = csv.reader(f)
-        next(reader)  # skip the (misaligned) header row
-        for row in reader:
-            if len(row) >= 2 and row[0] and row[1]:
-                pairs.append((row[0], row[1]))
-    return pairs
+    rows = load_rows("reportingmoduletoentityreferencemapping_v")
+    return [
+        (r["reportingModule"], r["entityTypeReference"])
+        for r in rows
+        if r.get("reportingModule") and r.get("entityTypeReference")
+    ]
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_sample_csv.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (6 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -592,7 +619,7 @@ def add_categorical_column(df: DataFrame, col_name: str, values: list, null_rate
     salt = salt or col_name
     values_array = F.array(*[F.lit(v) for v in values])
     idx = deterministic_index(F.col(row_id_col), salt, len(values))
-    base = F.element_at(values_array, idx + F.lit(1))
+    base = F.element_at(values_array, (idx + F.lit(1)).cast("int"))  # element_at's index arg requires INT, not the BIGINT pmod()/xxhash64() produce
     if null_rate > 0:
         null_marker = F.pmod(F.xxhash64(F.col(row_id_col), F.lit(salt + "_null")), F.lit(10000))
         threshold = F.lit(int(null_rate * 10000))
@@ -625,8 +652,8 @@ git commit -m "feat(onetrust_synth): add deterministic hash-based PySpark column
 - Test: `onetrust_synth/tests/test_main_tables.py`
 
 **Interfaces:**
-- Consumes: `generator.base_row_id_df`, `generator.add_categorical_column`, `generator.add_id_column` (Task 4); `profile_csv.ColumnProfile`, `profile_csv.get_columns` (Task 2); `sample_csv.load_column_values` (Task 3)
-- Produces: `build_generic_table(spark, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame` — builds one column per profiled `ColumnProfile`: an `id`-like string column (name containing "id"/"Id"/"ID" and ndv≈row_count) gets a unique id, low-cardinality string columns (`ndv <= 50`) get `add_categorical_column` seeded from real sample values when available else synthetic placeholders, numeric columns (`int`/`bigint`/`double`) get a deterministic ranged value, `timestamp`/`date` columns get a deterministic date within a fixed 2026 window, everything else (including nested types) is left for Task 6/7 to overwrite.
+- Consumes: `generator.base_row_id_df`, `generator.add_categorical_column`, `generator.add_id_column`, `generator.deterministic_index` (Task 4); `profile_csv.ColumnProfile`, `profile_csv.get_columns` (Task 2); `sample_csv.load_column_values` (Task 3)
+- Produces: `build_generic_table(spark, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame` — builds one column per profiled `ColumnProfile`: an `id`-like string column (name containing "id"/"Id"/"ID" and ndv≈row_count) gets a unique id; low-cardinality string columns (`ndv <= 50`) get `add_categorical_column` seeded from real sample values when available, else a synthetic pool sized toward the column's own `ndv` (not a fixed small placeholder set — a high-cardinality string column with no real samples must not collapse to a handful of values); numeric columns (`int`/`bigint`/`double`/`decimal`) and `timestamp`/`date` columns get a deterministic value **with the column's real `null_rate` applied** (a column that's 100% null in production must come out 100% null here, not fully dense); everything else (including nested types) is left for Task 6/7 to overwrite.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -672,6 +699,42 @@ def test_id_like_column_is_unique(spark):
     df = build_generic_table(spark, "cmb_riskrelatedobjects", 500, cols, sample_lookup=lambda col: [])
     ids = [r["riskId"] for r in df.select("riskId").collect()]
     assert len(ids) == len(set(ids))
+
+
+def test_numeric_and_temporal_columns_respect_real_null_rate(spark):
+    # cmb_controlimplementation.deadline is real null_rate=1.0 (always null in
+    # production); number (bigint) is real null_rate≈0.998. A generator that
+    # ignores null_rate for numeric/temporal columns silently fabricates dense
+    # data the real table doesn't have — caught by a prior task review.
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_controlimplementation")
+    df = build_generic_table(spark, "cmb_controlimplementation", 500, cols, sample_lookup=lambda col: [])
+    deadline_col = next(c for c in cols if c.name == "deadline")
+    assert deadline_col.null_rate == 1.0
+    non_null_deadlines = df.filter(df.deadline.isNotNull()).count()
+    assert non_null_deadlines == 0
+
+    number_col = next(c for c in cols if c.name == "number")
+    assert number_col.null_rate > 0.9
+    non_null_numbers = df.filter(df.number.isNotNull()).count()
+    assert non_null_numbers < 25  # ~0.2% of 500 should be non-null, not all 500
+
+
+def test_high_cardinality_string_column_without_samples_does_not_collapse(spark):
+    # cmb_assessment.template has real ndv=2558 with no calibrated sample
+    # values supplied here (sample_lookup returns []). Deliberately NOT
+    # "templateID": that column's name ends in the id-like suffix, so at this
+    # row_count it routes through _is_id_like's unique-id path instead of the
+    # catch-all placeholder-pool path this test targets — a prior review
+    # round caught a test that looked like it covered the fix but silently
+    # exercised the wrong code path instead. "template" has the identical
+    # real ndv (2558) with no id-like name, so it genuinely reaches
+    # _placeholder_values_for.
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    cols = get_columns(profile, "auto_qa_e40yx52dkbjpcqazimno9yvh4k", "cmb_assessment")
+    df = build_generic_table(spark, "cmb_assessment", 500, cols, sample_lookup=lambda col: [])
+    distinct_templates = df.select("template").distinct().count()
+    assert distinct_templates > 50  # nowhere near the real ndv=2558, but far above a 10-value collapse
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -691,7 +754,7 @@ from onetrust_synth.profile_csv import ColumnProfile
 
 _ID_LIKE_SUFFIXES = ("id", "Id", "ID")
 _LOW_CARDINALITY_MAX = 50
-_PLACEHOLDER_VALUES = [f"value_{i}" for i in range(10)]
+_PLACEHOLDER_POOL_CAP = 200  # cap on a synthetic value pool for a high-cardinality column with no real samples
 _NUMERIC_TYPES = ("int", "bigint", "double", "decimal")  # tuple: str.startswith() requires a tuple, not a set
 _TEMPORAL_TYPES = {"timestamp", "date"}
 
@@ -700,6 +763,23 @@ def _is_id_like(col: ColumnProfile, row_count: int) -> bool:
     name_hits = col.name.endswith(_ID_LIKE_SUFFIXES) or col.name == "id"
     high_cardinality = row_count > 0 and col.ndv >= row_count * 0.9
     return name_hits and high_cardinality
+
+
+def _placeholder_values_for(table: str, col: ColumnProfile) -> list:
+    # Sized toward the column's real cardinality (capped for practicality)
+    # instead of a fixed 10-value pool — a fixed small pool collapses every
+    # high-cardinality column with no real samples to the same handful of
+    # values regardless of how varied the real data actually is.
+    pool_size = min(col.ndv, _PLACEHOLDER_POOL_CAP) if col.ndv else 10
+    return [f"{table}.{col.name}_{i}" for i in range(max(pool_size, 1))]
+
+
+def _with_null_injection(df: DataFrame, col_name: str, value, null_rate: float, salt: str) -> DataFrame:
+    if null_rate > 0:
+        null_marker = F.pmod(F.xxhash64(F.col("_row_id"), F.lit(salt + "_null")), F.lit(10000))
+        threshold = F.lit(int(null_rate * 10000))
+        return df.withColumn(col_name, F.when(null_marker < threshold, F.lit(None)).otherwise(value))
+    return df.withColumn(col_name, value)
 
 
 def build_generic_table(spark: SparkSession, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame:
@@ -717,20 +797,22 @@ def build_generic_table(spark: SparkSession, table: str, row_count: int, columns
             df = add_categorical_column(df, col.name, [True, False], null_rate=col.null_rate, salt=f"{table}.{col.name}")
         elif dtype.startswith(_NUMERIC_TYPES):
             idx = deterministic_index(F.col("_row_id"), f"{table}.{col.name}", 1000)
-            df = df.withColumn(col.name, idx.cast("double" if "double" in dtype or "decimal" in dtype else "long"))
+            value = idx.cast("double" if "double" in dtype or "decimal" in dtype else "long")
+            df = _with_null_injection(df, col.name, value, col.null_rate, f"{table}.{col.name}")
         elif dtype in _TEMPORAL_TYPES:
             idx = deterministic_index(F.col("_row_id"), f"{table}.{col.name}", 90).cast("int")
             base_date = F.to_date(F.lit("2026-03-17"))
             d = F.date_add(base_date, idx)
-            df = df.withColumn(col.name, F.to_timestamp(d) if dtype == "timestamp" else d)
+            value = F.to_timestamp(d) if dtype == "timestamp" else d
+            df = _with_null_injection(df, col.name, value, col.null_rate, f"{table}.{col.name}")
         elif dtype.startswith(("map", "list", "struct", "array")):
             continue  # nested types handled by Task 7's overrides, not here
         else:
             values = sample_lookup(col.name)
             if not values:
-                values = _PLACEHOLDER_VALUES
-            if col.ndv and col.ndv <= _LOW_CARDINALITY_MAX:
-                values = values[: max(col.ndv, 1)] or _PLACEHOLDER_VALUES
+                values = _placeholder_values_for(table, col)
+            elif col.ndv and col.ndv <= _LOW_CARDINALITY_MAX:
+                values = values[: max(col.ndv, 1)] or _placeholder_values_for(table, col)
             df = add_categorical_column(df, col.name, values, null_rate=col.null_rate, salt=f"{table}.{col.name}")
 
     return df.drop("_row_id")
@@ -739,7 +821,7 @@ def build_generic_table(spark: SparkSession, table: str, row_count: int, columns
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_main_tables.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (6 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -758,7 +840,7 @@ git commit -m "feat(onetrust_synth): add profile-driven generic table builder"
 
 **Interfaces:**
 - Consumes: output `DataFrame` from `main_tables.build_generic_table` (Task 5)
-- Produces: `attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame` (adds well-typed, real `questionRootMap` + `userIdsAssociatedWithAssessment`, plus mostly-null placeholders for `assessmentSectionReportInformations`/`questionMap`), `attach_cmb_inventory_nested_columns(df: DataFrame) -> DataFrame` (mostly-null placeholders for `attributes`/`personalDataObjects`)
+- Produces: `attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame` (adds well-typed, real `questionRootMap` + `userIdsAssociatedWithAssessment` — the latter's values must be UUID-shaped strings, deterministically derived not randomly generated, matching design doc section 5.3 — plus mostly-null placeholders for `assessmentSectionReportInformations`/`questionMap`), `attach_cmb_inventory_nested_columns(df: DataFrame) -> DataFrame` (mostly-null placeholders for `attributes`/`personalDataObjects`)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -803,6 +885,48 @@ def test_cmb_inventory_nested_columns_present_and_mostly_null(spark):
     assert "personalDataObjects" in df.columns
     null_rate = df.filter(df.attributes.isNull()).count() / 1000
     assert null_rate > 0.9
+
+
+def test_user_ids_associated_with_assessment_are_uuid_shaped(spark):
+    # Design doc section 5.3 explicitly requires "a real LIST<STRING> of
+    # UUID-shaped values per row" for this column — a prior review caught an
+    # earlier version generating "user_0".."user_1999" instead. Deterministic
+    # (not a real random UUID, which would break this project's core
+    # reproducibility guarantee — see generator.py), but must look like a
+    # UUID: 36 chars, 4 hyphens at the standard positions.
+    df = add_id_column(base_row_id_df(spark, 200), "id", prefix="assess_")
+    df = attach_cmb_assessment_nested_columns(df)
+    rows = df.select("userIdsAssociatedWithAssessment").collect()
+    all_ids = [uid for r in rows for uid in r["userIdsAssociatedWithAssessment"]]
+    assert len(all_ids) > 0
+    for uid in all_ids:
+        assert len(uid) == 36
+        assert uid[8] == "-" and uid[13] == "-" and uid[18] == "-" and uid[23] == "-"
+
+
+def test_question_root_map_is_queryable_via_element_at_at_sql_level(spark):
+    # The whole point of NOT null-placeholder-ing this column is that real
+    # compatible queries call element_at(questionRootMap, '<uuid>') in a
+    # SELECT list. A test that only inspects values already collected into
+    # the Python driver doesn't verify this — it must be checked as an
+    # actual Spark SQL expression, the same way the real queries use it.
+    from pyspark.sql import functions as F
+
+    df = add_id_column(base_row_id_df(spark, 500), "id", prefix="assess_")
+    df = attach_cmb_assessment_nested_columns(df)
+    for key in ["a2d09d79-b6e2-42d7-a04d-a5726a062738", "d82a01e9-276b-4499-8b47-7d5068536f4f", "f3c1a0aa-1234-4a1b-9c3d-9a1b2c3d4e5f"]:
+        matched = df.filter(F.element_at(F.col("questionRootMap"), F.lit(key)).isNotNull()).count()
+        assert matched > 0, f"element_at never resolved for key {key}"
+
+
+def test_user_ids_associated_with_assessment_is_array_contains_queryable_at_sql_level(spark):
+    from pyspark.sql import functions as F
+
+    df = add_id_column(base_row_id_df(spark, 500), "id", prefix="assess_")
+    df = attach_cmb_assessment_nested_columns(df)
+    any_id = df.select(F.element_at(F.col("userIdsAssociatedWithAssessment"), 1).alias("uid")).first()["uid"]
+    matched = df.filter(F.array_contains(F.col("userIdsAssociatedWithAssessment"), any_id)).count()
+    assert matched > 0
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -832,34 +956,61 @@ _QUESTION_KEYS = [
 ]
 _QUESTION_TYPES = ["SINGLE_CHOICE", "MULTI_CHOICE", "TEXT"]
 _RESPONSE_TYPES = ["TEXT", "OPTION"]
+_QUESTION_STATES = ["ANSWERED", "UNANSWERED", "SKIPPED"]
+_QUESTION_DETAILS = [
+    "auto-generated question detail A",
+    "auto-generated question detail B",
+    "auto-generated question detail C",
+]
 
 
 def _null_placeholder(df: DataFrame, col_name: str, spark_type: str) -> DataFrame:
     return df.withColumn(col_name, F.lit(None).cast(spark_type))
 
 
-def attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame:
-    idx = F.pmod(F.xxhash64(F.col("id"), F.lit("questionRootMap")), F.lit(len(_QUESTION_KEYS)))
-    key = F.element_at(F.array(*[F.lit(k) for k in _QUESTION_KEYS]), idx + F.lit(1))
-    qtype_idx = F.pmod(F.xxhash64(F.col("id"), F.lit("qtype")), F.lit(len(_QUESTION_TYPES)))
-    qtype = F.element_at(F.array(*[F.lit(t) for t in _QUESTION_TYPES]), qtype_idx + F.lit(1))
-    rtype_idx = F.pmod(F.xxhash64(F.col("id"), F.lit("rtype")), F.lit(len(_RESPONSE_TYPES)))
-    rtype = F.element_at(F.array(*[F.lit(t) for t in _RESPONSE_TYPES]), rtype_idx + F.lit(1))
+def _pick(id_col, salt: str, values: list):
+    idx = F.pmod(F.xxhash64(id_col, F.lit(salt)), F.lit(len(values)))
+    return F.element_at(F.array(*[F.lit(v) for v in values]), (idx + F.lit(1)).cast("int"))
 
-    response_struct = F.struct(F.lit("sample response value").alias("value"), F.lit("resp_key_1").alias("valueKey"))
+
+def _deterministic_uuid_shaped(id_col, salt: str):
+    # Deterministic (hash-based, not a real random UUID — a random value
+    # would break this project's reproducibility guarantee, see
+    # generator.py), but formatted to LOOK like one: 8-4-4-4-12 hex groups,
+    # matching the design doc's "UUID-shaped values" requirement.
+    h = F.md5(F.concat(id_col, F.lit(salt)))
+    return F.concat(
+        F.substring(h, 1, 8), F.lit("-"),
+        F.substring(h, 9, 4), F.lit("-"),
+        F.substring(h, 13, 4), F.lit("-"),
+        F.substring(h, 17, 4), F.lit("-"),
+        F.substring(h, 21, 12),
+    )
+
+
+def attach_cmb_assessment_nested_columns(df: DataFrame) -> DataFrame:
+    key = _pick(F.col("id"), "questionRootMap", _QUESTION_KEYS)
+    qtype = _pick(F.col("id"), "qtype", _QUESTION_TYPES)
+    rtype = _pick(F.col("id"), "rtype", _RESPONSE_TYPES)
+    qstate = _pick(F.col("id"), "qstate", _QUESTION_STATES)
+    qdetail = _pick(F.col("id"), "qdetail", _QUESTION_DETAILS)
+    response_value = _pick(F.col("id"), "resp_value", ["response A", "response B", "response C"])
+    response_key = _pick(F.col("id"), "resp_key", ["resp_key_1", "resp_key_2", "resp_key_3"])
+
+    response_struct = F.struct(response_value.alias("value"), response_key.alias("valueKey"))
     value_struct = F.struct(
         qtype.alias("questionType"),
         F.lit("STRING").alias("dataType"),
-        F.lit("ANSWERED").alias("state"),
+        qstate.alias("state"),
         F.lit(False).alias("maturityScaleAllowed"),
-        F.lit("auto-generated question detail").alias("questionDetailedInfo"),
+        qdetail.alias("questionDetailedInfo"),
         F.array(response_struct).alias("responses"),
         rtype.alias("responseType"),
     )
     df = df.withColumn("questionRootMap", F.create_map(key, value_struct))
 
-    user_id_1 = F.concat(F.lit("user_"), (F.pmod(F.xxhash64(F.col("id"), F.lit("uid1")), F.lit(2000))).cast("string"))
-    user_id_2 = F.concat(F.lit("user_"), (F.pmod(F.xxhash64(F.col("id"), F.lit("uid2")), F.lit(2000))).cast("string"))
+    user_id_1 = _deterministic_uuid_shaped(F.col("id"), "uid1")
+    user_id_2 = _deterministic_uuid_shaped(F.col("id"), "uid2")
     df = df.withColumn("userIdsAssociatedWithAssessment", F.array(user_id_1, user_id_2))
 
     struct_type = "struct<id:struct<id:string>,name:struct<respondents:array<struct<value:string,valueKey:string>>>>"
@@ -877,7 +1028,7 @@ def attach_cmb_inventory_nested_columns(df: DataFrame) -> DataFrame:
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_nested_columns.py -v`
-Expected: PASS (4 tests)
+Expected: PASS (7 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -895,8 +1046,8 @@ git commit -m "feat(onetrust_synth): generate real questionRootMap/userIdsAssoci
 - Test: `onetrust_synth/tests/test_verbatim_tables.py`
 
 **Interfaces:**
-- Consumes: `sample_csv.load_rows` (Task 3)
-- Produces: `build_orghierarchy_df(spark) -> DataFrame` (all 183 real rows, verbatim — this becomes `org_registry` too, see Task 9), `build_cmb_v_inventoryaggregatedrisksummary_df(spark) -> DataFrame` (all 14 real rows, verbatim)
+- Consumes: `sample_csv.load_rows` (Task 3); `profile_csv.load_table_profile`, `profile_csv.get_columns` (Task 2)
+- Produces: `build_orghierarchy_df(spark) -> DataFrame` (all 183 real rows, verbatim — this becomes `org_registry` too, see Task 9), `build_cmb_v_inventoryaggregatedrisksummary_df(spark) -> DataFrame` (all 14 real rows, verbatim). Both cast every column to its real profiled Spark type (numeric/temporal/boolean), not left as the raw CSV string — `load_rows` only ever returns strings, and leaving numeric columns string-typed silently breaks `ORDER BY` (lexicographic, not numeric).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -925,6 +1076,32 @@ def test_inventory_risk_summary_has_14_real_rows(spark):
     types = {r["inventoryType"] for r in df.select("inventoryType").collect()}
     # verified against the real sample file: {'Assets', 'Processing Activities', 'Vendors'}
     assert types <= {"Assets", "Vendors", "Processing Activities"}
+
+
+def test_inventory_risk_summary_numeric_columns_are_real_typed_not_string(spark):
+    # A prior task review caught that every column coming straight out of a CSV
+    # is string-typed by default, which silently breaks ORDER BY on numeric
+    # columns (lexicographic '10' < '2' instead of numeric 2 < 10). This table
+    # is the single most-queried one in the Phase-1 compatible-query set (39 of
+    # 50 — design doc section 3), so its numeric/temporal columns must be cast
+    # to their real profiled types.
+    df = build_cmb_v_inventoryaggregatedrisksummary_df(spark)
+    schema = {f.name: f.dataType.typeName() for f in df.schema.fields}
+    assert schema["inherentRiskScore"] == "double"
+    assert schema["residualRiskScore"] == "double"
+    assert schema["targetRiskScore"] == "double"
+    assert schema["inventoryTypeID"] == "integer"
+    assert schema["inventoryNumber"] == "long"
+    ordered = [r["inventoryNumber"] for r in df.orderBy("inventoryNumber").select("inventoryNumber").collect()]
+    assert ordered == sorted(ordered)  # numeric order, not lexicographic
+
+
+def test_orghierarchy_temporal_and_boolean_columns_are_real_typed(spark):
+    df = build_orghierarchy_df(spark)
+    schema = {f.name: f.dataType.typeName() for f in df.schema.fields}
+    assert schema["eventTime"] == "timestamp"
+    assert schema["recModifiedTime"] == "timestamp"
+    assert schema["isDeleted"] == "boolean"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -939,27 +1116,65 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'onetrust_synth.verbat
 """
 orghierarchy and cmb_v_inventoryaggregatedrisksummary are small enough (183 and
 14 rows) that the design calls for using the real sample data near-verbatim
-instead of synthesizing — see design doc section 3.
+instead of synthesizing — see design doc section 3. Every value coming out of
+load_rows() is a Python string (CSV has no native types), so numeric/temporal/
+boolean columns are explicitly cast to their real profiled type — a prior task
+review caught that leaving everything string-typed silently breaks ORDER BY on
+numeric columns (lexicographic instead of numeric order), on the table that's
+the single most-queried one in the Phase-1 compatible-query set.
 """
+from pyspark.sql import functions as F
 from pyspark.sql import SparkSession, DataFrame
 
+from onetrust_synth import config
 from onetrust_synth.sample_csv import load_rows
+from onetrust_synth.profile_csv import load_table_profile, get_columns
+
+_TARGET_TENANT_SCHEMA = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
+
+
+def _spark_cast_type(profiled_dtype: str) -> str | None:
+    dtype = profiled_dtype.lower()
+    if dtype.startswith("bigint"):
+        return "bigint"
+    if dtype.startswith("int"):
+        return "int"
+    if dtype.startswith(("double", "decimal")):
+        return "double"
+    if dtype == "boolean":
+        return "boolean"
+    if dtype == "timestamp":
+        return "timestamp"
+    if dtype == "date":
+        return "date"
+    return None  # string and nested types: leave as the CSV's native string
+
+
+def _cast_to_real_types(df: DataFrame, table: str) -> DataFrame:
+    profile = load_table_profile(config.PROFILE_CSV_PATH)
+    for col in get_columns(profile, _TARGET_TENANT_SCHEMA, table):
+        cast_type = _spark_cast_type(col.data_type)
+        if cast_type and col.name in df.columns:
+            df = df.withColumn(col.name, F.col(col.name).cast(cast_type))
+    return df
 
 
 def build_orghierarchy_df(spark: SparkSession) -> DataFrame:
     rows = load_rows("orghierarchy")
-    return spark.createDataFrame(rows)
+    df = spark.createDataFrame(rows)
+    return _cast_to_real_types(df, "orghierarchy")
 
 
 def build_cmb_v_inventoryaggregatedrisksummary_df(spark: SparkSession) -> DataFrame:
     rows = load_rows("cmb_v_inventoryaggregatedrisksummary")
-    return spark.createDataFrame(rows)
+    df = spark.createDataFrame(rows)
+    return _cast_to_real_types(df, "cmb_v_inventoryaggregatedrisksummary")
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /Users/satyapranav/Desktop/PycharmProjects/abac && python3 -m pytest onetrust_synth/tests/test_verbatim_tables.py -v`
-Expected: PASS (3 tests)
+Expected: PASS (5 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -1715,6 +1930,23 @@ def build_abac_entity_subject_assignment(
     spark: SparkSession, assignment_df: DataFrame, entity_registry: DataFrame,
     org_registry: DataFrame, subject_registry: DataFrame, row_count: int,
 ) -> DataFrame:
+    # Only entities whose objectType is actually represented in assignment_df
+    # can ever be picked here — the later join against assignment_df is an
+    # inner join on objectType, so anything else is silently dropped,
+    # undershooting row_count. Two real cases land in "anything else": (1)
+    # entity_registry rows with objectType IS NULL — ~35% of rows, harvested
+    # from cmb_inventory, mirroring that column's real 99.57% null rate (see
+    # Task 11); (2) entity_registry rows with objectType == "TEMPLATE" —
+    # cmb_template is harvested with the static type TEMPLATE (see
+    # config.ENTITY_SOURCE_TABLES), but TEMPLATE is NOT one of the 20 real
+    # entityTypeReference values, so it never appears in
+    # assignment_df.objectType. Not a sampling fluke fixable by a bigger
+    # assignment_df — TEMPLATE structurally has no ABAC assignment in the
+    # real system. Filtering to the objectTypes assignment_df actually has
+    # (rather than a hardcoded IS NOT NULL) handles both cases generically.
+    assignment_object_types = [r["objectType"] for r in assignment_df.select("objectType").distinct().collect()]
+    entity_registry = entity_registry.filter(F.col("objectType").isin(assignment_object_types))
+
     entity_reg_indexed = entity_registry.withColumn(
         "_e_idx", F.row_number().over(Window.orderBy("entityId")) - 1
     )
@@ -1748,7 +1980,7 @@ def build_abac_entity_subject_assignment(
 
     org_array = F.array(*[F.lit(o) for o in org_ids]) if org_ids else F.array(F.lit(None).cast("string"))
     org_idx = deterministic_index(F.col("_row_id"), "esa.org", max(len(org_ids), 1))
-    df = df.withColumn("entityOrganizationId", F.element_at(org_array, org_idx + F.lit(1)))
+    df = df.withColumn("entityOrganizationId", F.element_at(org_array, (org_idx + F.lit(1)).cast("int")))
 
     df = df.withColumn("policyId", F.lit(None).cast("long"))
     df = df.withColumn("updateDT", F.to_timestamp(F.lit("2026-04-01 00:00:00")))
@@ -2537,10 +2769,20 @@ git commit -m "feat(onetrust_synth): add runner for the 50 compatible queries ag
 
 ## Phase 1 completion checklist (manual, run on Databricks in order)
 
+**Ordering note (found in final whole-branch review):** `onetrust_synth/write.py` calls
+`saveAsTable("abac_onetrust.onetrust_sim.<table>")`, and Unity Catalog does **not**
+auto-create a catalog/schema on first write — `01_catalog_schema.sql` must run
+*before* any Python generation step, not after. An earlier draft of this checklist
+had the Python steps (2–3) before the SQL steps (4), which would fail step 2
+immediately with a catalog/schema-not-found error. Fixed below: `01_catalog_schema.sql`
+now runs first; `02_tags.sql`–`04_policies.sql` still run after the tables exist
+(tags/policies need real tables and columns to attach to).
+
 1. `python3 -m pytest onetrust_synth/ -v` — all unit tests pass locally (Tasks 1–16).
-2. Run `onetrust_synth/generate_main_tables.py` on a Databricks cluster attached to a Unity Catalog workspace.
-3. Run `onetrust_synth/generate_abac_tables.py`.
-4. Run `sql_onetrust/01_catalog_schema.sql` through `sql_onetrust/04_policies.sql` in order (Tasks 17–18) — substitute the real service principal in `04_policies.sql`.
-5. Run `sql_onetrust/05_seed_test_principals.sql` then `sql_onetrust/06_test_cases.sql` (Task 19) — all 8 `assert_true` statements must pass.
-6. Run `onetrust_synth/run_compatible_queries.py` (Task 20) — 0 failures out of 50.
-7. If all of 1–6 pass: Phase 1 is done. Proceed to Phase 2 planning (full-scale ABAC generation + performance benchmark) per the design doc — a separate plan, not covered here.
+2. Run `sql_onetrust/01_catalog_schema.sql` on a Databricks cluster attached to a Unity Catalog workspace — creates the `abac_onetrust` catalog and its two schemas.
+3. Run `onetrust_synth/generate_main_tables.py`.
+4. Run `onetrust_synth/generate_abac_tables.py`.
+5. Run `sql_onetrust/02_tags.sql` through `sql_onetrust/04_policies.sql` in order (Tasks 17–18) — substitute the real service principal in `04_policies.sql`.
+6. Run `sql_onetrust/05_seed_test_principals.sql` then `sql_onetrust/06_test_cases.sql` (Task 19, same session — both reference session-scoped temporary views) — all 8 `assert_true` statements must pass.
+7. Run `onetrust_synth/run_compatible_queries.py` (Task 20) — 0 failures out of 50.
+8. If all of 1–7 pass: Phase 1 is done. Proceed to Phase 2 planning (full-scale ABAC generation + performance benchmark) per the design doc — a separate plan, not covered here.

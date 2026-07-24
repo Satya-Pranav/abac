@@ -6,3 +6,6 @@ baseline/*.txt
 .superpowers/
 .DS_Store
 .claude/worktrees/
+.venv/
+__pycache__/
+*.pyc
