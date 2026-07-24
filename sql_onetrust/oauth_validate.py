@@ -231,10 +231,21 @@ def main():
         if not ok:
             failures += 1
 
+    # Same claim as T8 (RBAC_ABAC, root=ASSETS, org=rbac_org_id), not CLAIM_OWNER: 39 of the 50
+    # queries touch cmb_v_inventoryaggregatedrisksummary, whose real object types (ASSETS/VENDORS/
+    # PROCESSING-ACTIVITIES) CLAIM_OWNER has no visibility into at all -- confirmed empty for all
+    # 39 on a live run. T8 already proves this RBAC claim returns real, non-empty rows against that
+    # exact table, and rbac_org_id is the literal org id several of these queries filter on
+    # directly, so it should surface real matching data for most of those 39. The remaining 11 (9
+    # EntityGroupConfig -- 0 rows regardless of claim; 2 CMB_Assessment/OrgHierarchy -- hardcoded
+    # real-customer org/user ids absent from our synthetic seed) stay empty either way -- a
+    # data-scope limit, not a claim problem.
+    claim_for_queries = {"tenant": 1, "user": "u.rbac.viewer@example.com", "org": rbac_org_id,
+                          "mode": "RBAC_ABAC", "root": "ASSETS", "permissions": []}
     print("\n=== 50 real compatible queries, run as the SP under a live claim ===")
     queries = load_compatible_queries()
-    print(f"Loaded {len(queries)} in-scope queries (claim: u.assessment.owner@example.com)")
-    token = mint_token(client_id, client_secret, workspace_host, CLAIM_OWNER)
+    print(f"Loaded {len(queries)} in-scope queries (claim: u.rbac.viewer@example.com, RBAC_ABAC/ASSETS)")
+    token = mint_token(client_id, client_secret, workspace_host, claim_for_queries)
     query_failures = 0
     for i, row in enumerate(queries, start=1):
         alias = row["query_alias"]

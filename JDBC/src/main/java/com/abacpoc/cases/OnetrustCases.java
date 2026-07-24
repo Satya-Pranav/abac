@@ -127,12 +127,25 @@ public final class OnetrustCases {
 
     /**
      * The 50 real compatible queries, run as INFO cases (execution success checked, row counts
-     * not asserted) under the seeded owner claim -- the first time they run under real row-filter
-     * enforcement instead of owner bypass. IDs are short (OTQ01..OTQ50); the full query_alias hash
-     * from the CSV goes in the description for traceability back to onetrust_sanity_run_annotated.csv.
+     * not asserted) -- the first time they run under real row-filter enforcement instead of owner
+     * bypass. IDs are short (OTQ01..OTQ50); the full query_alias hash from the CSV goes in the
+     * description for traceability back to onetrust_sanity_run_annotated.csv.
+     *
+     * Uses the SAME claim as OT-T8 (RBAC_ABAC, root=ASSETS, org=RBAC_ORG_ID), not the
+     * ASSESSMENT/TEMPLATE owner claim: 39 of the 50 queries touch
+     * cmb_v_inventoryaggregatedrisksummary, whose real object types (ASSETS/VENDORS/
+     * PROCESSING-ACTIVITIES) the owner claim has no visibility into at all -- every one of those
+     * 39 came back empty under it (confirmed on a live run). OT-T8 already proves this RBAC claim
+     * returns real, non-empty rows against that exact table, and RBAC_ORG_ID is the literal org id
+     * several of the real queries filter on directly (e.g. "WHERE main.parentOrgID = '<RBAC_ORG_ID>'"),
+     * so this claim is expected to surface real matching data for most of those 39. The remaining
+     * 11 (9 EntityGroupConfig -- 0 rows in the dataset regardless of claim; 2 CMB_Assessment/
+     * OrgHierarchy -- filter on hardcoded real-customer org/user ids absent from our synthetic
+     * seed) stay empty regardless of which claim is used here; that's a data-scope limit, not a
+     * claim problem.
      */
     public static List<Case> compatibleQueryCases() {
-        String ownerClaim = Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[\"TEMPLATE\"]");
+        String rbacClaim = Cases.claim("u.rbac.viewer@example.com", RBAC_ORG_ID, "RBAC_ABAC", "ASSETS", "[]");
         List<Case> cs = new ArrayList<>();
         int i = 0;
         for (CSVRecord row : loadAnnotatedQueries()) {
@@ -141,7 +154,7 @@ public final class OnetrustCases {
             cs.add(new Case(String.format("OTQ%02d", i), "ONETRUST-Q",
                 "real compatible query, run as the SP under a live claim",
                 "query_alias=" + row.get("query_alias") + " tables_used=" + row.get("tables_used"),
-                ownerClaim, row.get("modified_query"), Expect.info(), NEEDS_CLAIM_SWAP));
+                rbacClaim, row.get("modified_query"), Expect.info(), NEEDS_CLAIM_SWAP));
         }
         return cs;
     }
