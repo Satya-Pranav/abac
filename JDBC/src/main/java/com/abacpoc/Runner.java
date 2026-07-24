@@ -60,14 +60,7 @@ public class Runner {
         try (c) {
             boolean seeded = setUpFixture(engine, c);
             try {
-                List<Case> cases = new ArrayList<>(Cases.all(engine));
-                // Opt-in, default off: the OneTrust deployment (abac_onetrust.onetrust_sim) is a
-                // separate catalog/schema from the TPC-DS suite above, requires sql_onetrust/01-07
-                // already applied, and is unrelated to this run's TPC-DS fixture setup/teardown.
-                if (Boolean.parseBoolean(System.getenv().getOrDefault("INCLUDE_ONETRUST", "false"))) {
-                    cases.addAll(OnetrustCases.all());
-                }
-                runAll(engine, c, cases, seeded);
+                runAll(engine, c, Cases.all(engine), seeded);
             } finally {
                 if (seeded) {
                     try { dropFixture(engine, c); System.out.println(" Fixture: dropped."); }
@@ -77,6 +70,65 @@ public class Runner {
                 }
             }
         }
+
+        // Opt-in, default off: the OneTrust deployment (abac_onetrust.onetrust_sim) is governed by
+        // policies bound TO a DIFFERENT service principal than the TPC-DS suite above (see
+        // sql_onetrust/07_oauth_wiring.sql) -- reusing connection c's identity would leave OneTrust
+        // cases either erroring (no grants) or silently unfiltered (not in that policy's TO set), so
+        // this opens its own connection as that second principal, entirely separate from the TPC-DS
+        // run and its fixture.
+        if (Boolean.parseBoolean(System.getenv().getOrDefault("INCLUDE_ONETRUST", "false"))) {
+            runOnetrustCases(engine);
+        }
+    }
+
+    static void runOnetrustCases(Engine engine) throws SQLException {
+        if (!(engine instanceof DatabricksEngine)) {
+            System.out.println();
+            System.out.println("OneTrust cases SKIPPED: Databricks-only (engine is " + engine.name() + ")");
+            return;
+        }
+        String clientId = requireEnv("ONETRUST_CLIENT_ID");
+        String clientSecret = requireEnv("ONETRUST_CLIENT_SECRET");
+
+        System.out.println();
+        System.out.println("================================================================");
+        System.out.println(" OneTrust deployment (abac_onetrust.onetrust_sim) — separate service principal");
+        System.out.println(" (the one sql_onetrust/07_oauth_wiring.sql's policies are bound TO)");
+        System.out.println("================================================================");
+
+        Connection onetrustConn;
+        try {
+            onetrustConn = ((DatabricksEngine) engine).connectAs(clientId, clientSecret);
+        } catch (SQLException ce) {
+            System.out.println("!! OneTrust connection FAILED before any case ran: " + Jdbc.shortErr(ce.getMessage()));
+            System.out.println("   Check: ONETRUST_CLIENT_ID/ONETRUST_CLIENT_SECRET are a valid OAuth M2M pair with"
+                             + " workspace + warehouse access.");
+            throw ce;
+        }
+
+        try (onetrustConn) {
+            List<Case> cases = OnetrustCases.all();
+            System.out.println(" " + cases.size() + " cases (8 functional + 50 real compatible queries)");
+            System.out.println("================================================================");
+            int[] r = runCases(engine, onetrustConn, cases);
+            System.out.println();
+            System.out.println("================================================================");
+            System.out.println(" ONETRUST SUMMARY  ->  PASS " + r[0]
+                             + "   FAIL " + r[1] + "   SKIP " + r[2]
+                             + "   INFO " + r[3] + "   ERROR " + r[4]);
+            System.out.println("================================================================");
+        }
+    }
+
+    private static String requireEnv(String name) {
+        String v = System.getenv(name);
+        if (v == null || v.isEmpty()) {
+            throw new IllegalStateException("INCLUDE_ONETRUST=true requires " + name
+                + " (a service principal distinct from CLIENT_ID/CLIENT_SECRET — the one"
+                + " sql_onetrust/07_oauth_wiring.sql's policies are bound TO).");
+        }
+        return v;
     }
 
     // ---- Self-seeding fixture (namespaced; inserted at start, dropped at end) ----
@@ -109,8 +161,6 @@ public class Runner {
     }
 
     public static void runAll(Engine e, Connection c, List<Case> cases, boolean seeded) {
-        int pass = 0, fail = 0, skip = 0, info = 0, error = 0;
-
         List<Scenario> scenarios = new ArrayList<>();
         scenarios.add(new Dr2HotSwap());
         // ViewPolicySwap MUST come after Dr2HotSwap: Dr2HotSwap reverts dr2_row_filter to cutoff 10
@@ -135,6 +185,35 @@ public class Runner {
         System.out.println(" If a whole group (A9/B*/R*) returns 0/ALL unexpectedly, redeploy");
         System.out.println(" sql/05_dataset_udfs.sql's abac_row_filter — the live filter is not 3-branch.");
         System.out.println("================================================================");
+
+        int[] caseCounts = runCases(e, c, cases);
+        int pass = caseCounts[0], fail = caseCounts[1], skip = caseCounts[2], info = caseCounts[3], error = caseCounts[4];
+
+        for (Scenario s : scenarios) {
+            Optional<Capability> missing = firstMissing(s.requires(), e);
+            if (missing.isPresent()) {
+                System.out.println();
+                System.out.println("[" + s.id() + "] verdict: SKIP (" + e.name() + " lacks " + missing.get() + ")");
+                skip++;
+                continue;
+            }
+            int[] r = s.run(e, c);
+            pass += r[0]; fail += r[1]; skip += r[2]; error += r[3];
+        }
+
+        System.out.println();
+        System.out.println("================================================================");
+        System.out.println(" SUMMARY  ->  PASS " + pass
+                         + "   FAIL " + fail + "   SKIP " + skip
+                         + "   INFO " + info + "   ERROR " + error);
+        System.out.println("================================================================");
+    }
+
+    /** Runs a case list against a connection. Returns {pass, fail, skip, info, error}. No header/
+     *  summary printing, no scenarios -- callers own their own report framing (see runAll and
+     *  runOnetrustCases, which run against different connections/principals). */
+    static int[] runCases(Engine e, Connection c, List<Case> cases) {
+        int pass = 0, fail = 0, skip = 0, info = 0, error = 0;
 
         for (Case cs : cases) {
             Optional<Capability> missing = firstMissing(cs.requires(), e);
@@ -192,24 +271,7 @@ public class Runner {
             }
         }
 
-        for (Scenario s : scenarios) {
-            Optional<Capability> missing = firstMissing(s.requires(), e);
-            if (missing.isPresent()) {
-                System.out.println();
-                System.out.println("[" + s.id() + "] verdict: SKIP (" + e.name() + " lacks " + missing.get() + ")");
-                skip++;
-                continue;
-            }
-            int[] r = s.run(e, c);
-            pass += r[0]; fail += r[1]; skip += r[2]; error += r[3];
-        }
-
-        System.out.println();
-        System.out.println("================================================================");
-        System.out.println(" SUMMARY  ->  PASS " + pass
-                         + "   FAIL " + fail + "   SKIP " + skip
-                         + "   INFO " + info + "   ERROR " + error);
-        System.out.println("================================================================");
+        return new int[]{pass, fail, skip, info, error};
     }
 
     /**
