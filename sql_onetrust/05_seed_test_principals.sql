@@ -19,14 +19,17 @@ CREATE OR REPLACE TEMPORARY VIEW seed_control_entity AS
   SELECT id AS entity_id FROM abac_onetrust.onetrust_sim.cmb_controlimplementation ORDER BY id LIMIT 1;
 
 -- assignment 900001: explicit grant on the seeded assessment to u.assessment.owner
+-- SELECT ... UNION ALL, not a multi-row VALUES (...), (...): Databricks SQL cannot
+-- evaluate a non-deterministic expression like uuid() inside a VALUES inline table.
 INSERT INTO abac_onetrust.onetrust_sim.ABAC_Assignment
   (id, guid, staticIdentifier, name, objectType, sourceType, isActive, createdBy, createDT, updatedBy, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)
-VALUES
-  (900001, uuid(), 'phase1-test-seed', 'Owner', 'ASSESSMENT', 'SYSTEM', true, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false),
-  -- 900002: an INACTIVE grant (test case 8 — must NOT grant visibility)
-  (900002, uuid(), 'phase1-test-seed', 'Owner', 'ASSESSMENT', 'SYSTEM', false, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false),
-  -- 900003: group grant on the seeded control to test_group_1
-  (900003, uuid(), 'phase1-test-seed', 'Owner', 'CONTROL', 'SYSTEM', true, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false);
+SELECT 900001, uuid(), 'phase1-test-seed', 'Owner', 'ASSESSMENT', 'SYSTEM', true, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false
+UNION ALL
+-- 900002: an INACTIVE grant (test case 8 — must NOT grant visibility)
+SELECT 900002, uuid(), 'phase1-test-seed', 'Owner', 'ASSESSMENT', 'SYSTEM', false, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false
+UNION ALL
+-- 900003: group grant on the seeded control to test_group_1
+SELECT 900003, uuid(), 'phase1-test-seed', 'Owner', 'CONTROL', 'SYSTEM', true, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false;
 
 INSERT INTO abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment
   (assignmentId, policyId, entityId, entityOrganizationId, subjectId, subjectType, objectType, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)
