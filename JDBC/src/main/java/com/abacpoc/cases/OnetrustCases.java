@@ -183,7 +183,7 @@ public final class OnetrustCases {
         cs.add(new Case("OT-A6", "ABAC", "Deny wrong user: template tester has no ASSESSMENT assignment.",
             "Mirrors TPC-DS A6. u.template.owner is assigned only on cmb_template (TEMPLATE); querying "
                 + "cmb_assessment under root=ASSESSMENT finds no matching grant.",
-            templateOwnerClaim, "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+            Cases.claim("u.template.owner@example.com", "100", "ABAC", "ASSESSMENT", "[]"), "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
 
         cs.add(new Case("OT-A7", "ABAC", "Deny empty user: '' matches no real subjectID.",
             "Mirrors TPC-DS A7.",
