@@ -108,16 +108,21 @@ public class Runner {
         }
 
         try (onetrustConn) {
-            List<Case> cases = OnetrustCases.all();
-            System.out.println(" " + cases.size() + " cases (8 functional + 50 real compatible queries)");
-            System.out.println("================================================================");
-            int[] r = runCases(engine, onetrustConn, cases);
-            System.out.println();
-            System.out.println("================================================================");
-            System.out.println(" ONETRUST SUMMARY  ->  PASS " + r[0]
-                             + "   FAIL " + r[1] + "   SKIP " + r[2]
-                             + "   INFO " + r[3] + "   ERROR " + r[4]);
-            System.out.println("================================================================");
+            for (String sql : onetrustFixtureInserts()) Jdbc.exec(onetrustConn, sql);
+            try {
+                List<Case> cases = OnetrustCases.all();
+                System.out.println(" " + cases.size() + " cases");
+                System.out.println("================================================================");
+                int[] r = runCases(engine, onetrustConn, cases);
+                System.out.println();
+                System.out.println("================================================================");
+                System.out.println(" ONETRUST SUMMARY  ->  PASS " + r[0]
+                                 + "   FAIL " + r[1] + "   SKIP " + r[2]
+                                 + "   INFO " + r[3] + "   ERROR " + r[4]);
+                System.out.println("================================================================");
+            } finally {
+                for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
+            }
         }
     }
 
@@ -157,6 +162,55 @@ public class Runner {
             "DELETE FROM " + e.qualify("ABAC_Assignment") + " WHERE id IN ('suite_a_customer','suite_a_item','suite_a_sales')",
             "DELETE FROM " + e.qualify("ABAC_EntitySubjectAssignment") + " WHERE assignmentID IN ('suite_a_customer','suite_a_item','suite_a_sales')",
             "DELETE FROM " + e.qualify("orgHierarchy") + " WHERE orgID='" + Cases.SUITE_ORG + "' OR parentOrgID='" + Cases.SUITE_ORG + "'"
+        };
+    }
+
+    // ---- OneTrust self-seeding fixture (namespaced; inserted at start, dropped at end of
+    // runOnetrustCases). Mirrors fixtureInserts/fixtureDeletes above but hardcodes the OneTrust
+    // schema directly (OnetrustCases does the same -- see its q() helper) since abac_onetrust and
+    // abac_tpcds are different catalogs and Engine.qualify() is locked to the TPC-DS prefix.
+    //
+    // SUITE_ORG's child MUST include b99df4a4-2bf5-4c08-9483-bd636470bc11 -- the one real orgID
+    // all 14 verbatim cmb_v_inventoryaggregatedrisksummary rows carry (confirmed live via OT-T8:
+    // 10 of the 14 are ASSETS-type). A generic "first N orgs" sample would very likely miss it
+    // entirely, since cmb_v_inventoryaggregatedrisksummary's real org has no special ordering
+    // relationship to OrgHierarchyBase's other 67 real orgs.
+    private static final String ONETRUST_SCHEMA = "abac_onetrust.onetrust_sim";
+    private static final String ONETRUST_SUITE_ORG = "SUITE_ORG";
+    private static final String ONETRUST_SUITE_EMPTY = "SUITE_EMPTY";
+    private static final String ONETRUST_REAL_ASSETS_ORG = "b99df4a4-2bf5-4c08-9483-bd636470bc11";
+
+    static String[] onetrustFixtureInserts() {
+        return new String[] {
+            "INSERT INTO " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "(rootOrgId, rootOrgName, orgId, orgName, parentOrgId, parentOrgName, eventTime, recModifiedTime, isDeleted, tenantHash) "
+                + "SELECT rootOrgId, rootOrgName, orgId, orgName, '" + ONETRUST_SUITE_ORG + "', '" + ONETRUST_SUITE_ORG + "', "
+                + "current_timestamp(), current_timestamp(), false, tenantHash "
+                + "FROM " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "WHERE isDeleted = false AND orgId = '" + ONETRUST_REAL_ASSETS_ORG + "' LIMIT 1",
+            // DEL_ORG / LIVE_ORG: the SAME real org id as both a soft-deleted and a live child --
+            // isolates the isDeleted flag exactly like TPC-DS's ODEL/OLIVE pair (sql/13 Part E).
+            "INSERT INTO " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "(rootOrgId, rootOrgName, orgId, orgName, parentOrgId, parentOrgName, eventTime, recModifiedTime, isDeleted, tenantHash) "
+                + "SELECT rootOrgId, rootOrgName, orgId, orgName, 'DEL_ORG', 'DEL_ORG', "
+                + "current_timestamp(), current_timestamp(), true, tenantHash "
+                + "FROM " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "WHERE isDeleted = false AND orgId = '" + ONETRUST_REAL_ASSETS_ORG + "' LIMIT 1",
+            "INSERT INTO " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "(rootOrgId, rootOrgName, orgId, orgName, parentOrgId, parentOrgName, eventTime, recModifiedTime, isDeleted, tenantHash) "
+                + "SELECT rootOrgId, rootOrgName, orgId, orgName, 'LIVE_ORG', 'LIVE_ORG', "
+                + "current_timestamp(), current_timestamp(), false, tenantHash "
+                + "FROM " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "WHERE isDeleted = false AND orgId = '" + ONETRUST_REAL_ASSETS_ORG + "' LIMIT 1",
+        };
+        // SUITE_EMPTY needs no insert at all -- an org nothing references as parentOrgId is
+        // already "no children" by construction (same as TPC-DS's SUITE_EMPTY).
+    }
+
+    static String[] onetrustFixtureDeletes() {
+        return new String[] {
+            "DELETE FROM " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
+                + "WHERE parentOrgId IN ('" + ONETRUST_SUITE_ORG + "', 'DEL_ORG', 'LIVE_ORG')",
         };
     }
 
