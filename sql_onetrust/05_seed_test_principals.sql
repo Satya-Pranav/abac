@@ -45,5 +45,22 @@ FROM seed_control_entity;
 INSERT INTO abac_onetrust.onetrust_sim.UserGroupMembers (memberId, groupId, eventTime, recModifiedTime, isDeleted, tenantHash)
 VALUES ('u.group.member@example.com', 'test_group_1', current_timestamp(), current_timestamp(), false, 'phase1-test-seed');
 
+-- one real cmb_template id, picked the same deterministic way as seed_assessment_entity/
+-- seed_control_entity above.
+CREATE OR REPLACE TEMPORARY VIEW seed_template_entity AS
+  SELECT id AS entity_id FROM abac_onetrust.onetrust_sim.cmb_template ORDER BY id LIMIT 1;
+
+-- assignment 900004: explicit grant on the seeded template to u.template.owner (3rd real
+-- explicit-assignment identity, direct USER_ID -- not via a group, unlike test_group_1/CONTROL --
+-- so the ABAC-group cases have a same-mechanism-different-table pair independent of the group path).
+INSERT INTO abac_onetrust.onetrust_sim.ABAC_Assignment
+  (id, guid, staticIdentifier, name, objectType, sourceType, isActive, createdBy, createDT, updatedBy, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)
+SELECT 900004, uuid(), 'phase1-test-seed', 'Owner', 'TEMPLATE', 'SYSTEM', true, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false;
+
+INSERT INTO abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment
+  (assignmentId, policyId, entityId, entityOrganizationId, subjectId, subjectType, objectType, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)
+SELECT 900004, NULL, entity_id, NULL, 'u.template.owner@example.com', 'USER_ID', 'TEMPLATE', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false
+FROM seed_template_entity;
+
 -- Expected: no error; SELECT count(*) FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment
--- WHERE tenantHash = 'phase1-test-seed' returns 3.
+-- WHERE tenantHash = 'phase1-test-seed' returns 4.
