@@ -108,7 +108,10 @@ public class Runner {
         }
 
         try (onetrustConn) {
-            for (String sql : onetrustFixtureInserts()) Jdbc.exec(onetrustConn, sql);
+            boolean seeded = setUpOnetrustFixture(onetrustConn);
+            System.out.println(" Fixture: " + (seeded
+                ? "seeded namespaced rows (" + ONETRUST_SUITE_ORG + ", DEL_ORG, LIVE_ORG) — dropped at the end"
+                : "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"));
             try {
                 List<Case> cases = OnetrustCases.all();
                 System.out.println(" " + cases.size() + " cases");
@@ -212,6 +215,25 @@ public class Runner {
             "DELETE FROM " + ONETRUST_SCHEMA + ".OrgHierarchyBase "
                 + "WHERE parentOrgId IN ('" + ONETRUST_SUITE_ORG + "', 'DEL_ORG', 'LIVE_ORG')",
         };
+    }
+
+    /**
+     * Insert the OneTrust namespaced fixture into the REAL, shared OrgHierarchyBase table.
+     * Mirrors setUpFixture's pattern: pre-cleans any leftovers from a previously-aborted run
+     * before inserting (idempotent), and degrades gracefully -- logs and returns false, does NOT
+     * propagate -- if the SP lacks SELECT/MODIFY on OrgHierarchyBase or an insert otherwise fails,
+     * so OneTrust cases that don't depend on this fixture (OT-T1..OT-T8, the 50 real queries) still
+     * run instead of the whole suite crashing on a permission-denied error.
+     */
+    static boolean setUpOnetrustFixture(Connection onetrustConn) {
+        try {
+            for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql); // clear leftovers from an aborted run
+            for (String sql : onetrustFixtureInserts()) Jdbc.exec(onetrustConn, sql);
+            return true;
+        } catch (SQLException e2) {
+            System.out.println(" OneTrust fixture setup skipped: " + e2.getMessage());
+            return false;
+        }
     }
 
     public static void runAll(Engine e, Connection c, List<Case> cases, boolean seeded) {

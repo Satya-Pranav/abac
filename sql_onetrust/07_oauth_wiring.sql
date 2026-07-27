@@ -85,6 +85,13 @@ GRANT SELECT ON TABLE abac_onetrust.onetrust_sim.cmb_controlimplementation      
 GRANT SELECT ON TABLE abac_onetrust.onetrust_sim.cmb_template                         TO `<SERVICE_PRINCIPAL>`;
 GRANT SELECT ON TABLE abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary TO `<SERVICE_PRINCIPAL>`;
 
+-- OrgHierarchyBase is not a policied table -- it's the self-seeding test fixture's target
+-- (Runner.java's onetrustFixtureInserts()/onetrustFixtureDeletes(), see runOnetrustCases()).
+-- The fixture INSERTs are self-referential (INSERT INTO ... SELECT ... FROM OrgHierarchyBase
+-- WHERE ...) and the DELETE also reads to scope its WHERE clause, so the SP needs BOTH SELECT
+-- and MODIFY here, not just one.
+GRANT SELECT, MODIFY ON TABLE abac_onetrust.onetrust_sim.OrgHierarchyBase TO `<SERVICE_PRINCIPAL>`;
+
 GRANT EXECUTE ON FUNCTION abac_onetrust.onetrust_sim.abac_row_filter_wrapper_oauth TO `<SERVICE_PRINCIPAL>`;
 GRANT EXECUTE ON FUNCTION abac_onetrust.onetrust_sim.abac_row_filter              TO `<SERVICE_PRINCIPAL>`;
 GRANT EXECUTE ON FUNCTION abac_onetrust.onetrust_sim.get_user_context             TO `<SERVICE_PRINCIPAL>`;
