@@ -60,6 +60,7 @@ public final class OnetrustCases {
         cs.addAll(viewGroupCases());
         cs.addAll(scGroupCases());
         cs.addAll(tgGroupCases());
+        cs.addAll(ucGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -583,6 +584,18 @@ public final class OnetrustCases {
             "Mirrors TPC-DS TG3. abac_column_org (registered) matches no column on notag -- fails OPEN.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".notag", Expect.exact(20), NEEDS_CLAIM_SWAP));
 
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's UC2 -- a declared-type UDF param bound to a differently-typed column is
+     *  coerced, not rejected. Setup: sql_onetrust/15_udf_contract.sql. UC1 has no case -- see the
+     *  class doc there and Task 16's DP1 note. */
+    public static List<Case> ucGroupCases() {
+        List<Case> cs = new ArrayList<>();
+        cs.add(new Case("OT-UC2", "UC", "Declared DATE param vs bound TIMESTAMP column -- Databricks COERCES, it does not reject",
+            "Mirrors TPC-DS UC2. Setup: sql_onetrust/15_udf_contract.sql.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_udf.arity",
+            Expect.exact(9), NEEDS_CLAIM_SWAP));
         return cs;
     }
 
