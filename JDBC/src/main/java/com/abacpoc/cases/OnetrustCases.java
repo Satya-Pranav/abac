@@ -56,6 +56,7 @@ public final class OnetrustCases {
         cs.addAll(conflictGroupCases());
         cs.addAll(metaGroupCases());
         cs.addAll(threshGroupCases());
+        cs.addAll(rlsGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -489,6 +490,20 @@ public final class OnetrustCases {
             "Mirrors TPC-DS TH3. Confirms the boundary the '>=' predicate enforces.",
             claim, "SELECT min(quantity) FROM " + schema + ".thresh_inventory", Expect.atLeast(250), NEEDS_CLAIM_SWAP));
 
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's DR1 -- classic RLS, no tags, no policy. Setup:
+     *  sql_onetrust/11_direct_rls_and_dr2.sql (which also sets up DR2 for OnetrustDr2HotSwap, Task 18). */
+    public static List<Case> rlsGroupCases() {
+        List<Case> cs = new ArrayList<>();
+        cs.add(new Case("OT-DR1", "RLS",
+            "Direct classic RLS (NO tags, NO policy): rls_demo has SET ROW FILTER keeping id >= 10 -> count where < 10 is 0.",
+            "Mirrors TPC-DS DR1. Setup: sql_onetrust/11_direct_rls_and_dr2.sql. Data-independent proof "
+                + "that classic (table-managed) RLS filters WITHOUT any ABAC tag/policy machinery -- "
+                + "contrast OnetrustDr2HotSwap (Task 18), which does the same via a has_tag() policy.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_rls.rls_demo WHERE id < 10",
+            Expect.zero(), NEEDS_CLAIM_SWAP));
         return cs;
     }
 
