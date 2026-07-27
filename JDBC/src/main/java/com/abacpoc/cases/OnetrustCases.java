@@ -50,6 +50,7 @@ public final class OnetrustCases {
         cs.addAll(functionalCases());
         cs.addAll(abacGroupCases());
         cs.addAll(permGroupCases());
+        cs.addAll(rbacGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -230,6 +231,76 @@ public final class OnetrustCases {
             "Mirrors TPC-DS B4. permissions=['control.view','template.view'] (dot-notation, not object "
                 + "types) -- branch 2 compares against the OBJECT TYPE string 'CONTROL', not a permission string.",
             wrongFormatClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /**
+     * Mirrors TPC-DS's R1-R4 + ODEL/OLIVE (Cases.java). OT-R1 is an honest adaptation -- see the
+     * class-level note in this plan's Task 5: all 14 real cmb_v_inventoryaggregatedrisksummary
+     * rows share ONE real org, so org-subtree and per-row-assignment grants always overlap on
+     * this table and true additivity can't be shown without a fabricated second org.
+     */
+    public static List<Case> rbacGroupCases() {
+        String assetsOwnerRbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
+        String assetsOwnerEmptyOrgClaim = Cases.claim("u.assets.owner@example.com", "SUITE_EMPTY", "RBAC_ABAC", "ASSETS", "[]");
+        String assetsOwnerAbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "CONTROL", "[]");
+        String nobodySuiteOrgClaim = Cases.claim("u.nobody@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
+        String nobodyDelOrgClaim = Cases.claim("u.nobody@example.com", "DEL_ORG", "RBAC_ABAC", "ASSETS", "[]");
+        String nobodyLiveOrgClaim = Cases.claim("u.nobody@example.com", "LIVE_ORG", "RBAC_ABAC", "ASSETS", "[]");
+
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-R1", "RBAC",
+            "RBAC_ABAC org=SUITE_ORG with an OVERLAPPING explicit assignment -> org-subtree count unaffected (10). Adapted, see class doc.",
+            "TPC-DS R1 demonstrates additivity (org-subtree UNION explicit assignment > either alone). "
+                + "OneTrust's single-real-org dataset means u.assets.owner's explicit assignment (900005) "
+                + "is already covered by SUITE_ORG's subtree grant, so this instead proves the org-subtree "
+                + "count is unaffected -- not doubled, not broken -- by a redundant per-row grant.",
+            assetsOwnerRbacClaim,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
+            Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-R2", "RBAC",
+            "RBAC_ABAC is ADDITIVE (3a OR 3b): org=SUITE_EMPTY has no children (3a empty), but the explicit assignment (3b) still shows -> 1.",
+            "Mirrors TPC-DS R2. org=SUITE_EMPTY (no children seeded), so 3a's child set is empty; 3b EXISTS "
+                + "still matches u.assets.owner's explicit assignment on the seeded ASSETS entity.",
+            assetsOwnerEmptyOrgClaim,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary")
+                + " WHERE entityID = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.assets.owner@example.com' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-R3", "RBAC", "RBAC_ABAC does not help non-root tables: 3a lives only inside root=object_type -> 0.",
+            "Mirrors TPC-DS R3. mode=RBAC_ABAC, root=ASSETS, query cmb_controlimplementation (a "
+                + "different, non-root table) -- branch 3 (where 3a lives) never opens for it.",
+            assetsOwnerAbacClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-R4", "RBAC", "RBAC_ABAC is org-driven: a user with NO assignment -> only branch 3a's org subtree -> 10.",
+            "Mirrors TPC-DS R4. u.nobody has no assignments anywhere; mode=RBAC_ABAC, org=SUITE_ORG. "
+                + "3b EXISTS finds nothing, but 3a matches all 10 real ASSETS-type rows via the org subtree "
+                + "-- proves 3a is purely org-driven, independent of any grant.",
+            nobodySuiteOrgClaim,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
+            Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-ODEL", "RBAC",
+            "DEL_ORG's only child is soft-deleted -> excluded from branch 3a's child set; nobody has no assignment (3b) -> 0.",
+            "Mirrors TPC-DS ODEL. org=DEL_ORG; the fixture (Task 1) seeds the real ASSETS org as a child "
+                + "of DEL_ORG with isDeleted=true, so ABAC_OrgHierarchy (filtered to isDeleted IS NOT TRUE) "
+                + "excludes it -- 3a's child set is empty, and u.nobody has no assignment either.",
+            nobodyDelOrgClaim,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
+            Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-OLIVE", "RBAC",
+            "Control: the SAME org is a LIVE child of LIVE_ORG -> branch 3a includes it -> 10. Proves the isDeleted flag, not emptiness, excludes OT-ODEL.",
+            "Mirrors TPC-DS OLIVE. The SAME real org id is also seeded as a live child of LIVE_ORG "
+                + "(isDeleted=false) -- since it's the only org all 10 real ASSETS rows carry, all 10 pass. "
+                + "The only difference from OT-ODEL is the isDeleted flag, proving the flag (not emptiness) is what excludes it.",
+            nobodyLiveOrgClaim,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
+            Expect.exact(10), NEEDS_CLAIM_SWAP));
 
         return cs;
     }

@@ -62,5 +62,22 @@ INSERT INTO abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment
 SELECT 900004, NULL, entity_id, NULL, 'u.template.owner@example.com', 'USER_ID', 'TEMPLATE', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false
 FROM seed_template_entity;
 
+-- one real cmb_v_inventoryaggregatedrisksummary entity whose inventoryType is 'Assets' (maps to
+-- object type 'ASSETS' via entity_type_to_object_type -- see config.INVENTORY_TYPE_TO_OBJECT_TYPE).
+CREATE OR REPLACE TEMPORARY VIEW seed_assets_entity AS
+  SELECT entityID AS entity_id FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary
+  WHERE upper(inventoryType) = 'ASSETS' ORDER BY entityID LIMIT 1;
+
+-- assignment 900005: explicit grant on the seeded ASSETS entity to u.assets.owner (5th real
+-- explicit-assignment identity -- used by the RBAC group to prove 3b works independent of 3a).
+INSERT INTO abac_onetrust.onetrust_sim.ABAC_Assignment
+  (id, guid, staticIdentifier, name, objectType, sourceType, isActive, createdBy, createDT, updatedBy, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)
+SELECT 900005, uuid(), 'phase1-test-seed', 'Owner', 'ASSETS', 'SYSTEM', true, 'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false;
+
+INSERT INTO abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment
+  (assignmentId, policyId, entityId, entityOrganizationId, subjectId, subjectType, objectType, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)
+SELECT 900005, NULL, entity_id, NULL, 'u.assets.owner@example.com', 'USER_ID', 'ASSETS', current_timestamp(), current_timestamp(), current_timestamp(), 'phase1-test-seed', false
+FROM seed_assets_entity;
+
 -- Expected: no error; SELECT count(*) FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment
--- WHERE tenantHash = 'phase1-test-seed' returns 4.
+-- WHERE tenantHash = 'phase1-test-seed' returns 5.
