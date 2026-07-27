@@ -63,6 +63,7 @@ public final class OnetrustCases {
         cs.addAll(ucGroupCases());
         cs.addAll(xtGroupCases());
         cs.addAll(exGroupCases());
+        cs.addAll(clGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -629,6 +630,43 @@ public final class OnetrustCases {
         cs.add(new Case("OT-EX1", "EX", "EXCEPT clause: the excepted principal is NOT subject to the policy -- sees ALL rows",
             "Mirrors TPC-DS EX1. exempt_policy is bound TO `account users` EXCEPT the SP.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".exempt", Expect.exact(20), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's CL1-CL4 -- malformed/null-shaped claim JSON. No DDL; pure claim-shape
+     *  variation against the real seeded assignment (Task 2). */
+    public static List<Case> clGroupCases() {
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-CL1", "CL", "Claim missing the `mode` key entirely, sent by a user with NO assignment",
+            "Mirrors TPC-DS CL1. from_json produces ctx.mode = NULL -- branch 1 (mode='DISABLE') and "
+                + "3a (mode='RBAC_ABAC') are both unreadable without a mode, regardless of who ctx.user "
+                + "is; this user has no assignment either, so 3b also fails.",
+            "{\"tenant\":1,\"user\":\"u.cl.nobody@example.com\",\"org\":\"100\",\"root\":\"ASSESSMENT\",\"permissions\":[]}",
+            "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-CL2", "CL", "Claim with an explicit null user",
+            "Mirrors TPC-DS CL2. ctx.user = NULL, so the 3b subject match (esa.subjectId = ctx.user) "
+                + "is NULL for every row and no assignment can match.",
+            "{\"tenant\":1,\"user\":null,\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"ASSESSMENT\",\"permissions\":[]}",
+            "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-CL3", "CL", "Claim with `permissions` as a string instead of an array",
+            "Mirrors TPC-DS CL3. The declared struct type is ARRAY<STRING>; a scalar string is not "
+                + "coercible, so ctx.permissions is NULL and array_contains(NULL, ...) is NULL -- "
+                + "branch 2 cannot fire. root=ASSESSMENT querying cmb_template (non-root) means only "
+                + "branch 2 could have granted access.",
+            "{\"tenant\":1,\"user\":\"u.assessment.owner@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"ASSESSMENT\",\"permissions\":\"TEMPLATE\"}",
+            "SELECT count(*) FROM " + q("cmb_template"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-CL4", "CL", "Claim with a null ELEMENT inside `permissions` (not covered by CL1-CL3)",
+            "Mirrors TPC-DS CL4. permissions=[null,\"CONTROL\"] -- INFO until observed: does a null "
+                + "element alongside a real match break array_contains's ability to find 'CONTROL', or "
+                + "does it still correctly fire branch 2? root=ASSESSMENT querying cmb_controlimplementation "
+                + "(non-root) isolates branch 2 as the only path that could grant access.",
+            "{\"tenant\":1,\"user\":\"u.assessment.owner@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"ASSESSMENT\",\"permissions\":[null,\"CONTROL\"]}",
+            "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.info(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
