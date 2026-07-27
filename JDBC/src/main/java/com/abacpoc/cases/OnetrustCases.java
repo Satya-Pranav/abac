@@ -51,6 +51,7 @@ public final class OnetrustCases {
         cs.addAll(abacGroupCases());
         cs.addAll(permGroupCases());
         cs.addAll(rbacGroupCases());
+        cs.addAll(tenantOrgGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -301,6 +302,51 @@ public final class OnetrustCases {
             nobodyLiveOrgClaim,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
             Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's T1-T2/O1-O2 (Cases.java) -- ctx.tenant is never read by the filter; ctx.org
+     *  is read only inside the RBAC_ABAC branch (inert in plain ABAC). */
+    public static List<Case> tenantOrgGroupCases() {
+        String ownerClaimTenant999 = Cases.claim(999L, "u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[]");
+        String assetsRbacClaimTenant999 = Cases.claim(999L, "u.nobody@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
+        String orgUnusedAbacClaim = Cases.claim(1L, "u.assessment.owner@example.com", "ORG_UNUSED_999", "ABAC", "ASSESSMENT", "[]");
+        String nobodySuiteEmptyRbacClaim = Cases.claim(1L, "u.nobody@example.com", "SUITE_EMPTY", "RBAC_ABAC", "ASSETS", "[]");
+
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-T1t", "TENANT", "tenant is not read by the filter: OT-A2's claim with tenant=999 (vs tenant=1) -> identical result = 1.",
+            "Mirrors TPC-DS T1. abac_row_filter never references ctx.tenant, so the tenant value cannot "
+                + "affect any branch; evaluation is byte-identical to OT-A2.",
+            ownerClaimTenant999,
+            "SELECT count(*) FROM " + q("cmb_assessment")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-T2t", "TENANT", "tenant inert in RBAC_ABAC too: tenant=999, org=SUITE_ORG -> org still drives visibility -> same as OT-R4 = 10.",
+            "Mirrors TPC-DS T2. The OT-R4 claim (mode=RBAC_ABAC, org=SUITE_ORG) but tenant=999 -- tenant "
+                + "is again unread; org still drives 3a.",
+            assetsRbacClaimTenant999,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
+            Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-O1", "ORG", "org is inert in ABAC mode (3a is the only reader, and it needs RBAC_ABAC): org=ORG_UNUSED_999 vs OT-A2's org=100 -> EXISTS unchanged -> 1.",
+            "Mirrors TPC-DS O1. OT-A2's claim but org=ORG_UNUSED_999 and mode=ABAC -- ctx.org is read "
+                + "ONLY inside 3a, which requires mode=RBAC_ABAC; in ABAC mode org is never consulted.",
+            orgUnusedAbacClaim,
+            "SELECT count(*) FROM " + q("cmb_assessment")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-O2", "ORG", "org DRIVES RBAC_ABAC: user with NO assignment + org=SUITE_EMPTY (no children) -> 3a empty AND 3b empty -> 0.",
+            "Mirrors TPC-DS O2. Mirror of OT-R4 (org=SUITE_ORG -> 10); isolates the child-org set as 3a's "
+                + "sole input by emptying it.",
+            nobodySuiteEmptyRbacClaim,
+            "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
+            Expect.zero(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
