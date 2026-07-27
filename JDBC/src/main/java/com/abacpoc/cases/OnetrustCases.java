@@ -49,6 +49,7 @@ public final class OnetrustCases {
         List<Case> cs = new ArrayList<>();
         cs.addAll(functionalCases());
         cs.addAll(abacGroupCases());
+        cs.addAll(permGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -199,6 +200,36 @@ public final class OnetrustCases {
                 + "root<>object_type AND array_contains(permissions,'CONTROL') -- coarse, "
                 + "assignment-independent access to the whole related table (contrast OT-A5's per-row grant).",
             permissionsClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.all(), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's B1-B4 (Cases.java) -- the permissions (branch 2) path in isolation. */
+    public static List<Case> permGroupCases() {
+        String multiPermClaim = Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[\"CONTROL\",\"TEMPLATE\"]");
+        String omittedPermClaim = Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[\"TEMPLATE\"]");
+        String wrongFormatClaim = Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[\"control.view\",\"template.view\"]");
+
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-B1", "PERM", "CONTROL visible via branch 2 (CONTROL in permissions) -> ALL controls.",
+            "Mirrors TPC-DS B1. root=ASSESSMENT, permissions=[CONTROL,TEMPLATE], query cmb_controlimplementation.",
+            multiPermClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.all(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-B2", "PERM", "cmb_template via branch 2 (TEMPLATE in permissions) -> ALL templates.",
+            "Mirrors TPC-DS B2. Same claim as OT-B1, query cmb_template -- one permissions claim opens "
+                + "every governed related table it lists.",
+            multiPermClaim, "SELECT count(*) FROM " + q("cmb_template"), Expect.all(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-B3", "PERM", "Deny on a GOVERNED non-root table: CONTROL NOT in permissions (only TEMPLATE) -> 0.",
+            "Mirrors TPC-DS B3. root=ASSESSMENT, permissions=[TEMPLATE] (CONTROL deliberately omitted), "
+                + "query cmb_controlimplementation.",
+            omittedPermClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-B4", "PERM", "Wrong format: 'control.view' != object type 'CONTROL' -> branch 2 array_contains fails -> 0.",
+            "Mirrors TPC-DS B4. permissions=['control.view','template.view'] (dot-notation, not object "
+                + "types) -- branch 2 compares against the OBJECT TYPE string 'CONTROL', not a permission string.",
+            wrongFormatClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.zero(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
