@@ -57,6 +57,7 @@ public final class OnetrustCases {
         cs.addAll(metaGroupCases());
         cs.addAll(threshGroupCases());
         cs.addAll(rlsGroupCases());
+        cs.addAll(viewGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -504,6 +505,31 @@ public final class OnetrustCases {
                 + "contrast OnetrustDr2HotSwap (Task 18), which does the same via a has_tag() policy.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_rls.rls_demo WHERE id < 10",
             Expect.zero(), NEEDS_CLAIM_SWAP));
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's V1-V3 -- row filters (classic and ABAC) propagate through views, including
+     *  aggregates. Setup: sql_onetrust/12_views.sql (requires Task 10's SQL applied first). */
+    public static List<Case> viewGroupCases() {
+        String schema = "abac_onetrust.abac_rls";
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-V1", "V", "View over a governed base table (classic RLS) inherits the base row filter.",
+            "Mirrors TPC-DS V1. Setup: sql_onetrust/12_views.sql.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".v_rls_demo_governed WHERE id < 10",
+            Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-V2", "V", "View over a table governed by an ABAC policy still filters.",
+            "Mirrors TPC-DS V2.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".v_dr2_demo_governed",
+            Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-V3", "V", "Aggregate through a view cannot leak filtered rows.",
+            "Mirrors TPC-DS V3. min(id) through the view must be >= 10 -- an aggregate must not "
+                + "reveal filtered-out rows exist.",
+            Cases.DISABLE_CLAIM, "SELECT min(id) FROM " + schema + ".v_rls_demo_governed",
+            Expect.atLeast(10), NEEDS_CLAIM_SWAP));
+
         return cs;
     }
 
