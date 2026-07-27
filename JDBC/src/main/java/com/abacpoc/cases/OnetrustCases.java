@@ -53,6 +53,7 @@ public final class OnetrustCases {
         cs.addAll(rbacGroupCases());
         cs.addAll(tenantOrgGroupCases());
         cs.addAll(edgeGroupCases());
+        cs.addAll(conflictGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -402,6 +403,35 @@ public final class OnetrustCases {
             "Mirrors TPC-DS C8. Identities are matched exactly, case included.",
             Cases.claim("U.Assessment.Owner@example.com", "100", "ABAC", "ASSESSMENT", "[]"),
             "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's W1/WP1/WP2/WS1 -- UC_ABAC_MULTIPLE_ROW_FILTERS, table-wide, regardless of
+     *  column bindings. Setup: sql_onetrust/08_row_filter_conflict.sql (isolated schema). */
+    public static List<Case> conflictGroupCases() {
+        String schema = "abac_onetrust.abac_conflict";
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-W1", "CONFLICT", "Two policies on conflict_a (allow-all + deny-all): UC rejects the query -- at most one row filter per table.",
+            "Mirrors TPC-DS W1. Setup: sql_onetrust/08_row_filter_conflict.sql.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_a",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-WP1", "CONFLICT", "conflict_b count(*): two row filters with DIFFERENT bindings -> at most one row filter per table.",
+            "Mirrors TPC-DS WP1.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_b",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-WP2", "CONFLICT", "conflict_b SELECT col1: this column is bound by rf_b_1 ONLY, yet still errors -- the conflict is table-wide.",
+            "Mirrors TPC-DS WP2. The conflict is detected at the TABLE level during planning, before any column-specific evaluation.",
+            Cases.DISABLE_CLAIM, "SELECT col1 FROM " + schema + ".conflict_b",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-WS1", "CONFLICT", "conflict_c count(*): two row filters on the SAME column -> at most one row filter per table.",
+            "Mirrors TPC-DS WS1.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_c",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
