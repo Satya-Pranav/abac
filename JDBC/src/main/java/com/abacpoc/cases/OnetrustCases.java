@@ -59,6 +59,7 @@ public final class OnetrustCases {
         cs.addAll(rlsGroupCases());
         cs.addAll(viewGroupCases());
         cs.addAll(scGroupCases());
+        cs.addAll(tgGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -557,6 +558,30 @@ public final class OnetrustCases {
             "Mirrors TPC-DS SC4. scoped_b is covered by both the schema-level and a table-level policy.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".scoped_b",
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's TG1-TG3 -- tag-binding edge cases. Setup: sql_onetrust/14_tag_binding.sql.
+     *  OT-TG2 ships as INFO, same as TPC-DS's TG2 originally did, pending an OneTrust-side live
+     *  observation of which column (if either) Databricks actually binds. */
+    public static List<Case> tgGroupCases() {
+        String schema = "abac_onetrust.abac_tags";
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-TG1", "TG", "has_tag_value() binds only the column whose tag VALUE matches",
+            "Mirrors TPC-DS TG1. Setup: sql_onetrust/14_tag_binding.sql.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".tagval", Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-TG2", "TG", "Two columns sharing one tag -- record which column (if either) Databricks binds",
+            "Mirrors TPC-DS TG2. INFO until observed live on abac_onetrust -- TPC-DS's own TG2 found "
+                + "Databricks REFUSES to bind (UC_ABAC_AMBIGUOUS_COLUMN_MATCH), not that it silently "
+                + "picks the first column; confirm the same holds here before converting to a hard assertion.",
+            Cases.DISABLE_CLAIM, "SELECT a FROM " + schema + ".dualtag ORDER BY a", Expect.info(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-TG3", "TG", "A MATCH COLUMNS that matches nothing makes the policy SILENTLY not apply",
+            "Mirrors TPC-DS TG3. abac_column_org (registered) matches no column on notag -- fails OPEN.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".notag", Expect.exact(20), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
