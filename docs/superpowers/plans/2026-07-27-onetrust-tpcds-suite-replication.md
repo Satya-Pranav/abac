@@ -298,6 +298,7 @@ Add this method after `functionalCases()` (before `compatibleQueryCases()`):
 
         return cs;
     }
+```
 
 - [ ] **Step 2: Fold into `all()`**
 
@@ -390,6 +391,7 @@ Add after `abacGroupCases()`:
 
         return cs;
     }
+```
 
 - [ ] **Step 2: Fold into `all()`**
 
@@ -527,6 +529,7 @@ Add after `permGroupCases()`:
 
         return cs;
     }
+```
 
 - [ ] **Step 3: Fold into `all()`**
 
@@ -615,6 +618,8 @@ Add after `rbacGroupCases()`:
 
         return cs;
     }
+
+```
 
 - [ ] **Step 2: Fold into `all()`**
 
