@@ -55,6 +55,7 @@ public final class OnetrustCases {
         cs.addAll(edgeGroupCases());
         cs.addAll(conflictGroupCases());
         cs.addAll(metaGroupCases());
+        cs.addAll(threshGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -463,6 +464,30 @@ public final class OnetrustCases {
         cs.add(new Case("OT-N4", "META", "meta_ship: its ABAC_Assignment has isDeleted=true -> the AND a.isDeleted=false fails -> 0 (negative).",
             "Mirrors TPC-DS N4.",
             shipClaim, "SELECT count(*) FROM " + metaSchema + ".meta_ship WHERE id = 1", Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's TH1-TH3 -- a SEPARATE range (>=) row filter, isolated table but real
+     *  shared metadata. Setup: sql_onetrust/10_threshold_filter.sql. */
+    public static List<Case> threshGroupCases() {
+        String schema = "abac_onetrust.abac_thresh";
+        String claim = Cases.claim("u.thresh.tester@example.com", "100", "ABAC", "THRESH_INVENTORY", "[]");
+
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-TH1", "THRESH", "Range grant: tester assigned 250 -> rows with quantity >= 250 are visible -> 11 rows.",
+            "Mirrors TPC-DS TH1. Setup: sql_onetrust/10_threshold_filter.sql (quantity = id*25, 20 rows).",
+            claim, "SELECT count(*) FROM " + schema + ".thresh_inventory", Expect.exact(11), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-TH2", "THRESH", "The cutoff holds: among VISIBLE rows, none are below the threshold -> count where quantity < 250 is exactly 0.",
+            "Mirrors TPC-DS TH2. Data-independent: the row filter is ANDed with the query, so "
+                + "'quantity >= 250 AND quantity < 250' is impossible for every row.",
+            claim, "SELECT count(*) FROM " + schema + ".thresh_inventory WHERE quantity < 250", Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-TH3", "THRESH", "The floor holds: the minimum visible quantity is >= 250 (asserted; expected: exactly 250).",
+            "Mirrors TPC-DS TH3. Confirms the boundary the '>=' predicate enforces.",
+            claim, "SELECT min(quantity) FROM " + schema + ".thresh_inventory", Expect.atLeast(250), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
