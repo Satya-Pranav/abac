@@ -61,6 +61,7 @@ public final class OnetrustCases {
         cs.addAll(scGroupCases());
         cs.addAll(tgGroupCases());
         cs.addAll(ucGroupCases());
+        cs.addAll(xtGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -596,6 +597,19 @@ public final class OnetrustCases {
             "Mirrors TPC-DS UC2. Setup: sql_onetrust/15_udf_contract.sql.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_udf.arity",
             Expect.exact(9), NEEDS_CLAIM_SWAP));
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's XT1 -- the one-row-filter-per-table limit spans both ABAC and classic RLS.
+     *  Setup: sql_onetrust/16_cross_mechanism.sql. */
+    public static List<Case> xtGroupCases() {
+        List<Case> cs = new ArrayList<>();
+        cs.add(new Case("OT-XT1", "XT", "Classic SET ROW FILTER + ABAC policy on the SAME table",
+            "Mirrors TPC-DS XT1. Setup: sql_onetrust/16_cross_mechanism.sql. abac_fn keeps id<=10; "
+                + "classic_fn keeps id>15 -- disjoint predicates make every outcome diagnostic (see the "
+                + "decode table in the SQL file's comments).",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_xmech.both",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
         return cs;
     }
 
