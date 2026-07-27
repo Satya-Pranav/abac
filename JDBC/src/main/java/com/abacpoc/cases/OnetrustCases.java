@@ -58,6 +58,7 @@ public final class OnetrustCases {
         cs.addAll(threshGroupCases());
         cs.addAll(rlsGroupCases());
         cs.addAll(viewGroupCases());
+        cs.addAll(scGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -529,6 +530,33 @@ public final class OnetrustCases {
                 + "reveal filtered-out rows exist.",
             Cases.DISABLE_CLAIM, "SELECT min(id) FROM " + schema + ".v_rls_demo_governed",
             Expect.atLeast(10), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's SC1-SC4 -- ON SCHEMA policy scope. Setup: sql_onetrust/13_policy_scope.sql. */
+    public static List<Case> scGroupCases() {
+        String schema = "abac_onetrust.abac_scope";
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-SC1", "SC", "ON SCHEMA policy governs a table in that schema",
+            "Mirrors TPC-DS SC1. Setup: sql_onetrust/13_policy_scope.sql.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".scoped_a", Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-SC2", "SC", "ON SCHEMA policy covers EVERY matching member, not just the first",
+            "Mirrors TPC-DS SC2. scoped_c is a THIRD table in the same schema, covered by nothing but "
+                + "the schema-level policy.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".scoped_c WHERE id > 10", Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-SC3", "SC", "A table with no matching tag is NOT governed -- returns ALL rows",
+            "Mirrors TPC-DS SC3. ungoverned sits inside the policy's ON SCHEMA scope but has no "
+                + "abac_column_id tag -- the dangerous fail-open case.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".ungoverned", Expect.exact(20), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-SC4", "SC", "Schema-level + table-level row filters CONFLICT -- they do not have a precedence order",
+            "Mirrors TPC-DS SC4. scoped_b is covered by both the schema-level and a table-level policy.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".scoped_b",
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
