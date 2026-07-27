@@ -124,7 +124,11 @@ public class Runner {
                                  + "   INFO " + r[3] + "   ERROR " + r[4]);
                 System.out.println("================================================================");
             } finally {
-                for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
+                try {
+                    for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
+                } catch (SQLException e) {
+                    System.out.println(" OneTrust fixture teardown FAILED, remove manually: " + e.getMessage());
+                }
             }
         }
     }
