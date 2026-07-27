@@ -11,6 +11,12 @@ import com.abacpoc.engine.E6DataEngine;
 import com.abacpoc.engine.Engine;
 import com.abacpoc.scenario.Dr2HotSwap;
 import com.abacpoc.scenario.E6Scenarios;
+import com.abacpoc.scenario.OnetrustDr2HotSwap;
+import com.abacpoc.scenario.OnetrustE6Scenarios;
+import com.abacpoc.scenario.OnetrustSecondPrincipal;
+import com.abacpoc.scenario.OnetrustSecretInvariance;
+import com.abacpoc.scenario.OnetrustTokenExpiry;
+import com.abacpoc.scenario.OnetrustViewPolicySwap;
 import com.abacpoc.scenario.Scenario;
 import com.abacpoc.scenario.SecondPrincipal;
 import com.abacpoc.scenario.SecretInvariance;
@@ -114,14 +120,40 @@ public class Runner {
                 : "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"));
             try {
                 List<Case> cases = OnetrustCases.all();
-                System.out.println(" " + cases.size() + " cases");
+                List<Scenario> scenarios = new ArrayList<>();
+                // OnetrustViewPolicySwap MUST come after OnetrustDr2HotSwap: Dr2HotSwap reverts
+                // dr2_row_filter to cutoff 10 when it finishes, which is exactly the baseline
+                // ViewPolicySwap's first assertion expects -- same ordering constraint as TPC-DS's
+                // Dr2HotSwap/ViewPolicySwap pair in runAll. Do not reorder.
+                scenarios.add(new OnetrustDr2HotSwap());
+                scenarios.add(new OnetrustViewPolicySwap());
+                scenarios.add(new OnetrustSecretInvariance());
+                scenarios.add(new OnetrustSecondPrincipal());
+                scenarios.add(new OnetrustTokenExpiry());
+                scenarios.addAll(OnetrustE6Scenarios.all());
+
+                System.out.println(" " + cases.size() + " cases + " + scenarios.size() + " scenarios");
                 System.out.println("================================================================");
                 int[] r = runCases(engine, onetrustConn, cases);
+                int pass = r[0], fail = r[1], skip = r[2], info = r[3], error = r[4];
+
+                for (Scenario s : scenarios) {
+                    Optional<Capability> missing = firstMissing(s.requires(), engine);
+                    if (missing.isPresent()) {
+                        System.out.println();
+                        System.out.println("[" + s.id() + "] verdict: SKIP (" + engine.name() + " lacks " + missing.get() + ")");
+                        skip++;
+                        continue;
+                    }
+                    int[] sr = s.run(engine, onetrustConn);
+                    pass += sr[0]; fail += sr[1]; skip += sr[2]; error += sr[3];
+                }
+
                 System.out.println();
                 System.out.println("================================================================");
-                System.out.println(" ONETRUST SUMMARY  ->  PASS " + r[0]
-                                 + "   FAIL " + r[1] + "   SKIP " + r[2]
-                                 + "   INFO " + r[3] + "   ERROR " + r[4]);
+                System.out.println(" ONETRUST SUMMARY  ->  PASS " + pass
+                                 + "   FAIL " + fail + "   SKIP " + skip
+                                 + "   INFO " + info + "   ERROR " + error);
                 System.out.println("================================================================");
             } finally {
                 try {
