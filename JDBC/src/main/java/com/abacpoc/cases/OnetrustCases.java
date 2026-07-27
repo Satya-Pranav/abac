@@ -244,7 +244,7 @@ public final class OnetrustCases {
     public static List<Case> rbacGroupCases() {
         String assetsOwnerRbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String assetsOwnerEmptyOrgClaim = Cases.claim("u.assets.owner@example.com", "SUITE_EMPTY", "RBAC_ABAC", "ASSETS", "[]");
-        String assetsOwnerAbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "CONTROL", "[]");
+        String assetsOwnerAbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String nobodySuiteOrgClaim = Cases.claim("u.nobody@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String nobodyDelOrgClaim = Cases.claim("u.nobody@example.com", "DEL_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String nobodyLiveOrgClaim = Cases.claim("u.nobody@example.com", "LIVE_ORG", "RBAC_ABAC", "ASSETS", "[]");
