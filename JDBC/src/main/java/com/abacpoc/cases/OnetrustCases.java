@@ -62,6 +62,7 @@ public final class OnetrustCases {
         cs.addAll(tgGroupCases());
         cs.addAll(ucGroupCases());
         cs.addAll(xtGroupCases());
+        cs.addAll(exGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -610,6 +611,25 @@ public final class OnetrustCases {
                 + "decode table in the SQL file's comments).",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_xmech.both",
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's EX1/EX2 -- the TO ... EXCEPT exemption + its control. Setup:
+     *  sql_onetrust/17_except_and_defaults.sql. DP1 has no case -- DDL-time rejection, not
+     *  suite-observable, see the class doc there. */
+    public static List<Case> exGroupCases() {
+        String schema = "abac_onetrust.abac_gaps";
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-EX2", "EX", "CONTROL for OT-EX1: the SP IS subject to a broad TO with no EXCEPT -- filtered to 10",
+            "Mirrors TPC-DS EX2. Setup: sql_onetrust/17_except_and_defaults.sql. Must run/be read "
+                + "BEFORE OT-EX1 -- OT-EX1's result is only meaningful if this returns 10.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".subject", Expect.exact(10), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-EX1", "EX", "EXCEPT clause: the excepted principal is NOT subject to the policy -- sees ALL rows",
+            "Mirrors TPC-DS EX1. exempt_policy is bound TO `account users` EXCEPT the SP.",
+            Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".exempt", Expect.exact(20), NEEDS_CLAIM_SWAP));
+
         return cs;
     }
 
