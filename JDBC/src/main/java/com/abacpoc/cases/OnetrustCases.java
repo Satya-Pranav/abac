@@ -48,6 +48,7 @@ public final class OnetrustCases {
     public static List<Case> all() {
         List<Case> cs = new ArrayList<>();
         cs.addAll(functionalCases());
+        cs.addAll(abacGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -121,6 +122,83 @@ public final class OnetrustCases {
             rbacClaim,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
             Expect.atLeast(1), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /**
+     * Mirrors TPC-DS's A1-A9 (Cases.java) -- root-type explicit assignment: baseline allow,
+     * exact-id-list, same mechanism on a 2nd/3rd table, deny variants, branch-2 permissions.
+     * OT-A5 is an honest adaptation, not a 1:1 port -- see the class-level note below.
+     */
+    public static List<Case> abacGroupCases() {
+        String ownerClaim = Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[]");
+        String disabledClaim = Cases.claim("u.disabled.mode@example.com", "100", "DISABLE", "ASSESSMENT", "[]");
+        String templateOwnerClaim = Cases.claim("u.template.owner@example.com", "100", "ABAC", "TEMPLATE", "[]");
+        String groupMemberClaim = Cases.claim("u.group.member@example.com", "100", "ABAC", "CONTROL", "[]");
+        String emptyUserClaim = Cases.claim("", "100", "ABAC", "ASSESSMENT", "[]");
+        String permissionsClaim = Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "ASSESSMENT", "[\"CONTROL\"]");
+
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-A1", "ABAC", "DISABLE -> branch 1 fires; show all cmb_assessment rows, identity ignored.",
+            "Mirrors TPC-DS A1.",
+            disabledClaim, "SELECT count(*) FROM " + q("cmb_assessment"), Expect.all(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A2", "ABAC", "Baseline: branch 3b EXISTS matches the seeded assessment -> 1.",
+            "Mirrors TPC-DS A2 (the baseline everything else in this group contrasts against).",
+            ownerClaim,
+            "SELECT count(*) FROM " + q("cmb_assessment")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A3", "ABAC", "The visible id list is exactly [cmb_assessment_0] (asserted; observed run: cmb_assessment_0).",
+            "Mirrors TPC-DS A3. Same claim/evaluation as OT-A2, but projects id instead of count(*) -- "
+                + "proves the analyst sees precisely their assigned entity and no other id leaks.",
+            ownerClaim, "SELECT id FROM " + q("cmb_assessment") + " ORDER BY id",
+            Expect.exactIds("cmb_assessment_0"), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A4", "ABAC", "Template tester -> same mechanism, different table (cmb_template).",
+            "Mirrors TPC-DS A4. u.template.owner's real explicit assignment (seeded Task 2) on the same "
+                + "direct-USER_ID mechanism as OT-A2, on a different table.",
+            templateOwnerClaim,
+            "SELECT count(*) FROM " + q("cmb_template")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.template.owner@example.com' AND objectType = 'TEMPLATE' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A5", "ABAC",
+            "Group tester -> same table-count mechanism via GROUP membership, not direct USER_ID (adapted from TPC-DS A5).",
+            "TPC-DS A5 demonstrates one assignment granting MANY physical rows sharing an entity id "
+                + "(store_sales fan-out) -- no currently-policied OneTrust table has that shape (each is "
+                + "~1 real row per real id). Adapted to keep this group's mechanism coverage non-redundant: "
+                + "OT-A5 is the GROUP-membership grant (distinct from OT-A2/OT-A4's direct USER_ID grants).",
+            groupMemberClaim,
+            "SELECT count(*) FROM " + q("cmb_controlimplementation")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'test_group_1' AND objectType = 'CONTROL' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A6", "ABAC", "Deny wrong user: template tester has no ASSESSMENT assignment.",
+            "Mirrors TPC-DS A6. u.template.owner is assigned only on cmb_template (TEMPLATE); querying "
+                + "cmb_assessment under root=ASSESSMENT finds no matching grant.",
+            templateOwnerClaim, "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A7", "ABAC", "Deny empty user: '' matches no real subjectID.",
+            "Mirrors TPC-DS A7.",
+            emptyUserClaim, "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A8", "ABAC", "Deny wrong root: root != the queried table's object type.",
+            "Mirrors TPC-DS A8. u.assessment.owner's claim but root=CONTROL while querying cmb_assessment.",
+            Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "CONTROL", "[]"),
+            "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-A9", "ABAC", "Non-root table via branch 2: CONTROL in permissions -> ALL cmb_controlimplementation rows.",
+            "Mirrors TPC-DS A9. root=ASSESSMENT but permissions=[CONTROL]; branch 2 fires because "
+                + "root<>object_type AND array_contains(permissions,'CONTROL') -- coarse, "
+                + "assignment-independent access to the whole related table (contrast OT-A5's per-row grant).",
+            permissionsClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.all(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
