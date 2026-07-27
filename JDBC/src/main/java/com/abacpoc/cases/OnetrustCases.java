@@ -54,6 +54,7 @@ public final class OnetrustCases {
         cs.addAll(tenantOrgGroupCases());
         cs.addAll(edgeGroupCases());
         cs.addAll(conflictGroupCases());
+        cs.addAll(metaGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -432,6 +433,36 @@ public final class OnetrustCases {
             "Mirrors TPC-DS WS1.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_c",
             Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's N1-N4 -- onboarding a new table under the SAME deployed row filter.
+     *  Setup: sql_onetrust/09_onboard_new_tables.sql (isolated tables, real shared metadata). */
+    public static List<Case> metaGroupCases() {
+        String metaSchema = "abac_onetrust.abac_meta";
+        String promoClaim = Cases.claim("u.meta.tester@example.com", "100", "ABAC", "META_PROMO", "[]");
+        String storeClaim = Cases.claim("u.meta.tester@example.com", "100", "ABAC", "META_STORE", "[]");
+        String ccClaim = Cases.claim("u.meta.tester@example.com", "100", "ABAC", "META_CC", "[]");
+        String shipClaim = Cases.claim("u.meta.tester@example.com", "100", "ABAC", "META_SHIP", "[]");
+
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-N1", "META", "meta_promo: its esa row has isDeleted=true -> excluded -> 0 (negative).",
+            "Mirrors TPC-DS N1. Setup: sql_onetrust/09_onboard_new_tables.sql.",
+            promoClaim, "SELECT count(*) FROM " + metaSchema + ".meta_promo WHERE id = 1", Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-N2", "META", "meta_store: esa subjectType=USER_GROUP; meta.tester is a member -> group path grants -> 1 (positive).",
+            "Mirrors TPC-DS N2. Proves the group-membership grant path AND that a brand-new table onboards correctly.",
+            storeClaim, "SELECT count(*) FROM " + metaSchema + ".meta_store WHERE id = 1", Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-N3", "META", "meta_cc: its ABAC_Assignment has isActive=false -> the JOIN ... AND a.isActive fails -> 0 (negative).",
+            "Mirrors TPC-DS N3.",
+            ccClaim, "SELECT count(*) FROM " + metaSchema + ".meta_cc WHERE id = 1", Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-N4", "META", "meta_ship: its ABAC_Assignment has isDeleted=true -> the AND a.isDeleted=false fails -> 0 (negative).",
+            "Mirrors TPC-DS N4.",
+            shipClaim, "SELECT count(*) FROM " + metaSchema + ".meta_ship WHERE id = 1", Expect.zero(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
