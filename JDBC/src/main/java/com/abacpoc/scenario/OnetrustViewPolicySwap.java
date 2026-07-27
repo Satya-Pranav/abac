@@ -1,5 +1,6 @@
 package com.abacpoc.scenario;
 
+import com.abacpoc.cases.Cases;
 import com.abacpoc.engine.Capability;
 import com.abacpoc.engine.Engine;
 import com.abacpoc.util.Jdbc;
@@ -20,11 +21,11 @@ public class OnetrustViewPolicySwap implements Scenario {
     }
 
     @Override public int[] run(Engine e, Connection c) {
-        int[] r = runViewSwap(c);
+        int[] r = runViewSwap(e, c);
         return new int[]{r[0], r[1], 0, r[2]};
     }
 
-    static int[] runViewSwap(Connection c) {
+    static int[] runViewSwap(Engine e, Connection c) {
         int pass = 0, fail = 0, error = 0;
         final String VIEW = "abac_onetrust.abac_rls.v_dr2_demo_governed";
         final String CNT = "SELECT count(*) FROM " + VIEW;
@@ -35,6 +36,7 @@ public class OnetrustViewPolicySwap implements Scenario {
         System.out.println(" OnetrustDr2HotSwap, which reverted cutoff to 10, so baseline holds.");
         Thread guard = null;
         try {
+            e.applyIdentity(c, Cases.DISABLE_CLAIM);   // dr2_wrapper calls get_user_context() -> session must carry a claim
             long a1 = Jdbc.count(c, CNT);
             boolean ok1 = (a1 == 10);
             print("OT-VP1", "baseline THROUGH THE VIEW (ABAC policy; dr2_row_filter cutoff <= 10): 10 of 20 rows",

@@ -257,7 +257,7 @@ public final class OnetrustCases {
     public static List<Case> rbacGroupCases() {
         String assetsOwnerRbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String assetsOwnerEmptyOrgClaim = Cases.claim("u.assets.owner@example.com", "SUITE_EMPTY", "RBAC_ABAC", "ASSETS", "[]");
-        String assetsOwnerAbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
+        String assetsOwnerRbacAbacClaim = Cases.claim("u.assets.owner@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String nobodySuiteOrgClaim = Cases.claim("u.nobody@example.com", "SUITE_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String nobodyDelOrgClaim = Cases.claim("u.nobody@example.com", "DEL_ORG", "RBAC_ABAC", "ASSETS", "[]");
         String nobodyLiveOrgClaim = Cases.claim("u.nobody@example.com", "LIVE_ORG", "RBAC_ABAC", "ASSETS", "[]");
@@ -287,7 +287,7 @@ public final class OnetrustCases {
         cs.add(new Case("OT-R3", "RBAC", "RBAC_ABAC does not help non-root tables: 3a lives only inside root=object_type -> 0.",
             "Mirrors TPC-DS R3. mode=RBAC_ABAC, root=ASSETS, query cmb_controlimplementation (a "
                 + "different, non-root table) -- branch 3 (where 3a lives) never opens for it.",
-            assetsOwnerAbacClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.zero(), NEEDS_CLAIM_SWAP));
+            assetsOwnerRbacAbacClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.zero(), NEEDS_CLAIM_SWAP));
 
         cs.add(new Case("OT-R4", "RBAC", "RBAC_ABAC is org-driven: a user with NO assignment -> only branch 3a's org subtree -> 10.",
             "Mirrors TPC-DS R4. u.nobody has no assignments anywhere; mode=RBAC_ABAC, org=SUITE_ORG. "
