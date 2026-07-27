@@ -52,6 +52,7 @@ public final class OnetrustCases {
         cs.addAll(permGroupCases());
         cs.addAll(rbacGroupCases());
         cs.addAll(tenantOrgGroupCases());
+        cs.addAll(edgeGroupCases());
         cs.addAll(compatibleQueryCases());
         return cs;
     }
@@ -347,6 +348,60 @@ public final class OnetrustCases {
             nobodySuiteEmptyRbacClaim,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
             Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** Mirrors TPC-DS's C1-C8 -- claim parsing/case-sensitivity, against the real seeded
+     *  assessment (OT-A2's entity). No new SQL. */
+    public static List<Case> edgeGroupCases() {
+        String entitySubquery = "(SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+            + " WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1)";
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-C1", "EDGE", "mode 'abac' (lowercase): non-magic -> EXISTS path -> same as OT-A2.",
+            "Mirrors TPC-DS C1. 'abac' is neither the magic 'DISABLE' nor 'RBAC_ABAC', so evaluation falls to 3b EXISTS.",
+            Cases.claim("u.assessment.owner@example.com", "100", "abac", "ASSESSMENT", "[]"),
+            "SELECT count(*) FROM " + q("cmb_assessment") + " WHERE id = " + entitySubquery,
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C2", "EDGE", "mode 'disable' (lowercase): NOT allow-all (DISABLE is case-sensitive) -> 1.",
+            "Mirrors TPC-DS C2. Branch 1 compares ctx.mode = 'DISABLE' case-SENSITIVELY.",
+            Cases.claim("u.assessment.owner@example.com", "100", "disable", "ASSESSMENT", "[]"),
+            "SELECT count(*) FROM " + q("cmb_assessment") + " WHERE id = " + entitySubquery,
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C3", "EDGE", "root 'assessment' (lowercase) != 'ASSESSMENT' -> root branch fails -> 0.",
+            "Mirrors TPC-DS C3. Branch 3's gate 'ctx.root = object_type' is case-sensitive.",
+            Cases.claim("u.assessment.owner@example.com", "100", "ABAC", "assessment", "[]"),
+            "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C4", "EDGE", "missing 'permissions': from_json null; root path unaffected -> 1.",
+            "Mirrors TPC-DS C4. The root/3b path never touches permissions.",
+            "{\"tenant\":1,\"user\":\"u.assessment.owner@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"ASSESSMENT\"}",
+            "SELECT count(*) FROM " + q("cmb_assessment") + " WHERE id = " + entitySubquery,
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C5", "EDGE", "extra unknown field 'scope' ignored by from_json -> 1.",
+            "Mirrors TPC-DS C5. from_json drops fields not in the target STRUCT.",
+            "{\"tenant\":1,\"user\":\"u.assessment.owner@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"ASSESSMENT\",\"permissions\":[],\"scope\":\"xyz\"}",
+            "SELECT count(*) FROM " + q("cmb_assessment") + " WHERE id = " + entitySubquery,
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C6", "EDGE", "tenant as string \"1\": from_json tolerates the type mismatch; row set unchanged -> 1.",
+            "Mirrors TPC-DS C6.",
+            "{\"tenant\":\"1\",\"user\":\"u.assessment.owner@example.com\",\"org\":\"100\",\"mode\":\"ABAC\",\"root\":\"ASSESSMENT\",\"permissions\":[]}",
+            "SELECT count(*) FROM " + q("cmb_assessment") + " WHERE id = " + entitySubquery,
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C7", "EDGE", "empty claim {}: all fields null -> secure default deny -> 0.",
+            "Mirrors TPC-DS C7. A malformed/empty claim fails closed.",
+            "{}", "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-C8", "EDGE", "user mixed-case: exact subjectId compare fails -> 0.",
+            "Mirrors TPC-DS C8. Identities are matched exactly, case included.",
+            Cases.claim("U.Assessment.Owner@example.com", "100", "ABAC", "ASSESSMENT", "[]"),
+            "SELECT count(*) FROM " + q("cmb_assessment"), Expect.zero(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }
