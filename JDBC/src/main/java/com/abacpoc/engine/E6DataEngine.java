@@ -1,19 +1,44 @@
 package com.abacpoc.engine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * e6data engine binding. Connection surface only.
+ * e6data engine binding, wired for the OneTrust deployment specifically.
  *
- * The ABAC identity flow on e6data is still being built. {@link #applyIdentity} is the ONE seam
- * that changes when it lands — nothing else in the suite should need to move.
+ * The e6data connection itself (E6_USER/E6_PASSWORD) is a SEPARATE, orthogonal identity from the
+ * one row-filter policies are evaluated against: e6data's engine team fetches the actual Unity
+ * Catalog policy definitions for a table via the Databricks API, resolves them against the caller's
+ * identity, and applies the row filter during query planning -- the caller identity comes from a
+ * Databricks OAuth token carrying a custom_claim, attached per-statement via
+ * {@code Connection.setClientInfo("oauth_token", token)}. This is the exact mechanism demonstrated
+ * in e6-jdbc-abac-e2e/lib/e6-jdbc-abac-runner.jar's io.e6.jdbc.AbacStandaloneJDBCTest (decompiled
+ * for reference; not a dependency of this class).
+ *
+ * The token is minted with ONETRUST_CLIENT_ID/ONETRUST_CLIENT_SECRET, not the primary
+ * CLIENT_ID/CLIENT_SECRET: our Unity Catalog policies are bound TO the OneTrust SP specifically
+ * (see sql_onetrust/07_oauth_wiring.sql), independent of whatever authenticates the e6data
+ * connection itself. This engine is therefore scoped to OneTrust cases only -- see
+ * Runner.main()'s e6data branch.
  */
 public final class E6DataEngine implements Engine {
 
     private final String host, port, catalog, database, user, password;
+    private final String claimClientId, claimClientSecret, workspaceHost;
 
     public E6DataEngine() {
         this.host     = env("E6_HOST");
@@ -22,14 +47,21 @@ public final class E6DataEngine implements Engine {
         this.database = env("E6_DATABASE");
         this.user     = env("E6_USER");
         this.password = env("E6_PASSWORD");
+        this.claimClientId     = env("ONETRUST_CLIENT_ID");
+        this.claimClientSecret = env("ONETRUST_CLIENT_SECRET");
+        this.workspaceHost     = env("WORKSPACE_HOST");
     }
 
     @Override public String name() { return "e6data"; }
 
     @Override public String qualify(String table) { return catalog + "." + database + "." + table; }
 
-    /** Nothing ABAC-related is claimed yet. Cases requiring these report SKIP, not FAIL. */
-    @Override public boolean supports(Capability c) { return false; }
+    /** Only CLAIM_SWAP is proven -- every OnetrustCases case requires exactly this and nothing
+     *  else, so this alone unblocks all 119 cases. DDL-adjacent capabilities (POLICY_DDL, TAGS,
+     *  CLASSIC_RLS, VIEWS, SCHEMA_SCOPE) stay unsupported: only scenarios need them, and those
+     *  multi-step DDL-swap/polling behaviors haven't been validated against e6data. Cases requiring
+     *  them report SKIP, not FAIL -- same safe-by-default behavior as before this change. */
+    @Override public boolean supports(Capability c) { return c == Capability.CLAIM_SWAP; }
 
     @Override public Connection connect() throws SQLException {
         // The shaded jar-with-dependencies build overwrites META-INF/services/java.sql.Driver
@@ -50,17 +82,68 @@ public final class E6DataEngine implements Engine {
         return DriverManager.getConnection(url, props);
     }
 
-    /**
-     * SEAM — implement when the e6data ABAC identity flow exists.
-     *
-     * Throwing (rather than silently no-op'ing) is deliberate: a no-op would let cases run with
-     * NO identity and quietly pass against unfiltered data, which is the single most misleading
-     * outcome a governance suite can produce.
-     */
     @Override public void applyIdentity(Connection c, String ctxJson) throws SQLException {
-        throw new SQLException("E6DataEngine.applyIdentity is not implemented — "
-            + "the e6data ABAC identity flow is not available yet. "
-            + "Implement this method when it lands; nothing else needs to change.");
+        try {
+            c.setClientInfo("oauth_token", mintOAuthToken(ctxJson));
+        } catch (IOException ioe) {
+            throw new SQLException("Failed to mint the e6data identity token: " + ioe.getMessage(), ioe);
+        }
+    }
+
+    /** Same /oidc/v1/token + custom_claim flow used everywhere else in this suite (see
+     *  sql_onetrust/oauth_validate.py, AbacJdbcClient.mintCustomClaimToken) -- reimplemented here
+     *  as a plain HTTP POST rather than reusing AbacJdbcClient's version, which unwraps a
+     *  DatabricksConnection and is unusable against an e6data Connection. */
+    private String mintOAuthToken(String ctxJson) throws IOException {
+        URL url = new URL("https://" + workspaceHost + "/oidc/v1/token");
+        String body = "grant_type=client_credentials&scope=" + encode("all-apis")
+                    + "&custom_claim=" + encode(ctxJson);
+        byte[] payload = body.getBytes(StandardCharsets.UTF_8);
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setConnectTimeout(30_000);
+        conn.setReadTimeout(30_000);
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Authorization", basicAuth(claimClientId, claimClientSecret));
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setFixedLengthStreamingMode(payload.length);
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(payload);
+        }
+
+        int status = conn.getResponseCode();
+        String response = readAll(status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream());
+        if (status < 200 || status >= 300) {
+            throw new IOException("Token mint failed (HTTP " + status + "): " + response);
+        }
+        Matcher m = Pattern.compile("\"access_token\"\\s*:\\s*\"([^\"]+)\"").matcher(response);
+        if (!m.find()) {
+            throw new IOException("Databricks OAuth response did not contain access_token: " + response);
+        }
+        return m.group(1);
+    }
+
+    private static String encode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("UTF-8 is always supported", e);
+        }
+    }
+
+    private static String basicAuth(String clientId, String clientSecret) {
+        String creds = clientId + ":" + clientSecret;
+        return "Basic " + Base64.getEncoder().encodeToString(creds.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String readAll(InputStream in) throws IOException {
+        if (in == null) return "";
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        byte[] chunk = new byte[4096];
+        int n;
+        while ((n = in.read(chunk)) != -1) buf.write(chunk, 0, n);
+        return buf.toString(StandardCharsets.UTF_8.name());
     }
 
     @Override public void printBanner() {

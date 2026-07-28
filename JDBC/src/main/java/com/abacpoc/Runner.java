@@ -52,6 +52,18 @@ public class Runner {
         Engine engine = select();
         engine.printBanner();
 
+        if (engine instanceof E6DataEngine) {
+            // E6DataEngine is wired for the OneTrust deployment only (see its class doc) -- the
+            // TPC-DS suite below (abac_tpcds) is out of scope for this integration, so skip runAll()
+            // entirely rather than attempt a run e6data was never set up for.
+            if (!Boolean.parseBoolean(System.getenv().getOrDefault("INCLUDE_ONETRUST", "false"))) {
+                throw new IllegalStateException(
+                    "ENGINE=e6data only runs OneTrust cases currently -- set INCLUDE_ONETRUST=true.");
+            }
+            runOnetrustCases(engine);
+            return;
+        }
+
         Connection c;
         try {
             c = engine.connect();
@@ -89,78 +101,100 @@ public class Runner {
     }
 
     static void runOnetrustCases(Engine engine) throws SQLException {
-        if (!(engine instanceof DatabricksEngine)) {
+        if (!(engine instanceof DatabricksEngine) && !(engine instanceof E6DataEngine)) {
             System.out.println();
-            System.out.println("OneTrust cases SKIPPED: Databricks-only (engine is " + engine.name() + ")");
+            System.out.println("OneTrust cases SKIPPED: unsupported engine (" + engine.name() + ")");
             return;
         }
-        String clientId = requireEnv("ONETRUST_CLIENT_ID");
-        String clientSecret = requireEnv("ONETRUST_CLIENT_SECRET");
 
         System.out.println();
         System.out.println("================================================================");
-        System.out.println(" OneTrust deployment (abac_onetrust.onetrust_sim) — separate service principal");
-        System.out.println(" (the one sql_onetrust/07_oauth_wiring.sql's policies are bound TO)");
+        System.out.println(" OneTrust deployment (abac_onetrust.onetrust_sim)");
         System.out.println("================================================================");
 
         Connection onetrustConn;
-        try {
-            onetrustConn = ((DatabricksEngine) engine).connectAs(clientId, clientSecret);
-        } catch (SQLException ce) {
-            System.out.println("!! OneTrust connection FAILED before any case ran: " + Jdbc.shortErr(ce.getMessage()));
-            System.out.println("   Check: ONETRUST_CLIENT_ID/ONETRUST_CLIENT_SECRET are a valid OAuth M2M pair with"
-                             + " workspace + warehouse access.");
-            throw ce;
+        if (engine instanceof DatabricksEngine) {
+            // Unity Catalog policies here are bound TO a DIFFERENT service principal than the
+            // TPC-DS suite (see sql_onetrust/07_oauth_wiring.sql) -- reusing the primary
+            // connection's identity would leave OneTrust cases either erroring (no grants) or
+            // silently unfiltered (not in that policy's TO set), so this opens its own connection
+            // as that second principal, entirely separate from the TPC-DS run and its fixture.
+            String clientId = requireEnv("ONETRUST_CLIENT_ID");
+            String clientSecret = requireEnv("ONETRUST_CLIENT_SECRET");
+            try {
+                onetrustConn = ((DatabricksEngine) engine).connectAs(clientId, clientSecret);
+            } catch (SQLException ce) {
+                System.out.println("!! OneTrust connection FAILED before any case ran: " + Jdbc.shortErr(ce.getMessage()));
+                System.out.println("   Check: ONETRUST_CLIENT_ID/ONETRUST_CLIENT_SECRET are a valid OAuth M2M pair with"
+                                 + " workspace + warehouse access.");
+                throw ce;
+            }
+        } else {
+            // e6data separates connection identity (E6_USER/E6_PASSWORD) from row-filter identity
+            // (the per-statement OAuth token E6DataEngine.applyIdentity attaches via
+            // setClientInfo) -- one connection suffices; there is no second-principal connection
+            // to open the way Databricks requires.
+            try {
+                onetrustConn = engine.connect();
+            } catch (SQLException ce) {
+                System.out.println("!! OneTrust connection FAILED before any case ran: " + Jdbc.shortErr(ce.getMessage()));
+                System.out.println(engine.connectionHelp());
+                throw ce;
+            }
         }
 
         try (onetrustConn) {
-            boolean seeded = setUpOnetrustFixture(onetrustConn);
-            System.out.println(" Fixture: " + (seeded
-                ? "seeded namespaced rows (" + ONETRUST_SUITE_ORG + ", DEL_ORG, LIVE_ORG) — dropped at the end"
-                : "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"));
+            runOnetrustCasesOn(engine, onetrustConn);
+        }
+    }
+
+    private static void runOnetrustCasesOn(Engine engine, Connection onetrustConn) throws SQLException {
+        boolean seeded = setUpOnetrustFixture(onetrustConn);
+        System.out.println(" Fixture: " + (seeded
+            ? "seeded namespaced rows (" + ONETRUST_SUITE_ORG + ", DEL_ORG, LIVE_ORG) — dropped at the end"
+            : "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"));
+        try {
+            List<Case> cases = OnetrustCases.all();
+            List<Scenario> scenarios = new ArrayList<>();
+            // OnetrustViewPolicySwap MUST come after OnetrustDr2HotSwap: Dr2HotSwap reverts
+            // dr2_row_filter to cutoff 10 when it finishes, which is exactly the baseline
+            // ViewPolicySwap's first assertion expects -- same ordering constraint as TPC-DS's
+            // Dr2HotSwap/ViewPolicySwap pair in runAll. Do not reorder.
+            scenarios.add(new OnetrustDr2HotSwap());
+            scenarios.add(new OnetrustViewPolicySwap());
+            scenarios.add(new OnetrustSecretInvariance());
+            scenarios.add(new OnetrustSecondPrincipal());
+            scenarios.add(new OnetrustTokenExpiry());
+            scenarios.addAll(OnetrustE6Scenarios.all());
+
+            System.out.println(" " + cases.size() + " cases + " + scenarios.size() + " scenarios");
+            System.out.println("================================================================");
+            int[] r = runCases(engine, onetrustConn, cases);
+            int pass = r[0], fail = r[1], skip = r[2], info = r[3], error = r[4];
+
+            for (Scenario s : scenarios) {
+                Optional<Capability> missing = firstMissing(s.requires(), engine);
+                if (missing.isPresent()) {
+                    System.out.println();
+                    System.out.println("[" + s.id() + "] verdict: SKIP (" + engine.name() + " lacks " + missing.get() + ")");
+                    skip++;
+                    continue;
+                }
+                int[] sr = s.run(engine, onetrustConn);
+                pass += sr[0]; fail += sr[1]; skip += sr[2]; error += sr[3];
+            }
+
+            System.out.println();
+            System.out.println("================================================================");
+            System.out.println(" ONETRUST SUMMARY  ->  PASS " + pass
+                             + "   FAIL " + fail + "   SKIP " + skip
+                             + "   INFO " + info + "   ERROR " + error);
+            System.out.println("================================================================");
+        } finally {
             try {
-                List<Case> cases = OnetrustCases.all();
-                List<Scenario> scenarios = new ArrayList<>();
-                // OnetrustViewPolicySwap MUST come after OnetrustDr2HotSwap: Dr2HotSwap reverts
-                // dr2_row_filter to cutoff 10 when it finishes, which is exactly the baseline
-                // ViewPolicySwap's first assertion expects -- same ordering constraint as TPC-DS's
-                // Dr2HotSwap/ViewPolicySwap pair in runAll. Do not reorder.
-                scenarios.add(new OnetrustDr2HotSwap());
-                scenarios.add(new OnetrustViewPolicySwap());
-                scenarios.add(new OnetrustSecretInvariance());
-                scenarios.add(new OnetrustSecondPrincipal());
-                scenarios.add(new OnetrustTokenExpiry());
-                scenarios.addAll(OnetrustE6Scenarios.all());
-
-                System.out.println(" " + cases.size() + " cases + " + scenarios.size() + " scenarios");
-                System.out.println("================================================================");
-                int[] r = runCases(engine, onetrustConn, cases);
-                int pass = r[0], fail = r[1], skip = r[2], info = r[3], error = r[4];
-
-                for (Scenario s : scenarios) {
-                    Optional<Capability> missing = firstMissing(s.requires(), engine);
-                    if (missing.isPresent()) {
-                        System.out.println();
-                        System.out.println("[" + s.id() + "] verdict: SKIP (" + engine.name() + " lacks " + missing.get() + ")");
-                        skip++;
-                        continue;
-                    }
-                    int[] sr = s.run(engine, onetrustConn);
-                    pass += sr[0]; fail += sr[1]; skip += sr[2]; error += sr[3];
-                }
-
-                System.out.println();
-                System.out.println("================================================================");
-                System.out.println(" ONETRUST SUMMARY  ->  PASS " + pass
-                                 + "   FAIL " + fail + "   SKIP " + skip
-                                 + "   INFO " + info + "   ERROR " + error);
-                System.out.println("================================================================");
-            } finally {
-                try {
-                    for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
-                } catch (SQLException e) {
-                    System.out.println(" OneTrust fixture teardown FAILED, remove manually: " + e.getMessage());
-                }
+                for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
+            } catch (SQLException e) {
+                System.out.println(" OneTrust fixture teardown FAILED, remove manually: " + e.getMessage());
             }
         }
     }

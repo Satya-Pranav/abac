@@ -290,21 +290,31 @@ Databricks flow documented above:
 export ENGINE=e6data
 ```
 
-`E6DataEngine` is a **connection surface only** — see the warning at the end of this section
-before you run it.
+`E6DataEngine` runs the OneTrust deployment's 119 cases (`OnetrustCases.all()`) against a real
+e6data cluster — see "What actually runs" below for the exact scope before you run it.
 
 ### Env vars
 
 ```bash
 export E6_HOST="<e6data-host>"
 export E6_PORT="443"            # optional — defaults to 443 if unset
-export E6_CATALOG="<catalog>"
-export E6_DATABASE="<database>"
+export E6_CATALOG="abac_onetrust"
+export E6_DATABASE="onetrust_sim"
 export E6_USER="<user>"
 export E6_PASSWORD="<password>"          # from your secret store — do NOT hard-code
+
+# Identity-minting credentials -- separate from the E6_* connection creds above. Our Unity
+# Catalog policies are bound TO the OneTrust SP specifically (sql_onetrust/07_oauth_wiring.sql),
+# independent of whatever authenticates the e6data connection itself (E6_USER/E6_PASSWORD).
+export ONETRUST_CLIENT_ID="<ONETRUST_SP_APPLICATION_ID>"
+export ONETRUST_CLIENT_SECRET="<ONETRUST_SP_CLIENT_SECRET>"   # from your secret store — do NOT hard-code
+export WORKSPACE_HOST="<workspace-host>.azuredatabricks.net"
+
+export INCLUDE_ONETRUST=true    # required -- ENGINE=e6data throws at startup without this
 ```
 
-All five of `E6_HOST` / `E6_CATALOG` / `E6_DATABASE` / `E6_USER` / `E6_PASSWORD` are required
+`E6_HOST` / `E6_CATALOG` / `E6_DATABASE` / `E6_USER` / `E6_PASSWORD` /
+`ONETRUST_CLIENT_ID` / `ONETRUST_CLIENT_SECRET` / `WORKSPACE_HOST` are all required
 (`E6DataEngine` throws `IllegalStateException` at construction if any is missing or empty);
 `E6_PORT` is the only optional one.
 
@@ -349,19 +359,45 @@ Expect `1`.
 ### Running it
 
 ```bash
-ENGINE=e6data E6_HOST=<host> E6_PORT=<port> E6_CATALOG=<cat> E6_DATABASE=<db> \
+ENGINE=e6data INCLUDE_ONETRUST=true \
+E6_HOST=<host> E6_PORT=<port> E6_CATALOG=abac_onetrust E6_DATABASE=onetrust_sim \
 E6_USER=<user> E6_PASSWORD=<pw> \
+ONETRUST_CLIENT_ID=<onetrust-sp-app-id> ONETRUST_CLIENT_SECRET=<onetrust-sp-secret> \
+WORKSPACE_HOST=<workspace-host>.azuredatabricks.net \
 java -cp JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
 ```
 
-**A red or skipped run is the expected result today.** `E6DataEngine.supports(...)` returns
-`false` for every `Capability`, so every ABAC case reports `SKIP` rather than running, and
-`E6DataEngine.applyIdentity(...)` unconditionally throws `SQLException` — it is not a no-op. That
-throw is deliberate: the e6data ABAC identity flow doesn't exist yet, and silently no-op'ing here
-would let cases execute with **no identity applied** and report a false `PASS` against unfiltered
-data, which is the single most misleading outcome a governance suite can produce. Do not "fix"
-this by making `applyIdentity` a no-op — implement the real identity flow instead when it lands;
-`applyIdentity` is the one seam meant to change, nothing else in the suite should need to move.
+### What actually runs
+
+`ENGINE=e6data` is scoped to the OneTrust deployment only — `Runner.main()` skips the TPC-DS
+suite entirely (`abac_tpcds` is out of scope for this integration) and requires
+`INCLUDE_ONETRUST=true`, throwing `IllegalStateException` immediately if it's unset.
+
+`E6DataEngine.applyIdentity(...)` mints a Databricks OAuth token embedding the case's claim as
+`custom_claim` (via `ONETRUST_CLIENT_ID`/`ONETRUST_CLIENT_SECRET`/`WORKSPACE_HOST` — the same
+`/oidc/v1/token` flow used everywhere else in this suite), then attaches it to the e6data
+connection via `Connection.setClientInfo("oauth_token", token)` — the mechanism demonstrated in
+`e6-jdbc-abac-e2e/lib/e6-jdbc-abac-runner.jar`'s `io.e6.jdbc.AbacStandaloneJDBCTest`. e6data's own
+engine fetches the actual Unity Catalog policy definitions for the queried table via the
+Databricks API and applies the row filter during query planning; it does not reimplement the
+policy logic independently.
+
+`E6DataEngine.supports(...)` returns `true` only for `Capability.CLAIM_SWAP` — every one of
+`OnetrustCases.all()`'s 119 cases requires exactly this and nothing else, so all 119 attempt to
+run. The 12 scenario instances (`OnetrustDr2HotSwap`, `OnetrustViewPolicySwap`, etc.) require
+additional capabilities (`POLICY_DDL`, `TAGS`, `VIEWS`) that remain unsupported — their multi-step
+DDL-swap/polling behavior hasn't been validated against e6data — so they continue to report
+`SKIP`, same as before this change.
+
+**Known open question, not yet resolved either way:** e6data's policy-fetching correctly handles
+straightforward single-policy row filtering (most of Tier A). Whether it replicates Databricks'
+*specific* conflict-detection and scope-resolution rules for the harder Tier B mechanism cases
+(`OT-W1`/`OT-WP*`/`OT-WS1`/`OT-SC4`/`OT-XT1`'s `UC_ABAC_MULTIPLE_ROW_FILTERS`/
+`UC_ABAC_AND_NATIVE_ROW_FILTERS` conflict errors, `OT-TG2`'s `UC_ABAC_AMBIGUOUS_COLUMN_MATCH`,
+`OT-SC1`-`OT-SC3`'s schema-vs-table scope resolution) is untested — those are Databricks-internal
+query-planner validation behaviors that e6data's separate policy-resolution logic may or may not
+reproduce identically. Treat `FAIL`s in those specific groups as a signal to investigate the
+resolution rule, not necessarily a suite bug.
 
 ---
 
