@@ -676,24 +676,35 @@ public final class OnetrustCases {
     }
 
     /**
-     * The 50 real compatible queries, run as INFO cases (execution success checked, row counts
-     * not asserted) -- the first time they run under real row-filter enforcement instead of owner
-     * bypass. IDs are short (OTQ01..OTQ50); the full query_alias hash from the CSV goes in the
-     * description for traceability back to onetrust_sanity_run_annotated.csv.
+     * The 50 real compatible queries. IDs are short (OTQ01..OTQ50); the full query_alias hash from
+     * the CSV goes in the description for traceability back to onetrust_sanity_run_annotated.csv.
      *
      * Uses the SAME claim as OT-T8 (RBAC_ABAC, root=ASSETS, org=RBAC_ORG_ID), not the
      * ASSESSMENT/TEMPLATE owner claim: 39 of the 50 queries touch
      * cmb_v_inventoryaggregatedrisksummary, whose real object types (ASSETS/VENDORS/
      * PROCESSING-ACTIVITIES) the owner claim has no visibility into at all -- every one of those
      * 39 came back empty under it (confirmed on a live run). OT-T8 already proves this RBAC claim
-     * returns real, non-empty rows against that exact table, and RBAC_ORG_ID is the literal org id
-     * several of the real queries filter on directly (e.g. "WHERE main.parentOrgID = '<RBAC_ORG_ID>'"),
-     * so this claim is expected to surface real matching data for most of those 39. The remaining
-     * 11 (9 EntityGroupConfig -- 0 rows in the dataset regardless of claim; 2 CMB_Assessment/
-     * OrgHierarchy -- filter on hardcoded real-customer org/user ids absent from our synthetic
-     * seed) stay empty regardless of which claim is used here; that's a data-scope limit, not a
-     * claim problem.
+     * returns real, non-empty rows against that exact table.
+     *
+     * HARDENED 2026-07-28 from a clean live run (data generation is deterministic --
+     * onetrust_synth/generator.py hashes on row_id, no F.rand() -- so this split is stable across
+     * re-runs at the same data scale, not a one-time snapshot):
+     *   - 9 cases (EntityGroupConfig-touching) -> Expect.zero(): that table has 0 rows in this
+     *     dataset regardless of claim, a structural data-scope limit confirmed on every run so far.
+     *   - 15 cases -> Expect.atLeast(1): confirmed real, non-empty matching data under this claim
+     *     (atLeast, not an exact count, so minor future data-scale changes don't make these brittle).
+     *   - The remaining 26 stay Expect.info(): each has its own narrow, hardcoded filter (specific
+     *     substrings/ids/vendor-or-processing-activity object types the current single claim's
+     *     root=ASSETS can't reach via branch 3a even when matching data exists) -- empirically empty
+     *     and expected to stay that way, but not yet individually confirmed structural per-query, so
+     *     asserting zero() on all of them risks quietly enshrining "coincidentally empty" as
+     *     "correct" without having verified each one's specific reason.
      */
+    private static final Set<Integer> OTQ_ALWAYS_EMPTY = Set.of(
+        2, 4, 11, 30, 32, 33, 40, 41, 49);
+    private static final Set<Integer> OTQ_CONFIRMED_NONEMPTY = Set.of(
+        6, 7, 13, 14, 16, 17, 18, 19, 22, 28, 31, 37, 39, 42, 48);
+
     public static List<Case> compatibleQueryCases() {
         String rbacClaim = Cases.claim("u.rbac.viewer@example.com", RBAC_ORG_ID, "RBAC_ABAC", "ASSETS", "[]");
         List<Case> cs = new ArrayList<>();
@@ -701,10 +712,13 @@ public final class OnetrustCases {
         for (CSVRecord row : loadAnnotatedQueries()) {
             if (!"yes".equals(row.get("in_scope"))) continue;
             i++;
+            Expect exp = OTQ_ALWAYS_EMPTY.contains(i) ? Expect.zero()
+                        : OTQ_CONFIRMED_NONEMPTY.contains(i) ? Expect.atLeast(1)
+                        : Expect.info();
             cs.add(new Case(String.format("OTQ%02d", i), "ONETRUST-Q",
                 "real compatible query, run as the SP under a live claim",
                 "query_alias=" + row.get("query_alias") + " tables_used=" + row.get("tables_used"),
-                rbacClaim, row.get("modified_query"), Expect.info(), NEEDS_CLAIM_SWAP));
+                rbacClaim, row.get("modified_query"), exp, NEEDS_CLAIM_SWAP));
         }
         return cs;
     }
