@@ -549,10 +549,13 @@ public final class Cases {
           + "non-error result is diagnostic: 0 rows means they were ANDed, 10 means the ABAC policy won, "
           + "5 means classic won, 20 means neither applied. Expect instead the same one-row-filter-per-"
           + "table conflict Databricks raises for two ABAC policies -- proving the limit is per TABLE, not "
-          + "per mechanism.",
+          + "per mechanism. OBSERVED 2026-07-28: Databricks raises a DISTINCT, more specific error class "
+          + "for this native-vs-ABAC combination (UC_ABAC_AND_NATIVE_ROW_FILTERS) than for two ABAC "
+          + "policies (UC_ABAC_MULTIPLE_ROW_FILTERS) -- both share SQLSTATE 42KDJ, but the ErrorClass "
+          + "name differs; the underlying limit (per table, not per mechanism) is confirmed either way.",
             DISABLE_CLAIM,
             "SELECT count(*) FROM " + XMECH_S + "both",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"),
+            Expect.errorContains("UC_ABAC_AND_NATIVE_ROW_FILTERS"),
             Set.of(Capability.POLICY_DDL, Capability.TAGS, Capability.CLASSIC_RLS)));
 
         // ---- GAP. EXCEPT clause + DEFAULT UDF parameters (sql/21): the FIFTH isolated schema

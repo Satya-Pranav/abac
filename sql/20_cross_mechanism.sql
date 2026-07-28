@@ -14,8 +14,8 @@
 --   classic_fn (the classic filter) keeps id > 15   ->  5 of 20 rows if it alone applies
 -- Disjoint predicates turn every possible non-error outcome into a diagnostic signal instead
 -- of an ambiguous number. DECODE TABLE for `SELECT count(*) FROM abac_tpcds.abac_xmech.both`:
---   ERROR (UC_ABAC_MULTIPLE_ROW_FILTERS) => the one-filter-per-table limit spans BOTH
---                                           mechanisms (the expected / hypothesised result)
+--   ERROR (UC_ABAC_AND_NATIVE_ROW_FILTERS) => the one-filter-per-table limit spans BOTH
+--                                           mechanisms (CONFIRMED LIVE 2026-07-28)
 --   0                                    => the two filters were ANDed together
 --                                           (id <= 10 AND id > 15 is empty)
 --   10                                   => the ABAC policy won; classic was ignored
@@ -24,6 +24,12 @@
 -- If a COUNT comes back instead of an error, that is a significant finding, not a test bug:
 -- record the observed number and read it against the decode table above rather than treating
 -- it as a broken case.
+--
+-- CONFIRMED LIVE 2026-07-28: this native-vs-ABAC combination raises a DISTINCT, more specific
+-- error class -- UC_ABAC_AND_NATIVE_ROW_FILTERS -- than the two-ABAC-policies case (W1/WP1/WS1 in
+-- sql/12, SC4 in sql/17), which raises UC_ABAC_MULTIPLE_ROW_FILTERS. Both share SQLSTATE 42KDJ,
+-- but the ErrorClass name differs. The underlying limit (per table, not per mechanism) is
+-- confirmed either way.
 --
 -- Row arithmetic check: seeded via `range(1, 21)` -> ids 1..20 (20 rows total).
 --   id <= 10 matches {1..10}  -> 10 rows.
@@ -76,8 +82,8 @@ GRANT EXECUTE ON FUNCTION abac_tpcds.abac_xmech.classic_fn TO `76d5804d-d302-401
 
 -- Expect (as the SP via the suite):
 --   XT1: SELECT count(*) FROM abac_tpcds.abac_xmech.both
---        -> ERROR UC_ABAC_MULTIPLE_ROW_FILTERS (SQLSTATE 42KDJ) -- the expected / hypothesised
---           result: the per-table row-filter limit spans BOTH mechanisms, not just ABAC-vs-ABAC.
+--        -> ERROR UC_ABAC_AND_NATIVE_ROW_FILTERS (SQLSTATE 42KDJ) -- CONFIRMED LIVE 2026-07-28:
+--           the per-table row-filter limit spans BOTH mechanisms, not just ABAC-vs-ABAC.
 --        -> if instead a COUNT is returned, decode it per the table at the top of this file:
 --             0  => ANDed together   |  10 => ABAC won  |  5 => classic won  |  20 => neither applied
 

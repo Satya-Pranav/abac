@@ -609,9 +609,13 @@ public final class OnetrustCases {
         cs.add(new Case("OT-XT1", "XT", "Classic SET ROW FILTER + ABAC policy on the SAME table",
             "Mirrors TPC-DS XT1. Setup: sql_onetrust/16_cross_mechanism.sql. abac_fn keeps id<=10; "
                 + "classic_fn keeps id>15 -- disjoint predicates make every outcome diagnostic (see the "
-                + "decode table in the SQL file's comments).",
+                + "decode table in the SQL file's comments). OBSERVED 2026-07-28: this native-vs-ABAC "
+                + "combination raises UC_ABAC_AND_NATIVE_ROW_FILTERS, a DISTINCT error class from the "
+                + "two-ABAC-policies case (UC_ABAC_MULTIPLE_ROW_FILTERS) -- both share SQLSTATE 42KDJ, "
+                + "but the ErrorClass name differs; the underlying per-table (not per-mechanism) limit is "
+                + "confirmed either way -- see TPC-DS's XT1 for the same finding.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_xmech.both",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_AND_NATIVE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
         return cs;
     }
 

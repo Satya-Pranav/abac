@@ -8,13 +8,19 @@
 --   abac_fn    (ABAC policy)    keeps id <= 10  -> 10 of 20 rows if it alone applies
 --   classic_fn (classic filter) keeps id > 15   ->  5 of 20 rows if it alone applies
 -- DECODE TABLE for `SELECT count(*) FROM abac_onetrust.abac_xmech.both`:
---   ERROR (UC_ABAC_MULTIPLE_ROW_FILTERS) => the one-filter-per-table limit spans BOTH mechanisms
+--   ERROR (UC_ABAC_AND_NATIVE_ROW_FILTERS) => the one-filter-per-table limit spans BOTH mechanisms
 --   0     => the two filters were ANDed together (id <= 10 AND id > 15 is empty)
 --   10    => the ABAC policy won; classic was ignored
 --   5     => the classic filter won; the ABAC policy was ignored
 --   20    => NEITHER mechanism applied to this query
 -- If a COUNT comes back instead of an error, that is a significant finding, not a test bug --
 -- record the observed number and read it against the decode table, rather than treating it as broken.
+--
+-- CONFIRMED LIVE 2026-07-28: this native-vs-ABAC combination raises a DISTINCT, more specific
+-- error class -- UC_ABAC_AND_NATIVE_ROW_FILTERS -- than the two-ABAC-policies case (which raises
+-- UC_ABAC_MULTIPLE_ROW_FILTERS, see 08_row_filter_conflict.sql/13_policy_scope.sql). Both share
+-- SQLSTATE 42KDJ, but the ErrorClass name differs. The underlying limit (per table, not per
+-- mechanism) is confirmed either way.
 --
 -- SP the JDBC suite authenticates as: <ONETRUST_SP>
 -- =====================================================================
@@ -52,8 +58,8 @@ GRANT EXECUTE ON FUNCTION abac_onetrust.abac_xmech.classic_fn TO `<ONETRUST_SP>`
 
 -- Expect (as the SP via the suite):
 --   OT-XT1: SELECT count(*) FROM abac_onetrust.abac_xmech.both
---           -> ERROR UC_ABAC_MULTIPLE_ROW_FILTERS (expected/hypothesised: the per-table limit spans
---              BOTH mechanisms). If instead a COUNT comes back, decode it per the table above.
+--           -> ERROR UC_ABAC_AND_NATIVE_ROW_FILTERS (CONFIRMED LIVE 2026-07-28: the per-table limit
+--              spans BOTH mechanisms). If instead a COUNT comes back, decode it per the table above.
 
 -- ---- TEARDOWN ----
 -- Order matters: drop the classic row filter FIRST, then the ABAC policy, then the schema.
