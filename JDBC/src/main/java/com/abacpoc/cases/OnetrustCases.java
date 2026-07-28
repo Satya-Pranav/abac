@@ -688,20 +688,32 @@ public final class OnetrustCases {
      *
      * HARDENED 2026-07-28 from a clean live run (data generation is deterministic --
      * onetrust_synth/generator.py hashes on row_id, no F.rand() -- so this split is stable across
-     * re-runs at the same data scale, not a one-time snapshot):
-     *   - 9 cases (EntityGroupConfig-touching) -> Expect.zero(): that table has 0 rows in this
-     *     dataset regardless of claim, a structural data-scope limit confirmed on every run so far.
+     * re-runs at the same data scale, not a one-time snapshot). All 50 now carry a real assertion:
      *   - 15 cases -> Expect.atLeast(1): confirmed real, non-empty matching data under this claim
      *     (atLeast, not an exact count, so minor future data-scale changes don't make these brittle).
-     *   - The remaining 26 stay Expect.info(): each has its own narrow, hardcoded filter (specific
-     *     substrings/ids/vendor-or-processing-activity object types the current single claim's
-     *     root=ASSETS can't reach via branch 3a even when matching data exists) -- empirically empty
-     *     and expected to stay that way, but not yet individually confirmed structural per-query, so
-     *     asserting zero() on all of them risks quietly enshrining "coincidentally empty" as
-     *     "correct" without having verified each one's specific reason.
+     *   - 35 cases -> Expect.zero(), individually confirmed structural (not just "empirically empty
+     *     today"), via one of three mechanisms:
+     *       (a) 9 EntityGroupConfig-touching cases: that table has 0 rows in this dataset regardless
+     *           of claim.
+     *       (b) 1 case (OTQ10, cmb_assessment/OrgHierarchy): cmb_assessment's policy binds
+     *           object_type to the FIXED LITERAL 'ASSESSMENT' (sql_onetrust/04_policies.sql), so
+     *           under this claim (root='ASSETS', permissions=[]) branch 3's gate and branch 2's
+     *           array_contains both fail table-wide, independent of the query's own filter -- same
+     *           mechanism the existing OT-A8-style "wrong root" cases already assert elsewhere.
+     *       (c) 25 cases (cmb_v_inventoryaggregatedrisksummary): confirmed via a closed-world
+     *           argument -- this table's policy binds object_type to a PER-ROW tagged column, so
+     *           under root='ASSETS' the only rows ever reachable are the table's 10 real ASSETS-typed
+     *           rows (asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950,
+     *           asset_163271, asset_1_3631531, asset_216438, asset_5089207, cosmos_trigger_8417487 --
+     *           the complete, closed set observed across every non-empty case above). Each of these
+     *           25 queries' own inventoryName LOCATE()/LIMIT 0 filter is verified (including directly
+     *           against the raw seed CSV, not just the observed set) to exclude all 10 -- so the
+     *           empty result is a property of the query text against a known-closed dataset, not a
+     *           coincidence of this one run.
      */
     private static final Set<Integer> OTQ_ALWAYS_EMPTY = Set.of(
-        2, 4, 11, 30, 32, 33, 40, 41, 49);
+        1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15, 20, 21, 23, 24, 25, 26, 27, 29,
+        30, 32, 33, 34, 35, 36, 38, 40, 41, 43, 44, 45, 46, 47, 49, 50);
     private static final Set<Integer> OTQ_CONFIRMED_NONEMPTY = Set.of(
         6, 7, 13, 14, 16, 17, 18, 19, 22, 28, 31, 37, 39, 42, 48);
 
