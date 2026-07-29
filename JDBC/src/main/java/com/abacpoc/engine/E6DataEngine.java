@@ -37,12 +37,14 @@ import java.util.regex.Pattern;
  */
 public final class E6DataEngine implements Engine {
 
-    private final String host, port, catalog, database, user, password;
+    private final String host, port, secure, clusterName, catalog, database, user, password;
     private final String claimClientId, claimClientSecret, workspaceHost;
 
     public E6DataEngine() {
-        this.host     = env("E6_HOST");
-        this.port     = System.getenv().getOrDefault("E6_PORT", "443");
+        this.host        = env("E6_HOST");
+        this.port        = System.getenv().getOrDefault("E6_PORT", "443");
+        this.secure      = System.getenv().getOrDefault("E6_SECURE", "true");
+        this.clusterName = System.getenv().getOrDefault("E6_CLUSTER_NAME", "e6data-support-cluster-6");
         this.catalog  = env("E6_CATALOG");
         this.database = env("E6_DATABASE");
         this.user     = env("E6_USER");
@@ -75,10 +77,14 @@ public final class E6DataEngine implements Engine {
                 + "Check the com.e6data:e6-jdbc-driver dependency in JDBC/pom.xml.", cnfe);
         }
         String url = "jdbc:e6data://" + host + ":" + port
-                   + "/database=" + database + "&catalog=" + catalog;
+                   + "/secure=" + secure + "&cluster-name=" + clusterName
+                   + "&catalog=" + catalog + "&database=" + database;
         Properties props = new Properties();
-        props.put("user", user);
-        props.put("password", password);
+        props.setProperty("user", user);
+        props.setProperty("password", password);
+        props.put("connectionTimeout", 30);
+        props.put("queryTimeout", 300);
+        props.setProperty("auto-resume", "false");
         return DriverManager.getConnection(url, props);
     }
 
@@ -148,14 +154,17 @@ public final class E6DataEngine implements Engine {
 
     @Override public void printBanner() {
         System.out.println("Connecting: engine=e6data host=" + host + ":" + port
+                         + "  cluster=" + clusterName + "  secure=" + secure
                          + "  catalog=" + catalog + "  database=" + database
                          + "  user=" + DatabricksEngine.mask(user));
         System.out.println("URL: jdbc:e6data://" + host + ":" + port
-                         + "/database=" + database + "&catalog=" + catalog);
+                         + "/secure=" + secure + "&cluster-name=" + clusterName
+                         + "&catalog=" + catalog + "&database=" + database);
     }
 
     @Override public String connectionHelp() {
-        return "   Check: E6_HOST/E6_PORT reachable, E6_CATALOG='" + catalog
+        return "   Check: E6_HOST/E6_PORT reachable, E6_CLUSTER_NAME='" + clusterName
+             + "' is enabled (not disabled/suspended) in the e6data UI, E6_CATALOG='" + catalog
              + "' and E6_DATABASE='" + database + "' exist, and E6_USER/E6_PASSWORD are valid.";
     }
 

@@ -149,10 +149,16 @@ public class Runner {
     }
 
     private static void runOnetrustCasesOn(Engine engine, Connection onetrustConn) throws SQLException {
-        boolean seeded = setUpOnetrustFixture(onetrustConn);
+        // e6data is SELECT-only right now: an INSERT rejected mid-connection has been observed to
+        // poison the shared gRPC connection, turning every subsequent statement (all 119 cases) into
+        // a generic auth-looking failure. Skip the attempt entirely rather than try-and-catch it --
+        // catching the SQLException isn't enough, because the connection doesn't recover afterward.
+        boolean seeded = engine.supports(Capability.DML) && setUpOnetrustFixture(onetrustConn);
         System.out.println(" Fixture: " + (seeded
             ? "seeded namespaced rows (" + ONETRUST_SUITE_ORG + ", DEL_ORG, LIVE_ORG) — dropped at the end"
-            : "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"));
+            : engine.supports(Capability.DML)
+                ? "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"
+                : "SKIPPED (" + engine.name() + " does not support DML yet) — running without it"));
         try {
             List<Case> cases = OnetrustCases.all();
             List<Scenario> scenarios = new ArrayList<>();
@@ -192,7 +198,9 @@ public class Runner {
             System.out.println("================================================================");
         } finally {
             try {
-                for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
+                if (engine.supports(Capability.DML)) {
+                    for (String sql : onetrustFixtureDeletes()) Jdbc.exec(onetrustConn, sql);
+                }
             } catch (SQLException e) {
                 System.out.println(" OneTrust fixture teardown FAILED, remove manually: " + e.getMessage());
             }
@@ -369,7 +377,7 @@ public class Runner {
                 continue;
             }
 
-            Expect exp = cs.exp();
+            Expect exp = cs.expectFor(e);
 
             System.out.println();
             System.out.println("[" + cs.id() + "] (" + cs.group() + ") " + cs.purpose());
@@ -410,7 +418,13 @@ public class Runner {
                     System.out.println("   verdict: " + (ok ? "PASS" : "FAIL"));
                     if (ok) pass++; else fail++;
                 }
-            } catch (SQLException ex) {
+            } catch (SQLException | RuntimeException ex) {
+                // RuntimeException too, not just SQLException: e6data's E6ResultSet.getLong() has
+                // been observed to throw a raw ClassCastException (not wrapped in a SQLException,
+                // as the JDBC spec expects) when a case's SQL returns a non-numeric first column --
+                // e.g. an OTQ GROUP BY query shaped `SELECT name, COUNT(1) AS c FROM ... GROUP BY
+                // name`, whose first column is a String. An uncaught RuntimeException here would
+                // abort the entire run instead of just failing this one case.
                 System.out.println("   actual : <error> " + Jdbc.shortErr(ex.getMessage()));
                 System.out.println("   verdict: ERROR");
                 error++;

@@ -80,6 +80,60 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- e6data-only build. maven-assembly-plugin's naive unpack-and-overwrite merge does NOT
+           combine duplicate META-INF/services/* entries across dependency jars (see the caution
+           above), confirmed the hard way: e6data-jdbc-driver's own transitive dependencies
+           contribute MULTIPLE io.grpc.{NameResolverProvider,ManagedChannelProvider,
+           LoadBalancerProvider,ServerProvider} registrations, assembly-plugin only kept one
+           source's copy (wrong byte-for-byte vs. e6data's own proven-working demo jar), and the
+           resulting broken gRPC provider discovery made every single statement on the connection
+           fail with "UNKNOWN: status: 456, authenticate processed with custom error code",
+           reproduced even excluding databricks-jdbc from the assembly, so it was never actually
+           about the two drivers coexisting; it was this merge bug. maven-shade-plugin's
+           ServicesResourceTransformer merges (concatenates) these files correctly instead of
+           picking one arbitrarily. Also excludes com.databricks:databricks-jdbc: Runner.main()
+           never loads DatabricksEngine when ENGINE=e6data, so it isn't needed here, and dropping
+           it keeps this jar smaller. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>e6data-only</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>e6data-only</shadedClassifierName>
+              <artifactSet>
+                <excludes>
+                  <exclude>com.databricks:databricks-jdbc</exclude>
+                </excludes>
+              </artifactSet>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.abacpoc.Runner</mainClass>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

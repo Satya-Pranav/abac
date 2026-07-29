@@ -18,7 +18,21 @@ public final class Jdbc {
 
     public static long count(Connection c, String sql) throws SQLException {
         try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            return rs.next() ? rs.getLong(1) : 0L;
+            if (!rs.next()) return 0L;
+            try {
+                return rs.getLong(1);
+            } catch (SQLException | RuntimeException typeMismatch) {
+                // Not a scalar SELECT COUNT(*) result (column 1 isn't numeric) -- this is a
+                // multi-column / GROUP BY shaped query (e.g. the OTQ real compatible queries,
+                // which are verbatim BI-tool queries, not hand-written COUNT(*) cases). "Count"
+                // there means "how many rows does the filtered query return", so fall back to
+                // counting result rows instead of reading column 1's value. (Some drivers --
+                // e6data's included -- throw an unchecked ClassCastException here rather than a
+                // spec-compliant SQLException, hence catching RuntimeException too.)
+                long rows = 1; // the row already consumed by rs.next() above
+                while (rs.next()) rows++;
+                return rows;
+            }
         }
     }
 

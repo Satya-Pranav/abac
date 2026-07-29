@@ -424,24 +424,35 @@ public final class OnetrustCases {
         List<Case> cs = new ArrayList<>();
 
         cs.add(new Case("OT-W1", "CONFLICT", "Two policies on conflict_a (allow-all + deny-all): UC rejects the query -- at most one row filter per table.",
-            "Mirrors TPC-DS W1. Setup: sql_onetrust/08_row_filter_conflict.sql.",
+            "Mirrors TPC-DS W1. Setup: sql_onetrust/08_row_filter_conflict.sql. OBSERVED 2026-07-29 on"
+                + " e6data: it also refuses an unresolvable/conflicting policy, but via its own"
+                + " StorageServiceException(reason:ABAC_FAIL_CLOSED...) rather than Databricks'"
+                + " UC_ABAC_MULTIPLE_ROW_FILTERS -- same fail-closed intent, different vendor error text.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_a",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
 
         cs.add(new Case("OT-WP1", "CONFLICT", "conflict_b count(*): two row filters with DIFFERENT bindings -> at most one row filter per table.",
-            "Mirrors TPC-DS WP1.",
+            "Mirrors TPC-DS WP1. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed"
+                + " behavior as OT-W1, different error text than Databricks.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_b",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
 
         cs.add(new Case("OT-WP2", "CONFLICT", "conflict_b SELECT col1: this column is bound by rf_b_1 ONLY, yet still errors -- the conflict is table-wide.",
-            "Mirrors TPC-DS WP2. The conflict is detected at the TABLE level during planning, before any column-specific evaluation.",
+            "Mirrors TPC-DS WP2. The conflict is detected at the TABLE level during planning, before"
+                + " any column-specific evaluation. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED"
+                + " fail-closed behavior as OT-W1, different error text than Databricks.",
             Cases.DISABLE_CLAIM, "SELECT col1 FROM " + schema + ".conflict_b",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
 
         cs.add(new Case("OT-WS1", "CONFLICT", "conflict_c count(*): two row filters on the SAME column -> at most one row filter per table.",
-            "Mirrors TPC-DS WS1.",
+            "Mirrors TPC-DS WS1. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed"
+                + " behavior as OT-W1, different error text than Databricks.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".conflict_c",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
 
         return cs;
     }
@@ -559,9 +570,12 @@ public final class OnetrustCases {
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".ungoverned", Expect.exact(20), NEEDS_CLAIM_SWAP));
 
         cs.add(new Case("OT-SC4", "SC", "Schema-level + table-level row filters CONFLICT -- they do not have a precedence order",
-            "Mirrors TPC-DS SC4. scoped_b is covered by both the schema-level and a table-level policy.",
+            "Mirrors TPC-DS SC4. scoped_b is covered by both the schema-level and a table-level"
+                + " policy. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed behavior"
+                + " as OT-W1, different error text than Databricks.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".scoped_b",
-            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_MULTIPLE_ROW_FILTERS"), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
 
         return cs;
     }
@@ -578,10 +592,14 @@ public final class OnetrustCases {
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM " + schema + ".tagval", Expect.exact(10), NEEDS_CLAIM_SWAP));
 
         cs.add(new Case("OT-TG2", "TG", "Two columns sharing one tag -- record which column (if either) Databricks binds",
-            "Mirrors TPC-DS TG2. INFO until observed live on abac_onetrust -- TPC-DS's own TG2 found "
-                + "Databricks REFUSES to bind (UC_ABAC_AMBIGUOUS_COLUMN_MATCH), not that it silently "
-                + "picks the first column; confirm the same holds here before converting to a hard assertion.",
-            Cases.DISABLE_CLAIM, "SELECT a FROM " + schema + ".dualtag ORDER BY a", Expect.info(), NEEDS_CLAIM_SWAP));
+            "Mirrors TPC-DS TG2. INFO on Databricks until observed live on abac_onetrust -- TPC-DS's "
+                + "own TG2 found Databricks REFUSES to bind (UC_ABAC_AMBIGUOUS_COLUMN_MATCH), not that "
+                + "it silently picks the first column; confirm the same holds here before converting "
+                + "the Databricks side to a hard assertion. e6data OBSERVED 2026-07-29: it also refuses "
+                + "to resolve the ambiguous column match, via its own ABAC_FAIL_CLOSED error -- hardened "
+                + "to a real assertion for e6data only, since that side is now confirmed.",
+            Cases.DISABLE_CLAIM, "SELECT a FROM " + schema + ".dualtag ORDER BY a", Expect.info(), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
 
         cs.add(new Case("OT-TG3", "TG", "A MATCH COLUMNS that matches nothing makes the policy SILENTLY not apply",
             "Mirrors TPC-DS TG3. abac_column_org (registered) matches no column on notag -- fails OPEN.",

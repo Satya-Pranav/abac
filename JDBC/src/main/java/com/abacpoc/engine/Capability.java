@@ -7,5 +7,6 @@ public enum Capability {
     TAGS,          // governed column tags + has_tag()
     CLASSIC_RLS,   // ALTER TABLE ... SET ROW FILTER
     VIEWS,         // views over governed base tables
-    SCHEMA_SCOPE   // ON SCHEMA policy scoping
+    SCHEMA_SCOPE,  // ON SCHEMA policy scoping
+    DML            // INSERT/UPDATE/DELETE against ordinary tables (fixture seed/teardown)
 }

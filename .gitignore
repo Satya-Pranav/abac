@@ -9,3 +9,11 @@ baseline/*.txt
 .venv/
 __pycache__/
 *.pyc
+
+# e6data demo/e2e bundle -- abac-jdbc.env carries live SP secrets, never commit
+e6-jdbc-abac-e2e/
+
+# build artifacts, not source
+JDBC/output.log
+JDBC/dependency-reduced-pom.xml
+*.log

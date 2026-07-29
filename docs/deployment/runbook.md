@@ -298,6 +298,8 @@ e6data cluster — see "What actually runs" below for the exact scope before you
 ```bash
 export E6_HOST="<e6data-host>"
 export E6_PORT="443"            # optional — defaults to 443 if unset
+export E6_SECURE="true"         # optional — defaults to "true" if unset
+export E6_CLUSTER_NAME="<e6data-cluster-name>"   # optional — defaults to "e6data-support-cluster-6" if unset
 export E6_CATALOG="abac_onetrust"
 export E6_DATABASE="onetrust_sim"
 export E6_USER="<user>"
@@ -316,7 +318,19 @@ export INCLUDE_ONETRUST=true    # required -- ENGINE=e6data throws at startup wi
 `E6_HOST` / `E6_CATALOG` / `E6_DATABASE` / `E6_USER` / `E6_PASSWORD` /
 `ONETRUST_CLIENT_ID` / `ONETRUST_CLIENT_SECRET` / `WORKSPACE_HOST` are all required
 (`E6DataEngine` throws `IllegalStateException` at construction if any is missing or empty);
-`E6_PORT` is the only optional one.
+`E6_PORT` / `E6_SECURE` / `E6_CLUSTER_NAME` are optional, defaulting to `443` / `true` /
+`e6data-support-cluster-6` respectively.
+
+**`E6_CLUSTER_NAME` and `E6_SECURE` are load-bearing, not cosmetic.** The JDBC URL is
+`jdbc:e6data://<host>:<port>/secure=<secure>&cluster-name=<clusterName>&catalog=<catalog>&database=<database>`
+— this exact query-param shape was reverse-engineered from the proven-working
+`e6-jdbc-abac-e2e/lib/e6-jdbc-abac-runner.jar`'s `io.e6.jdbc.AbacStandaloneJDBCTest` (decompiled via
+`javap -v` to read its `StringConcatFactory` bootstrap constant). An earlier version of
+`E6DataEngine` built the URL without `secure=`/`cluster-name=` at all — get `E6_CLUSTER_NAME` wrong
+(or omit it and rely on the wrong default) and you will silently connect to a different cluster than
+the one you configured, or fail with a cluster-not-found/cluster-disabled error. If you hit `The
+cluster <x> is currently disabled` at connect time, that's an e6data-side cluster state issue (fix
+it in the e6data UI), not a code bug.
 
 ### Getting the driver on the classpath: the install-file fallback
 
@@ -360,12 +374,18 @@ Expect `1`.
 
 ```bash
 ENGINE=e6data INCLUDE_ONETRUST=true \
-E6_HOST=<host> E6_PORT=<port> E6_CATALOG=abac_onetrust E6_DATABASE=onetrust_sim \
+E6_HOST=<host> E6_PORT=<port> E6_SECURE=true E6_CLUSTER_NAME=<cluster-name> \
+E6_CATALOG=abac_onetrust E6_DATABASE=onetrust_sim \
 E6_USER=<user> E6_PASSWORD=<pw> \
 ONETRUST_CLIENT_ID=<onetrust-sp-app-id> ONETRUST_CLIENT_SECRET=<onetrust-sp-secret> \
 WORKSPACE_HOST=<workspace-host>.azuredatabricks.net \
 java -cp JDBC/target/jdbc-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.abacpoc.Runner
 ```
+
+Must be run from the `JDBC/` directory (or with `-cp JDBC/target/...` from the repo root but `cd
+JDBC` first) — `OnetrustCases.loadAnnotatedQueries()` resolves the 50-query CSV relative to CWD as
+`../onetrust/onetrust_sanity_run_annotated.csv`, and throws `IllegalStateException` if run from the
+wrong directory.
 
 ### What actually runs
 

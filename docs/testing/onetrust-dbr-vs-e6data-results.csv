@@ -1,0 +1,1722 @@
+case_id,test_category,description,query_used,claim_used,expected_result,dbr_result,e6data_status,reason_for_failure,failure_category,e6data_query_id
+OTQ01,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=d5dc4b5156925c72582b7a2a0780051cb37e7b1dafef947b96c254f55100704e tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_3', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ02,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=1e59e34ab40a9233440e47ea40635d0782bf74a00dcc414c9f632dddd7878c9c tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'Risk'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ03,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=745042167b626da7a60c21840a1da647a104c40b5cb190d441e07600e722950c tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_3103202', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ04,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=d06ec13fee524956dc321ac5e4557dd65c46b4d3aa8925e09c5b2021b2fa1188 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'AssessmentStageChangeEventDto'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ05,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=59a1112f44a676b3cb1b582a586be1f71a67bd5e6495b61101d39730589605d9 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_r', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ06,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=c5c75b4e8a21cd14a37543c2313ad5e40db8ff03f0dab7230ec29dfce3449da6 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asse', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ07,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=2feed11430eb041a378f5cced83b8cfe6b4935c05ea3440d2e02b70913b7c7a1 tables_used=CMB_Assessment, OrgHierarchy","WITH cte1(`name`, `number`, `questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738`, `questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f`, `templateID`, `templateName`, `templateType`, `GROUP_BY0Assessment`) AS (
+  /* `name` */
+  SELECT
+    CASE
+      WHEN NOT a1_0.name IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        a1_0.name AS value,
+        CASE WHEN NOT a1_0.id IS NULL THEN STRUCT(a1_0.id AS id) END AS hyperlink
+      )
+    END, /* `number` */
+    CASE
+      WHEN NOT a1_0.number IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.number AS value, NULL AS hyperlink)
+    END, /* `questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738` */
+    CASE
+      WHEN NOT ELEMENT_AT(a1_0.questionRootMap, 'a2d09d79-b6e2-42d7-a04d-a5726a062738') IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        ELEMENT_AT(a1_0.questionRootMap, 'a2d09d79-b6e2-42d7-a04d-a5726a062738') AS value,
+        NULL AS hyperlink
+      )
+    END, /* `questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f` */
+    CASE
+      WHEN NOT ELEMENT_AT(a1_0.questionRootMap, 'd82a01e9-276b-4499-8b47-7d5068536f4f') IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        ELEMENT_AT(a1_0.questionRootMap, 'd82a01e9-276b-4499-8b47-7d5068536f4f') AS value,
+        NULL AS hyperlink
+      )
+    END, /* `templateID` */
+    CASE
+      WHEN NOT a1_0.templateID IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.templateID AS value, NULL AS hyperlink)
+    END, /* `templateName` */
+    CASE
+      WHEN (
+        NOT a1_0.template IS NULL OR NOT a1_0.templateID IS NULL
+      )
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        STRUCT(a1_0.template AS value, a1_0.templateID AS valueKey) AS value,
+        NULL AS hyperlink
+      )
+    END, /* `templateType` */
+    CASE
+      WHEN NOT a1_0.templateType IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.templateType AS value, NULL AS hyperlink)
+    END,
+    STRUCT(a1_0.id AS id)
+  FROM abac_onetrust.onetrust_sim.CMB_Assessment AS a1_0
+  JOIN abac_onetrust.onetrust_sim.OrgHierarchy AS oh1_0
+    ON oh1_0.orgID = a1_0.orgGroupID AND (
+      oh1_0.isDeleted = FALSE
+    )
+  WHERE
+    (
+      a1_0.isDeleted = FALSE
+    )
+    AND (
+      oh1_0.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+      OR ARRAY_CONTAINS(a1_0.userIdsAssociatedWithAssessment, '79f09a0f-fbd7-4439-9e1e-d48abe62c98e')
+    )
+  GROUP BY ALL
+), data(_0, _1, _2, _3, _4, _5) AS (
+  SELECT
+    CAST(cte11_0.`name`.`value` AS STRING),
+    TO_JSON(cte11_0.`templateName`.`value`),
+    TO_JSON(cte11_0.`questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738`.`value`),
+    TO_JSON(cte11_0.`questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f`.`value`),
+    cte11_0.`name`.`hyperlink`.`id`,
+    cte11_0.`GROUP_BY0Assessment`
+  FROM cte1 AS cte11_0
+  WHERE
+    (
+      NOT cte11_0.`templateType`.`value` IN ('RA', 'GRA', 'DINA', 'BENCHMARKING')
+      OR cte11_0.`templateType`.`value` IS NULL
+    )
+    AND cte11_0.`templateID`.`value` IN ('47f3f457-f38f-4ed0-883e-05eee0d779bf')
+  ORDER BY
+    cte11_0.`number`.`value`,
+    6
+)
+SELECT
+  COUNT(*)
+FROM data AS data1_0","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,INFO (actual: [0]),ERROR (actual: <error> INTERNAL: Q904914-421-20260729.105351.506: java.lang.RuntimeException: ABAC token is required when requesting table policies),e6data: <error> INTERNAL: Q904914-421-20260729.105351.506: java.lang.RuntimeException: ABAC token is required when requesting table policies | dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,e6data engine gap: multi-table query (JOIN across 2 governed tables) -- policy-fetch does not propagate the ABAC token for the 2nd table,Q904914-421-20260729.105351.506
+OTQ08,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=0031ae576d4cb0cfc253e8bf978e37853143111407a8ca9b613fb4e31b1cd9d7 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_31032', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ09,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=f723c94d2d9849de9bcd239623497a5ffd0d975d054c5fac926ffd1e2e0ad32d tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_3103', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ10,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=33dcf07ed783a2e6724a9774666635da93fb6f150aeff5892b4f3a579958bf49 tables_used=CMB_Assessment, OrgHierarchy","WITH cte0(`name`, `number`, `questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738`, `questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f`, `templateID`, `templateName`, `templateType`, `GROUP_BY0Assessment`) AS (
+  /* `name` */
+  SELECT
+    CASE
+      WHEN NOT a1_0.name IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        a1_0.name AS value,
+        CASE WHEN NOT a1_0.id IS NULL THEN STRUCT(a1_0.id AS id) END AS hyperlink
+      )
+    END, /* `number` */
+    CASE
+      WHEN NOT a1_0.number IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.number AS value, NULL AS hyperlink)
+    END, /* `questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738` */
+    CASE
+      WHEN NOT ELEMENT_AT(a1_0.questionRootMap, 'a2d09d79-b6e2-42d7-a04d-a5726a062738') IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        ELEMENT_AT(a1_0.questionRootMap, 'a2d09d79-b6e2-42d7-a04d-a5726a062738') AS value,
+        NULL AS hyperlink
+      )
+    END, /* `questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f` */
+    CASE
+      WHEN NOT ELEMENT_AT(a1_0.questionRootMap, 'd82a01e9-276b-4499-8b47-7d5068536f4f') IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        ELEMENT_AT(a1_0.questionRootMap, 'd82a01e9-276b-4499-8b47-7d5068536f4f') AS value,
+        NULL AS hyperlink
+      )
+    END, /* `templateID` */
+    CASE
+      WHEN NOT a1_0.templateID IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.templateID AS value, NULL AS hyperlink)
+    END, /* `templateName` */
+    CASE
+      WHEN (
+        NOT a1_0.template IS NULL OR NOT a1_0.templateID IS NULL
+      )
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        STRUCT(a1_0.template AS value, a1_0.templateID AS valueKey) AS value,
+        NULL AS hyperlink
+      )
+    END, /* `templateType` */
+    CASE
+      WHEN NOT a1_0.templateType IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.templateType AS value, NULL AS hyperlink)
+    END,
+    STRUCT(a1_0.id AS id)
+  FROM abac_onetrust.onetrust_sim.CMB_Assessment AS a1_0
+  JOIN abac_onetrust.onetrust_sim.OrgHierarchy AS oh1_0
+    ON oh1_0.orgID = a1_0.orgGroupID AND (
+      oh1_0.isDeleted = FALSE
+    )
+  WHERE
+    (
+      a1_0.isDeleted = FALSE
+    )
+    AND (
+      oh1_0.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+      OR ARRAY_CONTAINS(a1_0.userIdsAssociatedWithAssessment, '79f09a0f-fbd7-4439-9e1e-d48abe62c98e')
+    )
+  GROUP BY ALL
+)
+SELECT
+  CAST(cte01_0.`name`.`value` AS STRING),
+  TO_JSON(cte01_0.`templateName`.`value`),
+  TO_JSON(cte01_0.`questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738`.`value`),
+  TO_JSON(cte01_0.`questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f`.`value`),
+  cte01_0.`name`.`hyperlink`.`id`,
+  cte01_0.`GROUP_BY0Assessment`
+FROM cte0 AS cte01_0
+WHERE
+  (
+    NOT cte01_0.`templateType`.`value` IN ('RA', 'GRA', 'DINA', 'BENCHMARKING')
+    OR cte01_0.`templateType`.`value` IS NULL
+  )
+  AND cte01_0.`templateID`.`value` IN ('47f3f457-f38f-4ed0-883e-05eee0d779bf')
+ORDER BY
+  cte01_0.`number`.`value`,
+  6
+LIMIT 5000
+OFFSET 0","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),ERROR (actual: <error> INTERNAL: Q904914-425-20260729.105359.771: java.lang.RuntimeException: ABAC token is required when requesting table policies),e6data: <error> INTERNAL: Q904914-425-20260729.105359.771: java.lang.RuntimeException: ABAC token is required when requesting table policies | dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,e6data engine gap: multi-table query (JOIN across 2 governed tables) -- policy-fetch does not propagate the ABAC token for the 2nd table,Q904914-425-20260729.105359.771
+OTQ11,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=2c536e64878a7937c5c9799f37a2909b211653accdaecbf862f681e8e3f81842 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'ControlImplementation'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ12,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=ea2685cd9ab1c0080ccd597819f6fa8f3fdf756323f3384a8496c3e4563e99b9 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_3103', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ13,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=aa8e9928f3e374d6372171266cb153ccc3f169f3071dce1a4abd037ab4177adb tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('as', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ14,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=f56c590fd8713295a79b0a88386dedc2a4b225b25a22a505f572f1b2eb1df506 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('ass', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ15,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=9e2d68b35e0236de7932e8654a69e1cc8a724689297bd366deb54581cf08e715 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ16,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=4c6544195cd23811ee2c209b42869935a41a2d0626ee79e18ca89fb88a842b9d tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    main.*
+  FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+  WHERE
+    main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+) AS `_`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, cosmos_trigger_8417487, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, as …)",PASS (actual: 10),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ17,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=3cb69737de61b37ffb1e5fbd2ed1a4f94bcd717f9bbb8fcda4d249a524b82e4a tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('ass', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ18,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=8b2f111739493f0f5a0ea7a60e3761e8cf8723e93d99ec71421a3c6bca114c6a tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  `inventoryNumber`
+FROM (
+  SELECT
+    `inventoryName`,
+    `inventoryNumber`,
+    `C1`,
+    COALESCE(CAST(`C1` AS DOUBLE), 0.000000000000000E+000) AS `C2`,
+    CASE WHEN `C1` IS NULL THEN 0 ELSE 1 END AS `C3`
+  FROM (
+    SELECT
+      `inventoryName`,
+      `inventoryNumber`,
+      `inventoryNumber` AS `C1`
+    FROM (
+      SELECT
+        main.*
+      FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+      WHERE
+        main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+    ) AS `_`
+  ) AS `ITBL`
+  GROUP BY
+    `inventoryName`,
+    `inventoryNumber`,
+    `C1`
+) AS `ITBL`
+ORDER BY
+  `ITBL`.`C2`,
+  `ITBL`.`C3`,
+  `inventoryName`
+LIMIT 501","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [cosmos_trigger_8417487, asset_5089207, asset_8896235, asset_558950, asset_5238597, asset_2812240_rep, asset_3029572, asset_163271, asset_216438, asse …)",PASS (actual: 10),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ19,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=af506b357a48cca65d764a3945f7d6de794630a68c177960feae75d736259727 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ20,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=73f49349e03167db61076a36cee6a7a6865cbc83f2535a57748311ae5515c32e tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_3103202', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ21,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=d162356761700979ee31cdc27d74ef9351162072bfac8a66d0be0396790c16ca tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ22,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=e4352f3af65645c751e90a15dd47b6cf6b76f107c36b75a2b511436dde2f7e4a tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ23,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=d15e57020f5bd34867d8ca7927aa0b477c5efae2c8d92d2446112de72685f864 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ24,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=abed58d97892dcbd2d72aeb7a0d2623baf2e997a4e6da641436fa228b50bc72e tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_r', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ25,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=38fe7e8cb621b6d6dd3d7e8fe26826b795f522e451bc8e46264af12bbd2bf7cd tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_31032026', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ26,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=e9980be4ea64b9e7de3c65a72e67e4252a068e4c21fd6109a7aa9f33abc8f778 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_310', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ27,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=43ce9be6c8f7a34fc6359aa816b2e2e28f11ec83c400cecd7d919c15b1da98b2 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_31', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ28,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=ce6f0dca326fac3332d6b2acbcc2a2250977a0dca73fdb21b165d8f39ee00c6a tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ29,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=ad56dd72e4060d65ee9190b0a2e8f44081f9ed37b71955d9303e0ada89d5c203 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_3', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ30,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=6c90c0fd31d16f5461457fc7fa6d4dd8bc4b80e1a2688dd420af85fd454dc4ca tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'RiskStageChangeTrackerEventDto'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ31,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=f6ab5645d12e259c8d808e11b07b7f6ac37b6145949b97e45069d535e7185a31 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ32,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=a299722af50e696595528ef8ce4cc0a4f4a8fb93b36f6a9ad665cb27f0a3ef53 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'AggregatedRiskSummary'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ33,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=1f1945ff10fcc5982846b7dc4eecee3b97a5e3ba092843b329aa2757de856ed7 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'Inventory'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ34,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=245a1d81eb09ed2dfb294237a61bdfb47fd3863fcbf50566eabcbd15cf0f06ff tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_31032', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ35,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=6caa3bd415aa32edf5b94b27bc8ad45d659a3c45ac394c01a78573bf0547aefb tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_310320', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ36,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=95b724c38125efb310f385380ef30769f1af39c545f55326fc5e742d644a2bcf tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_re', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ37,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=5f47fcdfe35bc2bc3b1d38f325d11270b1e979270ce2ed0aaa7ece0f6a82783e tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    main.*
+  FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+  WHERE
+    main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+) AS `_`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, cosmos_trigger_8417487, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, as …)",PASS (actual: 10),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ38,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=f6196e0cc3ba46f1c6137b20491dee4816d71869d67688d91e833669b8a4f3e4 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_310', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ39,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=1c302c6f6e4c5f757bfdd14ef0c60e8dcae344cb37d774f9d3c7b22299ac4e0e tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asse', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ40,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=a38c690688d1d81aa3365b56a81351b5aba08eb6fa1305cbe93c92d3700ec9d3 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'Entity'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ41,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=816b3da4fd48c77e7f5c2c4469d9cd9da5bf17175e06c829fea31d66ba0043a5 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'Assessment'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ42,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=cfaa050e6956622386b27e7a60a6c04d6240645b909dde04c51174be67fac156 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryNumber`
+FROM (
+  SELECT
+    `inventoryNumber`,
+    `C1`,
+    COALESCE(CAST(`C1` AS DOUBLE), 0.000000000000000E+000) AS `C2`,
+    CASE WHEN `C1` IS NULL THEN 0 ELSE 1 END AS `C3`
+  FROM (
+    SELECT
+      `inventoryNumber`,
+      `inventoryNumber` AS `C1`
+    FROM (
+      SELECT
+        main.*
+      FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+      WHERE
+        main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+    ) AS `_`
+  ) AS `ITBL`
+  GROUP BY
+    `inventoryNumber`,
+    `C1`
+) AS `ITBL`
+ORDER BY
+  `ITBL`.`C2`,
+  `ITBL`.`C3`
+LIMIT 501","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [1, 1000, 1881, 3027, 3348, 3349, 3352, 3357, 3358, 3360])",PASS (actual: 1),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ43,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=23e1cbdf615df1693ed96fdde36d488bd3dd18386ddd00a52c62ed52150490b8 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_re', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ44,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=7711760a384b556b80f5bf57c4411e81245989ff24deb56b991b176c13b9d8c6 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_310320', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ45,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=aca9168f01217d95ca05be86aef08974d20fd8fcf2a6568b9e95b3df7aef4a2a tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_31', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ46,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=16384539af7949d0383d68912c7903c3289206dab6c1f4a0ba419303c30b347c tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  *
+FROM (
+  SELECT
+    main.*
+  FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+  WHERE
+    main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+) AS `_`
+LIMIT 0","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ47,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=92c93ffcc1e5aad799b0ddbedcb7870f97613c0ad3630883d05104e6fd533a29 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_31032026', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ48,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=89d8507b3894d62c01857b7aecbd6386de68a2175e7222e36e1e8032864b8964 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('as', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,"INFO (actual: [asset_5238597, asset_3029572, asset_2812240_rep, asset_8896235, asset_558950, asset_163271, asset_1_3631531, asset_216438, asset_5089207])",PASS (actual: 9),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ49,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=a028ba2de550b820c6c9b8c734454de189f50d8e652685f4a4ee61d75da6f985 tables_used=EntityGroupConfig","SELECT
+  egc1_0.entityType
+FROM abac_onetrust.monitoring.EntityGroupConfig AS egc1_0
+WHERE
+  egc1_0.entityType = 'VendorWorkflowStageChangeTrackerEventDto'
+LIMIT 1","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OTQ50,ONETRUST-Q,"real compatible query, run as the SP under a live claim. query_alias=8a1ed6960de7ff74ef6c800a048cc55781e72e450f2e15a7e4011e7f43433a09 tables_used=cmb_v_inventoryaggregatedrisksummary","SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_rep_', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001","{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,INFO (actual: []),PASS (actual: 0),dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,n/a -- passed,
+OT-A1,ABAC,"DISABLE -> branch 1 fires; show all cmb_assessment rows, identity ignored.. Mirrors TPC-DS A1.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""u.disabled.mode@example.com"",""org"":""100"",""mode"":""DISABLE"",""root"":""ASSESSMENT"",""permissions"":[]}",ALL rows,PASS (actual: 4984),ERROR (actual: <error> INTERNAL: Q904914-352-20260729.105119.271: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-352-20260729.105119.271: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-352-20260729.105119.271
+OT-A2,ABAC,Baseline: branch 3b EXISTS matches the seeded assessment -> 1.. Mirrors TPC-DS A2 (the baseline everything else in this group contrasts against).,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-353-20260729.105121.222: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-353-20260729.105121.222: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-353-20260729.105121.222
+OT-A3,ABAC,"The visible id list is exactly [cmb_assessment_0] (asserted; observed run: cmb_assessment_0).. Mirrors TPC-DS A3. Same claim/evaluation as OT-A2, but projects id instead of count(*) -- proves the analyst sees precisely their assigned entity and no other id leaks.",SELECT id FROM abac_onetrust.onetrust_sim.cmb_assessment ORDER BY id,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",ids exactly [cmb_assessment_0],PASS (actual: [cmb_assessment_0]),ERROR (actual: <error> INTERNAL: Q904914-354-20260729.105123.127: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-354-20260729.105123.127: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-354-20260729.105123.127
+OT-A4,ABAC,"Template tester -> same mechanism, different table (cmb_template).. Mirrors TPC-DS A4. u.template.owner's real explicit assignment (seeded Task 2) on the same direct-USER_ID mechanism as OT-A2, on a different table.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_template WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.template.owner@example.com' AND objectType = 'TEMPLATE' LIMIT 1),"{""tenant"":1,""user"":""u.template.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""TEMPLATE"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-355-20260729.105124.840: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-355-20260729.105124.840: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-355-20260729.105124.840
+OT-A5,ABAC,"Group tester -> same table-count mechanism via GROUP membership, not direct USER_ID (adapted from TPC-DS A5).. TPC-DS A5 demonstrates one assignment granting MANY physical rows sharing an entity id (store_sales fan-out) -- no currently-policied OneTrust table has that shape (each is ~1 real row per real id). Adapted to keep this group's mechanism coverage non-redundant: OT-A5 is the GROUP-membership grant (distinct from OT-A2/OT-A4's direct USER_ID grants).",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'test_group_1' AND objectType = 'CONTROL' LIMIT 1),"{""tenant"":1,""user"":""u.group.member@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""CONTROL"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-356-20260729.105126.679: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-356-20260729.105126.679: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-356-20260729.105126.679
+OT-A6,ABAC,Deny wrong user: template tester has no ASSESSMENT assignment.. Mirrors TPC-DS A6. u.template.owner is assigned only on cmb_template (TEMPLATE); querying cmb_assessment under root=ASSESSMENT finds no matching grant.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""u.template.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-357-20260729.105128.360: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-357-20260729.105128.360: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-357-20260729.105128.360
+OT-A7,ABAC,Deny empty user: '' matches no real subjectID.. Mirrors TPC-DS A7.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":"""",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-358-20260729.105130.159: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-358-20260729.105130.159: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-358-20260729.105130.159
+OT-A8,ABAC,Deny wrong root: root != the queried table's object type.. Mirrors TPC-DS A8. u.assessment.owner's claim but root=CONTROL while querying cmb_assessment.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""CONTROL"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-359-20260729.105131.797: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-359-20260729.105131.797: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-359-20260729.105131.797
+OT-A9,ABAC,"Non-root table via branch 2: CONTROL in permissions -> ALL cmb_controlimplementation rows.. Mirrors TPC-DS A9. root=ASSESSMENT but permissions=[CONTROL]; branch 2 fires because root<>object_type AND array_contains(permissions,'CONTROL') -- coarse, assignment-independent access to the whole related table (contrast OT-A5's per-row grant).",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""CONTROL""]}",ALL rows,PASS (actual: 2573),ERROR (actual: <error> INTERNAL: Q904914-360-20260729.105133.480: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-360-20260729.105133.480: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-360-20260729.105133.480
+OT-B1,PERM,"CONTROL visible via branch 2 (CONTROL in permissions) -> ALL controls.. Mirrors TPC-DS B1. root=ASSESSMENT, permissions=[CONTROL,TEMPLATE], query cmb_controlimplementation.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""CONTROL"",""TEMPLATE""]}",ALL rows,PASS (actual: 2573),ERROR (actual: <error> INTERNAL: Q904914-361-20260729.105135.293: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-361-20260729.105135.293: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-361-20260729.105135.293
+OT-B2,PERM,"cmb_template via branch 2 (TEMPLATE in permissions) -> ALL templates.. Mirrors TPC-DS B2. Same claim as OT-B1, query cmb_template -- one permissions claim opens every governed related table it lists.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_template,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""CONTROL"",""TEMPLATE""]}",ALL rows,PASS (actual: 5235),ERROR (actual: <error> INTERNAL: Q904914-362-20260729.105137.107: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-362-20260729.105137.107: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-362-20260729.105137.107
+OT-B3,PERM,"Deny on a GOVERNED non-root table: CONTROL NOT in permissions (only TEMPLATE) -> 0.. Mirrors TPC-DS B3. root=ASSESSMENT, permissions=[TEMPLATE] (CONTROL deliberately omitted), query cmb_controlimplementation.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""TEMPLATE""]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-363-20260729.105138.801: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-363-20260729.105138.801: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-363-20260729.105138.801
+OT-B4,PERM,"Wrong format: 'control.view' != object type 'CONTROL' -> branch 2 array_contains fails -> 0.. Mirrors TPC-DS B4. permissions=['control.view','template.view'] (dot-notation, not object types) -- branch 2 compares against the OBJECT TYPE string 'CONTROL', not a permission string.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""control.view"",""template.view""]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-364-20260729.105140.496: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-364-20260729.105140.496: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-364-20260729.105140.496
+OT-C1,EDGE,"mode 'abac' (lowercase): non-magic -> EXISTS path -> same as OT-A2.. Mirrors TPC-DS C1. 'abac' is neither the magic 'DISABLE' nor 'RBAC_ABAC', so evaluation falls to 3b EXISTS.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""abac"",""root"":""ASSESSMENT"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-375-20260729.105207.063: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-375-20260729.105207.063: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-375-20260729.105207.063
+OT-C2,EDGE,mode 'disable' (lowercase): NOT allow-all (DISABLE is case-sensitive) -> 1.. Mirrors TPC-DS C2. Branch 1 compares ctx.mode = 'DISABLE' case-SENSITIVELY.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""disable"",""root"":""ASSESSMENT"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-376-20260729.105208.671: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-376-20260729.105208.671: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-376-20260729.105208.671
+OT-C3,EDGE,root 'assessment' (lowercase) != 'ASSESSMENT' -> root branch fails -> 0.. Mirrors TPC-DS C3. Branch 3's gate 'ctx.root = object_type' is case-sensitive.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""assessment"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-377-20260729.105210.470: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-377-20260729.105210.470: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-377-20260729.105210.470
+OT-C4,EDGE,missing 'permissions': from_json null; root path unaffected -> 1.. Mirrors TPC-DS C4. The root/3b path never touches permissions.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT""}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-378-20260729.105212.232: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-378-20260729.105212.232: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-378-20260729.105212.232
+OT-C5,EDGE,extra unknown field 'scope' ignored by from_json -> 1.. Mirrors TPC-DS C5. from_json drops fields not in the target STRUCT.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[],""scope"":""xyz""}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-379-20260729.105213.888: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-379-20260729.105213.888: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-379-20260729.105213.888
+OT-C6,EDGE,"tenant as string ""1"": from_json tolerates the type mismatch; row set unchanged -> 1.. Mirrors TPC-DS C6.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":""1"",""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-380-20260729.105215.561: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-380-20260729.105215.561: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-380-20260729.105215.561
+OT-C7,EDGE,empty claim {}: all fields null -> secure default deny -> 0.. Mirrors TPC-DS C7. A malformed/empty claim fails closed.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,{},0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-381-20260729.105217.221: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-381-20260729.105217.221: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-381-20260729.105217.221
+OT-C8,EDGE,"user mixed-case: exact subjectId compare fails -> 0.. Mirrors TPC-DS C8. Identities are matched exactly, case included.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""U.Assessment.Owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-382-20260729.105219.007: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-382-20260729.105219.007: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-382-20260729.105219.007
+OT-CL1,CL,"Claim missing the `mode` key entirely, sent by a user with NO assignment. Mirrors TPC-DS CL1. from_json produces ctx.mode = NULL -- branch 1 (mode='DISABLE') and 3a (mode='RBAC_ABAC') are both unreadable without a mode, regardless of who ctx.user is; this user has no assignment either, so 3b also fails.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""u.cl.nobody@example.com"",""org"":""100"",""root"":""ASSESSMENT"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-410-20260729.105324.353: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-410-20260729.105324.353: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-410-20260729.105324.353
+OT-CL2,CL,"Claim with an explicit null user. Mirrors TPC-DS CL2. ctx.user = NULL, so the 3b subject match (esa.subjectId = ctx.user) is NULL for every row and no assignment can match.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":null,""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-412-20260729.105327.388: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-412-20260729.105327.388: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-412-20260729.105327.388
+OT-CL3,CL,"Claim with `permissions` as a string instead of an array. Mirrors TPC-DS CL3. The declared struct type is ARRAY<STRING>; a scalar string is not coercible, so ctx.permissions is NULL and array_contains(NULL, ...) is NULL -- branch 2 cannot fire. root=ASSESSMENT querying cmb_template (non-root) means only branch 2 could have granted access.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_template,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":""TEMPLATE""}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-413-20260729.105329.048: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-413-20260729.105329.048: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-413-20260729.105329.048
+OT-CL4,CL,"Claim with a null ELEMENT inside `permissions` (not covered by CL1-CL3). Mirrors TPC-DS CL4. permissions=[null,""CONTROL""] -- INFO until observed: does a null element alongside a real match break array_contains's ability to find 'CONTROL', or does it still correctly fire branch 2? root=ASSESSMENT querying cmb_controlimplementation (non-root) isolates branch 2 as the only path that could grant access.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[null,""CONTROL""]}","(informational — printed, not checked)",INFO (actual: [2573]),ERROR (actual: <error> INTERNAL: Q904914-414-20260729.105330.792: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-414-20260729.105330.792: java.lang.UnsupportedOperationException: EXISTS is not supported yet | dbr result is from a pre-hardening baseline run (2026-07-28) where OTQ cases were still Expect.info() -- not re-verified against the current assertion,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-414-20260729.105330.792
+OT-DR1,RLS,"Direct classic RLS (NO tags, NO policy): rls_demo has SET ROW FILTER keeping id >= 10 -> count where < 10 is 0.. Mirrors TPC-DS DR1. Setup: sql_onetrust/11_direct_rls_and_dr2.sql. Data-independent proof that classic (table-managed) RLS filters WITHOUT any ABAC tag/policy machinery -- contrast OnetrustDr2HotSwap (Task 18), which does the same via a has_tag() policy.",SELECT count(*) FROM abac_onetrust.abac_rls.rls_demo WHERE id < 10,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",0 rows,PASS (actual: 0),PASS (actual: 0),,n/a -- passed,
+OT-EX1,EX,EXCEPT clause: the excepted principal is NOT subject to the policy -- sees ALL rows. Mirrors TPC-DS EX1. exempt_policy is bound TO `account users` EXCEPT the SP.,SELECT count(*) FROM abac_onetrust.abac_gaps.exempt,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",20 rows,PASS (actual: 20),PASS (actual: 20),,n/a -- passed,
+OT-EX2,EX,CONTROL for OT-EX1: the SP IS subject to a broad TO with no EXCEPT -- filtered to 10. Mirrors TPC-DS EX2. Setup: sql_onetrust/17_except_and_defaults.sql. Must run/be read BEFORE OT-EX1 -- OT-EX1's result is only meaningful if this returns 10.,SELECT count(*) FROM abac_onetrust.abac_gaps.subject,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",10 rows,PASS (actual: 10),PASS (actual: 10),,n/a -- passed,
+OT-N1,META,meta_promo: its esa row has isDeleted=true -> excluded -> 0 (negative).. Mirrors TPC-DS N1. Setup: sql_onetrust/09_onboard_new_tables.sql.,SELECT count(*) FROM abac_onetrust.abac_meta.meta_promo WHERE id = 1,"{""tenant"":1,""user"":""u.meta.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""META_PROMO"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-387-20260729.105228.738: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-387-20260729.105228.738: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-387-20260729.105228.738
+OT-N2,META,meta_store: esa subjectType=USER_GROUP; meta.tester is a member -> group path grants -> 1 (positive).. Mirrors TPC-DS N2. Proves the group-membership grant path AND that a brand-new table onboards correctly.,SELECT count(*) FROM abac_onetrust.abac_meta.meta_store WHERE id = 1,"{""tenant"":1,""user"":""u.meta.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""META_STORE"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-388-20260729.105230.527: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-388-20260729.105230.527: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-388-20260729.105230.527
+OT-N3,META,meta_cc: its ABAC_Assignment has isActive=false -> the JOIN ... AND a.isActive fails -> 0 (negative).. Mirrors TPC-DS N3.,SELECT count(*) FROM abac_onetrust.abac_meta.meta_cc WHERE id = 1,"{""tenant"":1,""user"":""u.meta.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""META_CC"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-389-20260729.105232.421: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-389-20260729.105232.421: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-389-20260729.105232.421
+OT-N4,META,meta_ship: its ABAC_Assignment has isDeleted=true -> the AND a.isDeleted=false fails -> 0 (negative).. Mirrors TPC-DS N4.,SELECT count(*) FROM abac_onetrust.abac_meta.meta_ship WHERE id = 1,"{""tenant"":1,""user"":""u.meta.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""META_SHIP"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-390-20260729.105234.191: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-390-20260729.105234.191: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-390-20260729.105234.191
+OT-O1,ORG,"org is inert in ABAC mode (3a is the only reader, and it needs RBAC_ABAC): org=ORG_UNUSED_999 vs OT-A2's org=100 -> EXISTS unchanged -> 1.. Mirrors TPC-DS O1. OT-A2's claim but org=ORG_UNUSED_999 and mode=ABAC -- ctx.org is read ONLY inside 3a, which requires mode=RBAC_ABAC; in ABAC mode org is never consulted.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""ORG_UNUSED_999"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-373-20260729.105202.607: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-373-20260729.105202.607: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-373-20260729.105202.607
+OT-O2,ORG,org DRIVES RBAC_ABAC: user with NO assignment + org=SUITE_EMPTY (no children) -> 3a empty AND 3b empty -> 0.. Mirrors TPC-DS O2. Mirror of OT-R4 (org=SUITE_ORG -> 10); isolates the child-org set as 3a's sole input by emptying it.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":1,""user"":""u.nobody@example.com"",""org"":""SUITE_EMPTY"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,PASS (actual: 0),PASS (actual: 0),,n/a -- passed,
+OT-ODEL,RBAC,"DEL_ORG's only child is soft-deleted -> excluded from branch 3a's child set; nobody has no assignment (3b) -> 0.. Mirrors TPC-DS ODEL. org=DEL_ORG; the fixture (Task 1) seeds the real ASSETS org as a child of DEL_ORG with isDeleted=true, so ABAC_OrgHierarchy (filtered to isDeleted IS NOT TRUE) excludes it -- 3a's child set is empty, and u.nobody has no assignment either.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":1,""user"":""u.nobody@example.com"",""org"":""DEL_ORG"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,PASS (actual: 0),PASS (actual: 0),,n/a -- passed,
+OT-OLIVE,RBAC,"Control: the SAME org is a LIVE child of LIVE_ORG -> branch 3a includes it -> 10. Proves the isDeleted flag, not emptiness, excludes OT-ODEL.. Mirrors TPC-DS OLIVE. The SAME real org id is also seeded as a live child of LIVE_ORG (isDeleted=false) -- since it's the only org all 10 real ASSETS rows carry, all 10 pass. The only difference from OT-ODEL is the isDeleted flag, proving the flag (not emptiness) is what excludes it.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":1,""user"":""u.nobody@example.com"",""org"":""LIVE_ORG"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",10 rows,PASS (actual: 10),FAIL (actual: 0),e6data: 0,"test-harness limitation: depends on the namespaced fixture (SUITE_ORG/DEL_ORG/LIVE_ORG), which is skipped on e6data (e6data doesn't support INSERT/DML yet) -- not an e6data query-execution bug",
+OT-R1,RBAC,"RBAC_ABAC org=SUITE_ORG with an OVERLAPPING explicit assignment -> org-subtree count unaffected (10). Adapted, see class doc.. TPC-DS R1 demonstrates additivity (org-subtree UNION explicit assignment > either alone). OneTrust's single-real-org dataset means u.assets.owner's explicit assignment (900005) is already covered by SUITE_ORG's subtree grant, so this instead proves the org-subtree count is unaffected -- not doubled, not broken -- by a redundant per-row grant.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":1,""user"":""u.assets.owner@example.com"",""org"":""SUITE_ORG"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",10 rows,PASS (actual: 10),FAIL (actual: 1),e6data: 1,"test-harness limitation: depends on the namespaced fixture (SUITE_ORG/DEL_ORG/LIVE_ORG), which is skipped on e6data (e6data doesn't support INSERT/DML yet) -- not an e6data query-execution bug",
+OT-R2,RBAC,"RBAC_ABAC is ADDITIVE (3a OR 3b): org=SUITE_EMPTY has no children (3a empty), but the explicit assignment (3b) still shows -> 1.. Mirrors TPC-DS R2. org=SUITE_EMPTY (no children seeded), so 3a's child set is empty; 3b EXISTS still matches u.assets.owner's explicit assignment on the seeded ASSETS entity.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE entityID = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assets.owner@example.com' LIMIT 1),"{""tenant"":1,""user"":""u.assets.owner@example.com"",""org"":""SUITE_EMPTY"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",1 row,PASS (actual: 1),PASS (actual: 1),,n/a -- passed,
+OT-R3,RBAC,"RBAC_ABAC does not help non-root tables: 3a lives only inside root=object_type -> 0.. Mirrors TPC-DS R3. mode=RBAC_ABAC, root=ASSETS, query cmb_controlimplementation (a different, non-root table) -- branch 3 (where 3a lives) never opens for it.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assets.owner@example.com"",""org"":""SUITE_ORG"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-367-20260729.105147.904: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-367-20260729.105147.904: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-367-20260729.105147.904
+OT-R4,RBAC,"RBAC_ABAC is org-driven: a user with NO assignment -> only branch 3a's org subtree -> 10.. Mirrors TPC-DS R4. u.nobody has no assignments anywhere; mode=RBAC_ABAC, org=SUITE_ORG. 3b EXISTS finds nothing, but 3a matches all 10 real ASSETS-type rows via the org subtree -- proves 3a is purely org-driven, independent of any grant.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":1,""user"":""u.nobody@example.com"",""org"":""SUITE_ORG"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",10 rows,PASS (actual: 10),FAIL (actual: 0),e6data: 0,"test-harness limitation: depends on the namespaced fixture (SUITE_ORG/DEL_ORG/LIVE_ORG), which is skipped on e6data (e6data doesn't support INSERT/DML yet) -- not an e6data query-execution bug",
+OT-SC1,SC,ON SCHEMA policy governs a table in that schema. Mirrors TPC-DS SC1. Setup: sql_onetrust/13_policy_scope.sql.,SELECT count(*) FROM abac_onetrust.abac_scope.scoped_a,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",10 rows,PASS (actual: 10),PASS (actual: 10),,n/a -- passed,
+OT-SC2,SC,"ON SCHEMA policy covers EVERY matching member, not just the first. Mirrors TPC-DS SC2. scoped_c is a THIRD table in the same schema, covered by nothing but the schema-level policy.",SELECT count(*) FROM abac_onetrust.abac_scope.scoped_c WHERE id > 10,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",0 rows,PASS (actual: 0),PASS (actual: 0),,n/a -- passed,
+OT-SC3,SC,A table with no matching tag is NOT governed -- returns ALL rows. Mirrors TPC-DS SC3. ungoverned sits inside the policy's ON SCHEMA scope but has no abac_column_id tag -- the dangerous fail-open case.,SELECT count(*) FROM abac_onetrust.abac_scope.ungoverned,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",20 rows,PASS (actual: 20),PASS (actual: 20),,n/a -- passed,
+OT-SC4,SC,"Schema-level + table-level row filters CONFLICT -- they do not have a precedence order. Mirrors TPC-DS SC4. scoped_b is covered by both the schema-level and a table-level policy. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed behavior as OT-W1, different error text than Databricks.",SELECT count(*) FROM abac_onetrust.abac_scope.scoped_b,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""ABAC_FAIL_CLOSED""","PASS (got the expected error) (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-a1fb-158d-80b2-951ea11a0b11], with response [TGetOperation …)",PASS (got the expected error) (actual: <error> INTERNAL: Q904914-402-20260729.105302.926: java.lang.RuntimeException: java.lang.RuntimeException: StorageServiceException(reason:ABAC_FAIL_CL …),"dbr: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-a1fb-158d-80b2-951ea11a0b11], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",n/a -- passed,Q904914-402-20260729.105302.926
+OT-T1,ONETRUST,"root type, explicit assignment -> seeded assessment IS visible. OAuth equivalent of 06_test_cases.sql T1. The policy attached to cmb_assessment filters transparently under this claim; the WHERE clause narrows to the one entity seeded for this user.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""TEMPLATE""]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-344-20260729.105102.616: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-344-20260729.105102.616: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-344-20260729.105102.616
+OT-T1t,TENANT,"tenant is not read by the filter: OT-A2's claim with tenant=999 (vs tenant=1) -> identical result = 1.. Mirrors TPC-DS T1. abac_row_filter never references ctx.tenant, so the tenant value cannot affect any branch; evaluation is byte-identical to OT-A2.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1),"{""tenant"":999,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-371-20260729.105158.046: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-371-20260729.105158.046: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-371-20260729.105158.046
+OT-T2,ONETRUST,"root type, no assignment -> a DIFFERENT assessment is NOT visible. OAuth equivalent of 06_test_cases.sql T2.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id != (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1) AND id NOT IN (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.assessment.owner@example.com'),"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""TEMPLATE""]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-345-20260729.105105.373: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-345-20260729.105105.373: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-345-20260729.105105.373
+OT-T2t,TENANT,"tenant inert in RBAC_ABAC too: tenant=999, org=SUITE_ORG -> org still drives visibility -> same as OT-R4 = 10.. Mirrors TPC-DS T2. The OT-R4 claim (mode=RBAC_ABAC, org=SUITE_ORG) but tenant=999 -- tenant is again unread; org still drives 3a.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":999,""user"":""u.nobody@example.com"",""org"":""SUITE_ORG"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",10 rows,PASS (actual: 10),FAIL (actual: 0),e6data: 0,"test-harness limitation: depends on the namespaced fixture (SUITE_ORG/DEL_ORG/LIVE_ORG), which is skipped on e6data (e6data doesn't support INSERT/DML yet) -- not an e6data query-execution bug",
+OT-T3,ONETRUST,"non-root type, IN permissions array -> ALL cmb_template rows visible. OAuth equivalent of 06_test_cases.sql T3. No WHERE clause at all -- Expect.all() re-runs the same SQL under DISABLE and asserts the counts match, same idiom as the TPC-DS A1-style cases.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_template,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""TEMPLATE""]}",ALL rows,PASS (actual: 5235),ERROR (actual: <error> INTERNAL: Q904914-346-20260729.105107.059: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-346-20260729.105107.059: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-346-20260729.105107.059
+OT-T4,ONETRUST,"non-root type, NOT in permissions array -> ZERO controls visible. OAuth equivalent of 06_test_cases.sql T4.",SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation,"{""tenant"":1,""user"":""u.assessment.owner@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[""TEMPLATE""]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-347-20260729.105109.008: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-347-20260729.105109.008: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-347-20260729.105109.008
+OT-T5,ONETRUST,group membership -> a member of test_group_1 sees the group-assigned control. OAuth equivalent of 06_test_cases.sql T5.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_controlimplementation WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'test_group_1' AND objectType = 'CONTROL' LIMIT 1),"{""tenant"":1,""user"":""u.group.member@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""CONTROL"",""permissions"":[]}",1 row,PASS (actual: 1),ERROR (actual: <error> INTERNAL: Q904914-348-20260729.105110.695: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-348-20260729.105110.695: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-348-20260729.105110.695
+OT-T6,ONETRUST,isActive=false assignment -> must NOT grant visibility. OAuth equivalent of 06_test_cases.sql T6.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment WHERE id = (SELECT entityId FROM abac_onetrust.onetrust_sim.ABAC_EntitySubjectAssignment WHERE subjectId = 'u.inactive.grant@example.com' LIMIT 1),"{""tenant"":1,""user"":""u.inactive.grant@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""ASSESSMENT"",""permissions"":[]}",0 rows,PASS (actual: 0),ERROR (actual: <error> INTERNAL: Q904914-349-20260729.105112.550: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-349-20260729.105112.550: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-349-20260729.105112.550
+OT-T7,ONETRUST,DISABLE mode -> everything visible regardless of assignments. OAuth equivalent of 06_test_cases.sql T7.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment,"{""tenant"":1,""user"":""u.disabled.mode@example.com"",""org"":""100"",""mode"":""DISABLE"",""root"":""ASSESSMENT"",""permissions"":[]}",ALL rows,PASS (actual: 4984),ERROR (actual: <error> INTERNAL: Q904914-350-20260729.105114.381: java.lang.UnsupportedOperationException: EXISTS is not supported yet),e6data: <error> INTERNAL: Q904914-350-20260729.105114.381: java.lang.UnsupportedOperationException: EXISTS is not supported yet,e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),Q904914-350-20260729.105114.381
+OT-T8,ONETRUST,RBAC_ABAC over the real orgHierarchy ancestor closure. OAuth equivalent of 06_test_cases.sql T8. org is the one real orgID all 14 verbatim rows of this table carry -- makes the RBAC_ABAC org-subtree branch fire against real profiled data.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_v_inventoryaggregatedrisksummary WHERE upper(inventoryType) = 'ASSETS',"{""tenant"":1,""user"":""u.rbac.viewer@example.com"",""org"":""b99df4a4-2bf5-4c08-9483-bd636470bc11"",""mode"":""RBAC_ABAC"",""root"":""ASSETS"",""permissions"":[]}",value >= 1,PASS (actual: 10),PASS (actual: 10),,n/a -- passed,
+OT-TG1,TG,has_tag_value() binds only the column whose tag VALUE matches. Mirrors TPC-DS TG1. Setup: sql_onetrust/14_tag_binding.sql.,SELECT count(*) FROM abac_onetrust.abac_tags.tagval,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",10 rows,PASS (actual: 10),PASS (actual: 10),,n/a -- passed,
+OT-TG2,TG,"Two columns sharing one tag -- record which column (if either) Databricks binds. Mirrors TPC-DS TG2. INFO on Databricks until observed live on abac_onetrust -- TPC-DS's own TG2 found Databricks REFUSES to bind (UC_ABAC_AMBIGUOUS_COLUMN_MATCH), not that it silently picks the first column; confirm the same holds here before converting the Databricks side to a hard assertion. e6data OBSERVED 2026-07-29: it also refuses to resolve the ambiguous column match, via its own ABAC_FAIL_CLOSED error -- hardened to a real assertion for e6data only, since that side is now confirmed.",SELECT a FROM abac_onetrust.abac_tags.dualtag ORDER BY a,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""ABAC_FAIL_CLOSED""","ERROR (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-a4eb-1d07-933a-09f8303bd00d], with response [TGetOperation …)",PASS (got the expected error) (actual: <error> INTERNAL: Q904914-404-20260729.105308.055: java.lang.RuntimeException: java.lang.RuntimeException: StorageServiceException(reason:ABAC_FAIL_CL …),"dbr: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-a4eb-1d07-933a-09f8303bd00d], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",n/a -- passed,Q904914-404-20260729.105308.055
+OT-TG3,TG,A MATCH COLUMNS that matches nothing makes the policy SILENTLY not apply. Mirrors TPC-DS TG3. abac_column_org (registered) matches no column on notag -- fails OPEN.,SELECT count(*) FROM abac_onetrust.abac_tags.notag,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",20 rows,PASS (actual: 20),PASS (actual: 20),,n/a -- passed,
+OT-TH1,THRESH,"Range grant: tester assigned 250 -> rows with quantity >= 250 are visible -> 11 rows.. Mirrors TPC-DS TH1. Setup: sql_onetrust/10_threshold_filter.sql (quantity = id*25, 20 rows).",SELECT count(*) FROM abac_onetrust.abac_thresh.thresh_inventory,"{""tenant"":1,""user"":""u.thresh.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""THRESH_INVENTORY"",""permissions"":[]}",11 rows,PASS (actual: 11),PASS (actual: 11),,n/a -- passed,
+OT-TH2,THRESH,"The cutoff holds: among VISIBLE rows, none are below the threshold -> count where quantity < 250 is exactly 0.. Mirrors TPC-DS TH2. Data-independent: the row filter is ANDed with the query, so 'quantity >= 250 AND quantity < 250' is impossible for every row.",SELECT count(*) FROM abac_onetrust.abac_thresh.thresh_inventory WHERE quantity < 250,"{""tenant"":1,""user"":""u.thresh.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""THRESH_INVENTORY"",""permissions"":[]}",0 rows,PASS (actual: 0),PASS (actual: 0),,n/a -- passed,
+OT-TH3,THRESH,The floor holds: the minimum visible quantity is >= 250 (asserted; expected: exactly 250).. Mirrors TPC-DS TH3. Confirms the boundary the '>=' predicate enforces.,SELECT min(quantity) FROM abac_onetrust.abac_thresh.thresh_inventory,"{""tenant"":1,""user"":""u.thresh.tester@example.com"",""org"":""100"",""mode"":""ABAC"",""root"":""THRESH_INVENTORY"",""permissions"":[]}",value >= 250,PASS (actual: 250),PASS (actual: 250),,n/a -- passed,
+OT-UC2,UC,"Declared DATE param vs bound TIMESTAMP column -- Databricks COERCES, it does not reject. Mirrors TPC-DS UC2. Setup: sql_onetrust/15_udf_contract.sql.",SELECT count(*) FROM abac_onetrust.abac_udf.arity,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",9 rows,PASS (actual: 9),PASS (actual: 9),,n/a -- passed,
+OT-V1,V,View over a governed base table (classic RLS) inherits the base row filter.. Mirrors TPC-DS V1. Setup: sql_onetrust/12_views.sql.,SELECT count(*) FROM abac_onetrust.abac_rls.v_rls_demo_governed WHERE id < 10,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",0 rows,PASS (actual: 0),PASS (actual: 0),,n/a -- passed,
+OT-V2,V,View over a table governed by an ABAC policy still filters.. Mirrors TPC-DS V2.,SELECT count(*) FROM abac_onetrust.abac_rls.v_dr2_demo_governed,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",10 rows,PASS (actual: 10),PASS (actual: 10),,n/a -- passed,
+OT-V3,V,Aggregate through a view cannot leak filtered rows.. Mirrors TPC-DS V3. min(id) through the view must be >= 10 -- an aggregate must not reveal filtered-out rows exist.,SELECT min(id) FROM abac_onetrust.abac_rls.v_rls_demo_governed,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}",value >= 10,PASS (actual: 10),PASS (actual: 10),,n/a -- passed,
+OT-W1,CONFLICT,"Two policies on conflict_a (allow-all + deny-all): UC rejects the query -- at most one row filter per table.. Mirrors TPC-DS W1. Setup: sql_onetrust/08_row_filter_conflict.sql. OBSERVED 2026-07-29 on e6data: it also refuses an unresolvable/conflicting policy, but via its own StorageServiceException(reason:ABAC_FAIL_CLOSED...) rather than Databricks' UC_ABAC_MULTIPLE_ROW_FILTERS -- same fail-closed intent, different vendor error text.",SELECT count(*) FROM abac_onetrust.abac_conflict.conflict_a,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""ABAC_FAIL_CLOSED""","PASS (got the expected error) (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-886c-1cea-b23f-d7002e1d8a90], with response [TGetOperation …)",PASS (got the expected error) (actual: <error> INTERNAL: Q904914-383-20260729.105220.639: java.lang.RuntimeException: java.lang.RuntimeException: StorageServiceException(reason:ABAC_FAIL_CL …),"dbr: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-886c-1cea-b23f-d7002e1d8a90], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",n/a -- passed,Q904914-383-20260729.105220.639
+OT-WP1,CONFLICT,"conflict_b count(*): two row filters with DIFFERENT bindings -> at most one row filter per table.. Mirrors TPC-DS WP1. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed behavior as OT-W1, different error text than Databricks.",SELECT count(*) FROM abac_onetrust.abac_conflict.conflict_b,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""ABAC_FAIL_CLOSED""","PASS (got the expected error) (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-8a2d-1447-8804-33410d6fddad], with response [TGetOperation …)",PASS (got the expected error) (actual: <error> INTERNAL: Q904914-384-20260729.105222.850: java.lang.RuntimeException: java.lang.RuntimeException: StorageServiceException(reason:ABAC_FAIL_CL …),"dbr: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-8a2d-1447-8804-33410d6fddad], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",n/a -- passed,Q904914-384-20260729.105222.850
+OT-WP2,CONFLICT,"conflict_b SELECT col1: this column is bound by rf_b_1 ONLY, yet still errors -- the conflict is table-wide.. Mirrors TPC-DS WP2. The conflict is detected at the TABLE level during planning, before any column-specific evaluation. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed behavior as OT-W1, different error text than Databricks.",SELECT col1 FROM abac_onetrust.abac_conflict.conflict_b,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""ABAC_FAIL_CLOSED""","PASS (got the expected error) (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-8bd9-1d7f-8461-268818fe8f36], with response [TGetOperation …)",PASS (got the expected error) (actual: <error> INTERNAL: Q904914-385-20260729.105224.574: java.lang.RuntimeException: java.lang.RuntimeException: StorageServiceException(reason:ABAC_FAIL_CL …),"dbr: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-8bd9-1d7f-8461-268818fe8f36], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",n/a -- passed,Q904914-385-20260729.105224.574
+OT-WS1,CONFLICT,"conflict_c count(*): two row filters on the SAME column -> at most one row filter per table.. Mirrors TPC-DS WS1. OBSERVED 2026-07-29 on e6data: same ABAC_FAIL_CLOSED fail-closed behavior as OT-W1, different error text than Databricks.",SELECT count(*) FROM abac_onetrust.abac_conflict.conflict_c,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""ABAC_FAIL_CLOSED""","PASS (got the expected error) (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-8d8d-11e6-9357-1de7e5131084], with response [TGetOperation …)",PASS (got the expected error) (actual: <error> INTERNAL: Q904914-386-20260729.105226.478: java.lang.RuntimeException: java.lang.RuntimeException: StorageServiceException(reason:ABAC_FAIL_CL …),"dbr: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-8d8d-11e6-9357-1de7e5131084], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",n/a -- passed,Q904914-386-20260729.105226.478
+OT-XT1,XT,"Classic SET ROW FILTER + ABAC policy on the SAME table. Mirrors TPC-DS XT1. Setup: sql_onetrust/16_cross_mechanism.sql. abac_fn keeps id<=10; classic_fn keeps id>15 -- disjoint predicates make every outcome diagnostic (see the decode table in the SQL file's comments). OBSERVED 2026-07-28: this native-vs-ABAC combination raises UC_ABAC_AND_NATIVE_ROW_FILTERS, a DISTINCT error class from the two-ABAC-policies case (UC_ABAC_MULTIPLE_ROW_FILTERS) -- both share SQLSTATE 42KDJ, but the ErrorClass name differs; the underlying per-table (not per-mechanism) limit is confirmed either way -- see TPC-DS's XT1 for the same finding.",SELECT count(*) FROM abac_onetrust.abac_xmech.both,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","query ERROR containing ""UC_ABAC_AND_NATIVE_ROW_FILTERS""","PASS (got the expected error) (actual: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-a8f4-1425-989a-425fbe16244c], with response [TGetOperation …)",FAIL (different error) (actual: <error> INTERNAL: Q904914-407-20260729.105316.985: java.lang.RuntimeException: ABAC token is required when requesting table policies),"e6data: <error> INTERNAL: Q904914-407-20260729.105316.985: java.lang.RuntimeException: ABAC token is required when requesting table policies | dbr also non-PASS: <error> Operation failed with error: [no error details from server] for statement [01f18a5e-a8f4-1425-989a-425fbe16244c], with response [TGetOperationStatusResp(status:TStatus(statusCode:SUCCESS_STATU …",e6data engine gap: multi-table query (JOIN across 2 governed tables) -- policy-fetch does not propagate the ABAC token for the 2nd table,Q904914-407-20260729.105316.985
+OT-DR2,SCENARIO,"Policy hot-swap propagation on dr2_demo: 3 checks (baseline cutoff<=10, CREATE OR REPLACE to cutoff<=5 and poll until reflected, then revert to 10).",SELECT count(*) FROM abac_onetrust.abac_rls.dr2_demo,"N/A -- claim irrelevant, uses direct classic table-bound policy",counts match cutoff at each of the 3 stages,"PASS (OT-DR2a=PASS, OT-DR2b=PASS, OT-DR2c=PASS)",SKIP (e6data lacks POLICY_DDL),"requires POLICY_DDL + TAGS -- e6data only advertises CLAIM_SWAP, so this SKIPs structurally (by design, not a bug)","structural SKIP (capability gating, by design)",
+OT-VP,SCENARIO,"Same hot-swap as OT-DR2, read THROUGH a view (v_dr2_demo_governed) -- proves policy changes propagate through views.",SELECT count(*) FROM abac_onetrust.abac_rls.v_dr2_demo_governed,"N/A -- claim irrelevant, uses direct classic table-bound policy","counts match cutoff at each of the 3 stages, through the view","PASS (OT-VP1=PASS, OT-VP2=PASS, OT-VP3=PASS)",SKIP (e6data lacks POLICY_DDL),"requires POLICY_DDL + TAGS + VIEWS -- e6data only advertises CLAIM_SWAP, so this SKIPs structurally (by design, not a bug)","structural SKIP (capability gating, by design)",
+OT-SEC,SCENARIO,Secret invariance: the SAME OneTrust SP with a 2nd OAuth secret must reach identical ABAC decisions across 3 probes.,SELECT count(*) FROM abac_onetrust.onetrust_sim.cmb_assessment / cmb_controlimplementation / abac_rls.dr2_demo (3 probes),N/A -- see description,see description,SKIP (set ONETRUST_CLIENT_SECRET_ALT (a 2nd OAuth secret for the same OneTrust SP) to run),SKIP (Databricks-auth-specific; engine is e6data),"e6data: code hard-checks `instanceof DatabricksEngine`, SKIPs unconditionally for any other engine (by design). dbr SKIP here is env-var gating (2nd secret / 2nd SP / expired token not supplied to this particular run), not a failure.","structural SKIP (Databricks-auth-specific, by design)",
+OT-MSP,SCENARIO,Principal targeting: a policy bound TO the OneTrust SP only must NOT restrict a DIFFERENT SP querying the same table with no claim injected.,SELECT count(*) FROM abac_onetrust.abac_rls.dr2_demo,N/A -- see description,see description,"SKIP (set ONETRUST_SP2_CLIENT_ID and ONETRUST_SP2_CLIENT_SECRET (a 2nd, DIFFERENT service principal, granted SELECT on abac_onetrust.abac_rls.dr2_demo) to run)",SKIP (Databricks-auth-specific; engine is e6data),"e6data: code hard-checks `instanceof DatabricksEngine`, SKIPs unconditionally for any other engine (by design). dbr SKIP here is env-var gating (2nd secret / 2nd SP / expired token not supplied to this particular run), not a failure.","structural SKIP (Databricks-auth-specific, by design)",
+OT-EXP,SCENARIO,"Token expiry (fail-closed): a fresh token must authenticate (control); an EXPIRED bearer token must be rejected, not honored.",SELECT 1,N/A -- see description,see description,"SKIP (set ONETRUST_ABAC_EXPIRED_TOKEN to a raw, EXPIRED OAuth access token minted for the OneTrust SP to run)",SKIP (Databricks-auth-specific; engine is e6data),"e6data: code hard-checks `instanceof DatabricksEngine`, SKIPs unconditionally for any other engine (by design). dbr SKIP here is env-var gating (2nd secret / 2nd SP / expired token not supplied to this particular run), not a failure.","structural SKIP (Databricks-auth-specific, by design)",
+OT-E6-PLANNER,SCENARIO-E6,"Authenticate on planner A, query planner B — identity is honored, not reused or dropped","N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+OT-E6-CACHE,SCENARIO-E6,"After a policy change, a subsequent query reflects it (ASSERT the new result; REPORT how long it took)","N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+OT-E6-POOL,SCENARIO-E6,Two identities over a reused connection do not bleed into each other,"N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+OT-E6-EXPIRY,SCENARIO-E6,"Token expiry mid-flow yields a clean categorized error, never unfiltered rows","N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+OT-E6-RETRY,SCENARIO-E6,"A transient connect failure recovers within a bounded ATTEMPT COUNT (a count, not a duration)","N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+OT-E6-BREAKER,SCENARIO-E6,Sustained downstream failure surfaces an error to the client (REPORT time to surface; do not assert on it),"N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+OT-E6-ERRCLASS,SCENARIO-E6,Client errors are distinguishable from internal errors,"N/A -- placeholder, no query executed","N/A -- placeholder, no claim executed",N/A -- placeholder,"SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)","SKIP (awaiting the e6data ABAC identity flow) (stub, always SKIPs)",run() body is a HARDCODED stub printing 'SKIP (awaiting the e6data ABAC identity flow)' regardless of engine -- never actually exercises e6data even though that flow now exists (E6DataEngine.applyIdentity). Needs a real implementation.,stub -- never implemented for e6data despite the identity flow now existing,
+
+
+"SUMMARY: failure_category breakdown (e6data, 131 total rows, 58 non-PASS)"
+failure_category,count,is_real_e6data_gap
+n/a -- passed,73,n/a
+e6data engine gap: EXISTS subquery not supported (branch-3b per-row assignment check),39,yes
+stub -- never implemented for e6data despite the identity flow now existing,7,"no -- test harness gap, not e6data"
+"test-harness limitation: depends on the namespaced fixture (SUITE_ORG/DEL_ORG/LIVE_ORG), which is skipped on e6data (e6data doesn't support INSERT/DML yet) -- not an e6data query-execution bug",4,no -- test harness limitation
+e6data engine gap: multi-table query (JOIN across 2 governed tables) -- policy-fetch does not propagate the ABAC token for the 2nd table,3,yes
+"structural SKIP (Databricks-auth-specific, by design)",3,no -- expected/by design
+"structural SKIP (capability gating, by design)",2,no -- expected/by design
