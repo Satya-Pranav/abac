@@ -128,6 +128,39 @@ _POLICY_SPEC = {
 }
 
 
+def _validate_specs():
+    """
+    Validate that _TAG_SPEC and _POLICY_SPEC agree on which columns are real vs literal.
+    Enforces the invariant: if type_col is None in _TAG_SPEC, then literal_type must NOT be None
+    in _POLICY_SPEC (and vice versa), ensuring generated policies reference only tagged columns.
+    """
+    tag_spec_by_table = {t: (id_c, type_c, org_c) for t, id_c, type_c, org_c in _TAG_SPEC}
+    for table, (literal_type, literal_org) in _POLICY_SPEC.items():
+        if table not in tag_spec_by_table:
+            raise ValueError(f"Table '{table}' in _POLICY_SPEC not found in _TAG_SPEC")
+        id_c, type_c, org_c = tag_spec_by_table[table]
+
+        # Invariant: type_col is None ⟺ literal_type is not None
+        if (type_c is None) != (literal_type is not None):
+            raise ValueError(
+                f"Table '{table}': type spec mismatch. _TAG_SPEC has type_col={type_c}, "
+                f"_POLICY_SPEC has literal_type={literal_type}. "
+                f"If type_col is None, literal_type must not be None (and vice versa)."
+            )
+
+        # Invariant: org_col is None ⟺ literal_org is not None
+        if (org_c is None) != (literal_org is not None):
+            raise ValueError(
+                f"Table '{table}': org spec mismatch. _TAG_SPEC has org_col={org_c}, "
+                f"_POLICY_SPEC has literal_org={literal_org}. "
+                f"If org_col is None, literal_org must not be None (and vice versa)."
+            )
+
+
+# Validate specs at module load time to catch inconsistencies early
+_validate_specs()
+
+
 def build_policies_sql(catalog: str, schema: str = "onetrust_sim", service_principal: str = "<SERVICE_PRINCIPAL>") -> list[str]:
     q = f"{catalog}.{schema}"
     stmts = []

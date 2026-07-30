@@ -37,3 +37,5 @@ def test_build_policies_sql_covers_all_8_tables_with_correct_shapes():
     assert "MATCH COLUMNS has_tag('abac_column_id') as id, has_tag('abac_column_type') as type, has_tag('abac_column_org') as org" in joined
     # cmb_v_assessment_v4: id + literal type + org column
     assert "USING COLUMNS (id, 'ASSESSMENT', org)" in joined
+    # cmb_inventory and entitylink_v3: id + type from real tagged columns, org literal '100'
+    assert "MATCH COLUMNS has_tag('abac_column_id') as id, has_tag('abac_column_type') as type\nUSING COLUMNS (id, type, '100')" in joined
