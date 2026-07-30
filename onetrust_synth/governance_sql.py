@@ -193,3 +193,91 @@ def build_policies_sql(catalog: str, schema: str = "onetrust_sim", service_princ
             f"USING COLUMNS ({', '.join(using_cols)});"
         )
     return stmts
+
+
+def build_seed_principals_sql(catalog: str, schema: str = "onetrust_sim") -> list[str]:
+    q = f"{catalog}.{schema}"
+    stmts = [
+        f"DELETE FROM {q}.ABAC_Assignment WHERE staticIdentifier = 'phase2-test-seed';",
+        f"DELETE FROM {q}.ABAC_EntitySubjectAssignment WHERE tenantHash = 'phase2-test-seed';",
+        f"DELETE FROM {q}.UserGroupMembers WHERE tenantHash = 'phase2-test-seed';",
+    ]
+
+    def assignment_insert(aid, object_type, is_active="true"):
+        return (
+            f"INSERT INTO {q}.ABAC_Assignment "
+            "(id, guid, staticIdentifier, name, objectType, sourceType, isActive, createdBy, "
+            "createDT, updatedBy, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)\n"
+            f"SELECT {aid}, uuid(), 'phase2-test-seed', 'Owner', '{object_type}', 'SYSTEM', {is_active}, "
+            "'seed', current_timestamp(), 'seed', current_timestamp(), current_timestamp(), "
+            "current_timestamp(), 'phase2-test-seed', false;"
+        )
+
+    def esa_insert(aid, table, id_col, filter_clause, subject, subject_type, object_type_expr):
+        return (
+            f"INSERT INTO {q}.ABAC_EntitySubjectAssignment "
+            "(assignmentId, policyId, entityId, entityOrganizationId, subjectId, subjectType, "
+            "objectType, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)\n"
+            f"SELECT {aid}, NULL, entity_id, NULL, '{subject}', '{subject_type}', {object_type_expr}, "
+            "current_timestamp(), current_timestamp(), current_timestamp(), 'phase2-test-seed', false\n"
+            f"FROM (SELECT {id_col} AS entity_id FROM {q}.{table} {filter_clause} LIMIT 1) ent;"
+        )
+
+    # --- original 4, replayed verbatim (same subjects/tables as sql_onetrust/05, new catalog) ---
+    stmts.append(assignment_insert(900001, "ASSESSMENT"))
+    stmts.append(assignment_insert(900002, "ASSESSMENT", is_active="false"))
+    stmts.append(assignment_insert(900003, "CONTROL"))
+    stmts.append(esa_insert(900001, "cmb_assessment", "id", "ORDER BY id", "u.assessment.owner@example.com", "USER_ID", "'ASSESSMENT'"))
+    stmts.append(esa_insert(900002, "cmb_assessment", "id", "ORDER BY id", "u.inactive.grant@example.com", "USER_ID", "'ASSESSMENT'"))
+    stmts.append(esa_insert(900003, "cmb_controlimplementation", "id", "ORDER BY id", "test_group_1", "USER_GROUP", "'CONTROL'"))
+    stmts.append(
+        f"INSERT INTO {q}.UserGroupMembers (memberId, groupId, eventTime, recModifiedTime, isDeleted, tenantHash)\n"
+        f"VALUES ('u.group.member@example.com', 'test_group_1', current_timestamp(), current_timestamp(), false, 'phase2-test-seed');"
+    )
+    stmts.append(assignment_insert(900004, "TEMPLATE"))
+    stmts.append(esa_insert(900004, "cmb_template", "id", "ORDER BY id", "u.template.owner@example.com", "USER_ID", "'TEMPLATE'"))
+    stmts.append(assignment_insert(900005, "ASSETS"))
+    stmts.append(esa_insert(
+        900005, "cmb_v_inventoryaggregatedrisksummary", "entityID",
+        "WHERE upper(inventoryType) = 'ASSETS' ORDER BY entityID",
+        "u.assets.owner@example.com", "USER_ID", "'ASSETS'",
+    ))
+
+    # --- 4 new governed tables (design doc section 5) ---
+    stmts.append(assignment_insert(900006, "INVENTORY"))
+    stmts.append(esa_insert(
+        900006, "cmb_riskrelatedobjects", "riskId",
+        "WHERE upper(entityType) = 'INVENTORY' ORDER BY riskId",
+        "u.risk.owner@example.com", "USER_ID", "'INVENTORY'",
+    ))
+
+    stmts.append(assignment_insert(900007, "ASSETS"))
+    stmts.append(esa_insert(
+        900007, "cmb_inventory", "id",
+        "WHERE upper(inventoryType) = 'ASSETS' ORDER BY id",
+        "u.inventory.owner@example.com", "USER_ID", "'ASSETS'",
+    ))
+
+    stmts.append(assignment_insert(900008, "ASSESSMENT"))
+    # cmb_v_assessment_v4's id is a fan-out column (design doc section 5): more than one physical
+    # row can share the picked id, which is expected (mirrors TPC-DS A5), not a bug — the test
+    # case built on this seed asserts nonzero, not exactly 1.
+    stmts.append(esa_insert(
+        900008, "cmb_v_assessment_v4", "id",
+        "WHERE orgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11' ORDER BY id",
+        "u.assessmentv4.owner@example.com", "USER_ID", "'ASSESSMENT'",
+    ))
+
+    stmts.append(assignment_insert(900009, "CONTROLTEMPLATE"))
+    # entityid1typereference's real vocabulary has 5 values, but the 500-row sample only
+    # observed 'ControlTemplate' (design doc section 5 caveat) — build_generic_table's
+    # categorical synthesis is undersampled the same way, so this is the only value
+    # guaranteed to actually appear in the generated data. entityid1 is also not unique
+    # (fan-out, same as cmb_v_assessment_v4) — nonzero, not exactly-1, expected.
+    stmts.append(esa_insert(
+        900009, "entitylink_v3", "entityid1",
+        "WHERE entityid1typereference = 'ControlTemplate' ORDER BY entityid1",
+        "u.entitylink.owner@example.com", "USER_ID", "'CONTROLTEMPLATE'",
+    ))
+
+    return stmts

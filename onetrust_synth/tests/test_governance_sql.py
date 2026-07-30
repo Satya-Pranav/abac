@@ -1,4 +1,4 @@
-from onetrust_synth.governance_sql import build_udf_sql, build_tags_sql, build_policies_sql
+from onetrust_synth.governance_sql import build_udf_sql, build_tags_sql, build_policies_sql, build_seed_principals_sql
 
 
 def test_build_udf_sql_is_catalog_qualified():
@@ -39,3 +39,23 @@ def test_build_policies_sql_covers_all_8_tables_with_correct_shapes():
     assert "USING COLUMNS (id, 'ASSESSMENT', org)" in joined
     # cmb_inventory and entitylink_v3: id + type from real tagged columns, org literal '100'
     assert "MATCH COLUMNS has_tag('abac_column_id') as id, has_tag('abac_column_type') as type\nUSING COLUMNS (id, type, '100')" in joined
+
+
+def test_build_seed_principals_sql_covers_all_8_tables():
+    stmts = build_seed_principals_sql("abac_onetrust_scale")
+    joined = "\n".join(stmts)
+    # 3 DELETEs (idempotent re-run) + inserts for 9 assignment ids (900001-900009: 5 for the
+    # original 4 tables + 1 each for the 4 new tables)
+    assert joined.count("DELETE FROM") == 3
+    for assignment_id in range(900001, 900010):
+        assert str(assignment_id) in joined
+    assert "u.assessment.owner@example.com" in joined  # original 4, replayed
+    assert "u.risk.owner@example.com" in joined  # new
+    assert "u.inventory.owner@example.com" in joined  # new
+    assert "u.assessmentv4.owner@example.com" in joined  # new
+    assert "u.entitylink.owner@example.com" in joined  # new
+    assert "abac_onetrust_scale.onetrust_sim.cmb_riskrelatedobjects" in joined
+    assert "WHERE upper(entityType) = 'INVENTORY'" in joined
+    assert "WHERE upper(inventoryType) = 'ASSETS'" in joined
+    assert "b99df4a4-2bf5-4c08-9483-bd636470bc11" in joined
+    assert "WHERE entityid1typereference = 'ControlTemplate'" in joined
