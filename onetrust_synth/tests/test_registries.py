@@ -73,3 +73,41 @@ def test_entity_registry_entity_ids_are_unique_within_type(spark):
     reg = build_entity_registry(spark, main_tables)
     dup_check = reg.groupBy("entityId", "objectType").count().filter("count > 1").count()
     assert dup_check == 0
+
+
+from onetrust_synth.registries import build_entitylink_v3_entity_piece
+
+
+def test_entitylink_v3_entity_piece_shape(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    piece = build_entitylink_v3_entity_piece(main_tables)
+    assert set(piece.columns) == {"entityId", "objectType", "orgId"}
+    assert piece.count() > 0
+
+
+def test_entity_registry_accepts_extra_pieces(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    base_reg = build_entity_registry(spark, main_tables)
+    extra = build_entitylink_v3_entity_piece(main_tables)
+    combined_reg = build_entity_registry(spark, main_tables, extra_pieces=[extra])
+    assert combined_reg.count() >= base_reg.count()
+    types = {r["objectType"] for r in combined_reg.select("objectType").distinct().collect()}
+    assert "CONTROLTEMPLATE" in types
+
+
+def test_entity_registry_without_extra_pieces_is_unchanged(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    reg = build_entity_registry(spark, main_tables)
+    types = {r["objectType"] for r in reg.select("objectType").distinct().collect()}
+    assert "CONTROLTEMPLATE" not in types
+
+
+def test_subject_registry_accepts_size_override(spark):
+    reg = build_subject_registry(spark, user_count=10, group_count=5)
+    assert reg.filter(reg.subjectType == "USER_ID").count() == 10
+    assert reg.filter(reg.subjectType == "USER_GROUP").count() == 5
+
+
+def test_subject_registry_default_is_unchanged(spark):
+    reg = build_subject_registry(spark)
+    assert reg.filter(reg.subjectType == "USER_ID").count() == config.SUBJECT_REGISTRY_USER_COUNT
