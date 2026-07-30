@@ -160,18 +160,39 @@ public class Runner {
                 ? "NOT seeded (SP needs SELECT/MODIFY on OrgHierarchyBase) — running without it"
                 : "SKIPPED (" + engine.name() + " does not support DML yet) — running without it"));
         try {
-            List<Case> cases = OnetrustCases.all();
+            // Cases requiring a capability this engine doesn't have go to standby -- excluded from
+            // the run and the case count entirely (not run-and-report-SKIP), with one summary line
+            // instead of a per-case verdict. Right now this is only OT-R1/OT-R4/OT-OLIVE/OT-T2t,
+            // which need Capability.DML for their namespaced-fixture seed; re-included automatically
+            // once an engine advertises DML.
+            List<Case> cases = new ArrayList<>();
+            List<Case> standby = new ArrayList<>();
+            for (Case cs : OnetrustCases.all()) {
+                (firstMissing(cs.requires(), engine).isPresent() ? standby : cases).add(cs);
+            }
+            if (!standby.isEmpty()) {
+                System.out.println(" Standby (blocked on " + engine.name() + " capabilities, not run): "
+                    + standby.stream().map(Case::id).collect(java.util.stream.Collectors.joining(", ")));
+            }
             List<Scenario> scenarios = new ArrayList<>();
-            // OnetrustViewPolicySwap MUST come after OnetrustDr2HotSwap: Dr2HotSwap reverts
-            // dr2_row_filter to cutoff 10 when it finishes, which is exactly the baseline
-            // ViewPolicySwap's first assertion expects -- same ordering constraint as TPC-DS's
-            // Dr2HotSwap/ViewPolicySwap pair in runAll. Do not reorder.
-            scenarios.add(new OnetrustDr2HotSwap());
-            scenarios.add(new OnetrustViewPolicySwap());
-            scenarios.add(new OnetrustSecretInvariance());
-            scenarios.add(new OnetrustSecondPrincipal());
-            scenarios.add(new OnetrustTokenExpiry());
-            scenarios.addAll(OnetrustE6Scenarios.all());
+            // All of these currently SKIP unconditionally for e6data -- OnetrustDr2HotSwap/
+            // OnetrustViewPolicySwap need POLICY_DDL (not yet supported), OnetrustSecretInvariance/
+            // OnetrustSecondPrincipal/OnetrustTokenExpiry are Databricks-auth-specific (their own
+            // run() checks `instanceof DatabricksEngine`), and OnetrustE6Scenarios are placeholders
+            // that self-SKIP pending the e6data ABAC identity flow. Only add them for Databricks so
+            // an e6data run's output isn't padded with 12 guaranteed SKIP lines.
+            if (engine instanceof DatabricksEngine) {
+                // OnetrustViewPolicySwap MUST come after OnetrustDr2HotSwap: Dr2HotSwap reverts
+                // dr2_row_filter to cutoff 10 when it finishes, which is exactly the baseline
+                // ViewPolicySwap's first assertion expects -- same ordering constraint as TPC-DS's
+                // Dr2HotSwap/ViewPolicySwap pair in runAll. Do not reorder.
+                scenarios.add(new OnetrustDr2HotSwap());
+                scenarios.add(new OnetrustViewPolicySwap());
+                scenarios.add(new OnetrustSecretInvariance());
+                scenarios.add(new OnetrustSecondPrincipal());
+                scenarios.add(new OnetrustTokenExpiry());
+                scenarios.addAll(OnetrustE6Scenarios.all());
+            }
 
             System.out.println(" " + cases.size() + " cases + " + scenarios.size() + " scenarios");
             System.out.println("================================================================");

@@ -41,6 +41,13 @@ public final class OnetrustCases {
 
     private static final Set<Capability> NEEDS_CLAIM_SWAP = Set.of(Capability.CLAIM_SWAP);
 
+    // OT-R1/OT-R4/OT-OLIVE/OT-T2t assert org-subtree counts (10) that only hold once the
+    // namespaced fixture (SUITE_ORG/DEL_ORG/LIVE_ORG child rows) is seeded -- which needs DML.
+    // Without it they're not testing the row filter, they're testing an empty fixture, so gate
+    // them on DML too rather than letting them run and report a misleading FAIL/ERROR.
+    private static final Set<Capability> NEEDS_CLAIM_SWAP_AND_DML =
+        Set.of(Capability.CLAIM_SWAP, Capability.DML);
+
     private OnetrustCases() { }
 
     private static String q(String table) { return SCHEMA + "." + table; }
@@ -272,7 +279,7 @@ public final class OnetrustCases {
                 + "count is unaffected -- not doubled, not broken -- by a redundant per-row grant.",
             assetsOwnerRbacClaim,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
-            Expect.exact(10), NEEDS_CLAIM_SWAP));
+            Expect.exact(10), NEEDS_CLAIM_SWAP_AND_DML));
 
         cs.add(new Case("OT-R2", "RBAC",
             "RBAC_ABAC is ADDITIVE (3a OR 3b): org=SUITE_EMPTY has no children (3a empty), but the explicit assignment (3b) still shows -> 1.",
@@ -295,7 +302,7 @@ public final class OnetrustCases {
                 + "-- proves 3a is purely org-driven, independent of any grant.",
             nobodySuiteOrgClaim,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
-            Expect.exact(10), NEEDS_CLAIM_SWAP));
+            Expect.exact(10), NEEDS_CLAIM_SWAP_AND_DML));
 
         cs.add(new Case("OT-ODEL", "RBAC",
             "DEL_ORG's only child is soft-deleted -> excluded from branch 3a's child set; nobody has no assignment (3b) -> 0.",
@@ -313,7 +320,7 @@ public final class OnetrustCases {
                 + "The only difference from OT-ODEL is the isDeleted flag, proving the flag (not emptiness) is what excludes it.",
             nobodyLiveOrgClaim,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
-            Expect.exact(10), NEEDS_CLAIM_SWAP));
+            Expect.exact(10), NEEDS_CLAIM_SWAP_AND_DML));
 
         return cs;
     }
@@ -342,7 +349,7 @@ public final class OnetrustCases {
                 + "is again unread; org still drives 3a.",
             assetsRbacClaimTenant999,
             "SELECT count(*) FROM " + q("cmb_v_inventoryaggregatedrisksummary") + " WHERE upper(inventoryType) = 'ASSETS'",
-            Expect.exact(10), NEEDS_CLAIM_SWAP));
+            Expect.exact(10), NEEDS_CLAIM_SWAP_AND_DML));
 
         cs.add(new Case("OT-O1", "ORG", "org is inert in ABAC mode (3a is the only reader, and it needs RBAC_ABAC): org=ORG_UNUSED_999 vs OT-A2's org=100 -> EXISTS unchanged -> 1.",
             "Mirrors TPC-DS O1. OT-A2's claim but org=ORG_UNUSED_999 and mode=ABAC -- ctx.org is read "
@@ -628,12 +635,16 @@ public final class OnetrustCases {
             "Mirrors TPC-DS XT1. Setup: sql_onetrust/16_cross_mechanism.sql. abac_fn keeps id<=10; "
                 + "classic_fn keeps id>15 -- disjoint predicates make every outcome diagnostic (see the "
                 + "decode table in the SQL file's comments). OBSERVED 2026-07-28: this native-vs-ABAC "
-                + "combination raises UC_ABAC_AND_NATIVE_ROW_FILTERS, a DISTINCT error class from the "
-                + "two-ABAC-policies case (UC_ABAC_MULTIPLE_ROW_FILTERS) -- both share SQLSTATE 42KDJ, "
-                + "but the ErrorClass name differs; the underlying per-table (not per-mechanism) limit is "
-                + "confirmed either way -- see TPC-DS's XT1 for the same finding.",
+                + "combination raises UC_ABAC_AND_NATIVE_ROW_FILTERS on Databricks, a DISTINCT error class "
+                + "from the two-ABAC-policies case (UC_ABAC_MULTIPLE_ROW_FILTERS) -- both share SQLSTATE "
+                + "42KDJ, but the ErrorClass name differs; the underlying per-table (not per-mechanism) "
+                + "limit is confirmed either way -- see TPC-DS's XT1 for the same finding. e6data surfaces "
+                + "the SAME underlying condition (a table with two competing row filters) through its own "
+                + "fail-closed text instead -- observed live 2026-07-30: 'ABAC_FAIL_CLOSED: ABAC: policy "
+                + "fetch failed for [TableRef(...)]' -- so the assertion is engine-specific.",
             Cases.DISABLE_CLAIM, "SELECT count(*) FROM abac_onetrust.abac_xmech.both",
-            Expect.errorContains("UC_ABAC_AND_NATIVE_ROW_FILTERS"), NEEDS_CLAIM_SWAP));
+            Expect.errorContains("UC_ABAC_AND_NATIVE_ROW_FILTERS"), NEEDS_CLAIM_SWAP,
+            "e6data", Expect.errorContains("ABAC_FAIL_CLOSED")));
         return cs;
     }
 
@@ -707,17 +718,20 @@ public final class OnetrustCases {
      * HARDENED 2026-07-28 from a clean live run (data generation is deterministic --
      * onetrust_synth/generator.py hashes on row_id, no F.rand() -- so this split is stable across
      * re-runs at the same data scale, not a one-time snapshot). All 50 now carry a real assertion:
-     *   - 15 cases -> Expect.atLeast(1): confirmed real, non-empty matching data under this claim
+     *   - 14 cases -> Expect.atLeast(1): confirmed real, non-empty matching data under this claim
      *     (atLeast, not an exact count, so minor future data-scale changes don't make these brittle).
-     *   - 35 cases -> Expect.zero(), individually confirmed structural (not just "empirically empty
+     *   - 36 cases -> Expect.zero(), individually confirmed structural (not just "empirically empty
      *     today"), via one of three mechanisms:
      *       (a) 9 EntityGroupConfig-touching cases: that table has 0 rows in this dataset regardless
      *           of claim.
-     *       (b) 1 case (OTQ10, cmb_assessment/OrgHierarchy): cmb_assessment's policy binds
-     *           object_type to the FIXED LITERAL 'ASSESSMENT' (sql_onetrust/04_policies.sql), so
-     *           under this claim (root='ASSETS', permissions=[]) branch 3's gate and branch 2's
+     *       (b) 2 cases (OTQ07, OTQ10, both cmb_assessment/OrgHierarchy): cmb_assessment's policy
+     *           binds object_type to the FIXED LITERAL 'ASSESSMENT' (sql_onetrust/04_policies.sql),
+     *           so under this claim (root='ASSETS', permissions=[]) branch 3's gate and branch 2's
      *           array_contains both fail table-wide, independent of the query's own filter -- same
      *           mechanism the existing OT-A8-style "wrong root" cases already assert elsewhere.
+     *           OTQ07 was originally misclassified as non-empty (before this mechanism was
+     *           documented for OTQ10); a live e6data run 2026-07-30 returned 0 for it, and Databricks'
+     *           own recorded baseline (docs/testing/onetrust-dbr-vs-e6data-results.csv) agrees.
      *       (c) 25 cases (cmb_v_inventoryaggregatedrisksummary): confirmed via a closed-world
      *           argument -- this table's policy binds object_type to a PER-ROW tagged column, so
      *           under root='ASSETS' the only rows ever reachable are the table's 10 real ASSETS-typed
@@ -730,10 +744,10 @@ public final class OnetrustCases {
      *           coincidence of this one run.
      */
     private static final Set<Integer> OTQ_ALWAYS_EMPTY = Set.of(
-        1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15, 20, 21, 23, 24, 25, 26, 27, 29,
+        1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 15, 20, 21, 23, 24, 25, 26, 27, 29,
         30, 32, 33, 34, 35, 36, 38, 40, 41, 43, 44, 45, 46, 47, 49, 50);
     private static final Set<Integer> OTQ_CONFIRMED_NONEMPTY = Set.of(
-        6, 7, 13, 14, 16, 17, 18, 19, 22, 28, 31, 37, 39, 42, 48);
+        6, 13, 14, 16, 17, 18, 19, 22, 28, 31, 37, 39, 42, 48);
 
     public static List<Case> compatibleQueryCases() {
         String rbacClaim = Cases.claim("u.rbac.viewer@example.com", RBAC_ORG_ID, "RBAC_ABAC", "ASSETS", "[]");
