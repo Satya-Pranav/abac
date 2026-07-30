@@ -56,6 +56,14 @@ public final class OnetrustCases {
         List<Case> cs = new ArrayList<>();
         cs.addAll(functionalCases());
         cs.addAll(abacGroupCases());
+        // newGovernedTableCases() deliberately NOT included here: SCHEMA above is hardcoded to
+        // the ORIGINAL abac_onetrust catalog, which never has (and per the design doc, never
+        // gets) the 4 newly-governed tables/seed data those 8 cases require. all() is what
+        // Runner.runOnetrustCasesOn() runs against abac_onetrust, so including them would
+        // regress a previously-green ~119-case suite with 8 spurious failures. CsvExporter is
+        // the only consumer of the scale-2-catalog-targeted 8 cases -- it concatenates them onto
+        // all() itself, after CsvExporter's own catalog-name rewrite (abac_onetrust ->
+        // abac_onetrust_scale) makes the "wrong catalog" problem moot for CSV-export purposes.
         cs.addAll(permGroupCases());
         cs.addAll(rbacGroupCases());
         cs.addAll(tenantOrgGroupCases());
@@ -221,6 +229,79 @@ public final class OnetrustCases {
                 + "root<>object_type AND array_contains(permissions,'CONTROL') -- coarse, "
                 + "assignment-independent access to the whole related table (contrast OT-A5's per-row grant).",
             permissionsClaim, "SELECT count(*) FROM " + q("cmb_controlimplementation"), Expect.all(), NEEDS_CLAIM_SWAP));
+
+        return cs;
+    }
+
+    /** The 4 tables newly governed for the scale-2 catalog (design doc section 5): real
+     *  per-row entityType/inventoryType/orgID/typereference columns drive the filter instead
+     *  of a literal, mirroring OT-A2/OT-A6's positive/negative pairing. Requires
+     *  onetrust_synth.governance_sql's seed principals (assignment IDs 900006-900009) to
+     *  already be applied — see databricks/phase2_scale_run.py Step 6. */
+    public static List<Case> newGovernedTableCases() {
+        List<Case> cs = new ArrayList<>();
+
+        cs.add(new Case("OT-RRO1", "ABAC", "cmb_riskrelatedobjects: real entityType/organizationID columns drive the filter -> seeded grant visible.",
+            "New for the scale-2 catalog. u.risk.owner has an explicit ESA grant (seed id 900006) on one real "
+                + "riskId whose entityType is 'INVENTORY' -- proves the full 3-tag pattern (id+type+org) works "
+                + "on a table with real per-row columns for all three, unlike the original 4 tables' literals.",
+            Cases.claim("u.risk.owner@example.com", "100", "ABAC", "INVENTORY", "[]"),
+            "SELECT count(*) FROM " + q("cmb_riskrelatedobjects")
+                + " WHERE riskId = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.risk.owner@example.com' AND objectType = 'INVENTORY' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-RRO2", "ABAC", "cmb_riskrelatedobjects: deny wrong user.",
+            "Negative pairing for OT-RRO1 -- u.template.owner has no INVENTORY-type assignment.",
+            Cases.claim("u.template.owner@example.com", "100", "ABAC", "INVENTORY", "[]"),
+            "SELECT count(*) FROM " + q("cmb_riskrelatedobjects"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-INV1", "ABAC", "cmb_inventory: real inventoryType column (via entity_type_to_object_type) drives the filter -> seeded grant visible.",
+            "New for the scale-2 catalog. u.inventory.owner has an explicit ESA grant (seed id 900007) on "
+                + "one real id whose inventoryType is 'Assets' -> object type 'ASSETS'.",
+            Cases.claim("u.inventory.owner@example.com", "100", "ABAC", "ASSETS", "[]"),
+            "SELECT count(*) FROM " + q("cmb_inventory")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.inventory.owner@example.com' AND objectType = 'ASSETS' LIMIT 1)",
+            Expect.exact(1), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-INV2", "ABAC", "cmb_inventory: deny wrong user.",
+            "Negative pairing for OT-INV1.",
+            Cases.claim("u.template.owner@example.com", "100", "ABAC", "ASSETS", "[]"),
+            "SELECT count(*) FROM " + q("cmb_inventory"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-AV41", "ABAC", "cmb_v_assessment_v4: fan-out id (many physical rows can share one id) -> seeded grant makes at least one visible.",
+            "New for the scale-2 catalog. u.assessmentv4.owner has an explicit ESA grant (seed id 900008) on "
+                + "one real id in org b99df4a4-2bf5-4c08-9483-bd636470bc11. Unlike OT-A2's exact(1), this "
+                + "asserts nonzero because cmb_v_assessment_v4's id is NOT unique (ndv=2,666 across 1.59M "
+                + "real rows, same fan-out shape TPC-DS's A5 tests deliberately) -- more than 1 row can "
+                + "legitimately share the granted id.",
+            Cases.claim("u.assessmentv4.owner@example.com", "100", "ABAC", "ASSESSMENT", "[]"),
+            "SELECT count(*) FROM " + q("cmb_v_assessment_v4")
+                + " WHERE id = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.assessmentv4.owner@example.com' AND objectType = 'ASSESSMENT' LIMIT 1)",
+            Expect.nonzero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-AV42", "ABAC", "cmb_v_assessment_v4: deny wrong user.",
+            "Negative pairing for OT-AV41.",
+            Cases.claim("u.template.owner@example.com", "100", "ABAC", "ASSESSMENT", "[]"),
+            "SELECT count(*) FROM " + q("cmb_v_assessment_v4"), Expect.zero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-EL1", "ABAC", "entitylink_v3: real entityid1typereference column drives the filter -> seeded grant makes at least one row visible.",
+            "New for the scale-2 catalog. u.entitylink.owner has an explicit ESA grant (seed id 900009) on "
+                + "one real entityid1 whose entityid1typereference is 'ControlTemplate' -> object type "
+                + "'CONTROLTEMPLATE'. Asserts nonzero, not exactly 1: entityid1 is not unique either "
+                + "(ndv=673 across 1M+ real rows) -- same fan-out reasoning as OT-AV41.",
+            Cases.claim("u.entitylink.owner@example.com", "100", "ABAC", "CONTROLTEMPLATE", "[]"),
+            "SELECT count(*) FROM " + q("entitylink_v3")
+                + " WHERE entityid1 = (SELECT entityId FROM " + q("ABAC_EntitySubjectAssignment")
+                + " WHERE subjectId = 'u.entitylink.owner@example.com' AND objectType = 'CONTROLTEMPLATE' LIMIT 1)",
+            Expect.nonzero(), NEEDS_CLAIM_SWAP));
+
+        cs.add(new Case("OT-EL2", "ABAC", "entitylink_v3: deny wrong user.",
+            "Negative pairing for OT-EL1.",
+            Cases.claim("u.template.owner@example.com", "100", "ABAC", "CONTROLTEMPLATE", "[]"),
+            "SELECT count(*) FROM " + q("entitylink_v3"), Expect.zero(), NEEDS_CLAIM_SWAP));
 
         return cs;
     }

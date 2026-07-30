@@ -20,3 +20,58 @@ def test_abac_table_row_counts_match_phase1_targets(spark):
     # other table hits its target exactly.
     failures = validate_row_counts(built, config.ABAC_TABLE_ROW_TARGETS, tolerance=0.05)
     assert failures == []
+
+
+from onetrust_synth.registries import build_entitylink_v3_entity_piece
+
+
+def test_build_all_abac_tables_default_targets_are_unchanged(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    abac = build_all_abac_tables(spark, main_tables)
+    assert abac["ABAC_EntitySubjectAssignment"].count() > 0  # Phase-1 sized, not asserting exact count (hash-index driven)
+
+
+def test_build_all_abac_tables_accepts_row_targets_override(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    small_scale2_targets = {
+        "ABAC_Assignment": 50, "ABAC_AssignmentPermission": 200,
+        "ABAC_EntitySubjectAssignment": 500, "UserGroupMembers": 100,
+        "ABAC_OrgHierarchy": 183,
+    }
+    abac = build_all_abac_tables(spark, main_tables, row_targets=small_scale2_targets)
+    assert abac["ABAC_Assignment"].count() == 50
+
+
+def test_build_all_abac_tables_threads_standalone_per_type_through_registry_sizes(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    small_targets = {
+        "ABAC_Assignment": 50, "ABAC_AssignmentPermission": 200,
+        "ABAC_EntitySubjectAssignment": 500, "UserGroupMembers": 100,
+        "ABAC_OrgHierarchy": 183,
+    }
+    # registry_sizes["standalone_per_type"] must reach build_entity_registry without raising and
+    # without changing the ABAC table build itself -- the entity registry it drives isn't
+    # returned by build_all_abac_tables, so this is a wiring/no-crash check; the row-count-changes
+    # assertion for the underlying mechanism lives in test_registries.py.
+    abac = build_all_abac_tables(
+        spark, main_tables, row_targets=small_targets,
+        registry_sizes={"standalone_per_type": 5},
+    )
+    assert abac["ABAC_Assignment"].count() == 50
+
+
+def test_build_all_abac_tables_accepts_extra_entity_pieces(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    extra = build_entitylink_v3_entity_piece(main_tables)
+    small_targets = {
+        "ABAC_Assignment": 200, "ABAC_AssignmentPermission": 500,
+        "ABAC_EntitySubjectAssignment": 2000, "UserGroupMembers": 100,
+        "ABAC_OrgHierarchy": 183,
+    }
+    abac = build_all_abac_tables(spark, main_tables, row_targets=small_targets, extra_entity_pieces=[extra])
+    esa = abac["ABAC_EntitySubjectAssignment"]
+    types = {r["objectType"] for r in esa.select("objectType").distinct().collect()}
+    # CONTROLTEMPLATE only appears in ESA if some ABAC_Assignment row also has that objectType —
+    # not guaranteed with a small random Assignment sample, so this test only asserts the
+    # pipeline runs end-to-end without error when extra_entity_pieces is supplied.
+    assert esa.count() > 0

@@ -13,20 +13,28 @@ from onetrust_synth.write import write_delta_table
 _TARGET_SCHEMA_HASH = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
 
 
-def build_all_main_tables(spark: SparkSession, scale_factor: float = config.SCALE_FACTOR_DEFAULT) -> dict:
+def build_all_main_tables(
+    spark: SparkSession,
+    scale_factor: float = config.SCALE_FACTOR_DEFAULT,
+    table_row_counts: dict | None = None,
+) -> dict:
+    table_row_counts = table_row_counts if table_row_counts is not None else config.MAIN_TABLES
     profile = load_table_profile(config.PROFILE_CSV_PATH)
+    profile.update(load_table_profile(config.REMAINING_PROFILE_CSV_PATH))
     tables = {}
 
     # verbatim small tables — ignore scale_factor, they're real observed data
-    tables["orghierarchy"] = build_orghierarchy_df(spark)
-    tables["cmb_v_inventoryaggregatedrisksummary"] = build_cmb_v_inventoryaggregatedrisksummary_df(spark)
+    if "orghierarchy" in table_row_counts:
+        tables["orghierarchy"] = build_orghierarchy_df(spark)
+    if "cmb_v_inventoryaggregatedrisksummary" in table_row_counts:
+        tables["cmb_v_inventoryaggregatedrisksummary"] = build_cmb_v_inventoryaggregatedrisksummary_df(spark)
 
-    for table_name in config.MAIN_TABLES:
+    for table_name in table_row_counts:
         if table_name in tables:
             continue
         schema_key = config.MONITORING_SCHEMA if table_name in config.MONITORING_TABLES else _TARGET_SCHEMA_HASH
         cols = get_columns(profile, schema_key, table_name)
-        row_count = config.scaled_row_count(table_name, scale_factor)
+        row_count = config.scaled_row_count(table_name, scale_factor, table_row_counts)
 
         def sample_lookup(col_name, _table=table_name):
             try:

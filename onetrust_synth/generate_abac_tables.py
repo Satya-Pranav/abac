@@ -11,20 +11,33 @@ from onetrust_synth.abac_tables import (
 from onetrust_synth.write import write_delta_table
 
 
-def build_all_abac_tables(spark: SparkSession, main_tables: dict) -> dict:
-    entity_registry = build_entity_registry(spark, main_tables)
+def build_all_abac_tables(
+    spark: SparkSession,
+    main_tables: dict,
+    row_targets: dict | None = None,
+    extra_entity_pieces: list | None = None,
+    registry_sizes: dict | None = None,
+) -> dict:
+    row_targets = row_targets if row_targets is not None else config.ABAC_TABLE_ROW_TARGETS
+    registry_sizes = registry_sizes or {}
+    entity_registry = build_entity_registry(
+        spark, main_tables, extra_pieces=extra_entity_pieces,
+        standalone_per_type=registry_sizes.get("standalone_per_type"),
+    )
     org_registry = build_org_registry(spark)
-    subject_registry = build_subject_registry(spark)
+    subject_registry = build_subject_registry(
+        spark, user_count=registry_sizes.get("users"), group_count=registry_sizes.get("groups"),
+    )
 
-    assignment = build_abac_assignment(spark, config.ABAC_TABLE_ROW_TARGETS["ABAC_Assignment"])
+    assignment = build_abac_assignment(spark, row_targets["ABAC_Assignment"])
     assignment_permission = build_abac_assignment_permission(
-        spark, assignment, config.ABAC_TABLE_ROW_TARGETS["ABAC_AssignmentPermission"]
+        spark, assignment, row_targets["ABAC_AssignmentPermission"]
     )
     esa = build_abac_entity_subject_assignment(
         spark, assignment, entity_registry, org_registry, subject_registry,
-        config.ABAC_TABLE_ROW_TARGETS["ABAC_EntitySubjectAssignment"],
+        row_targets["ABAC_EntitySubjectAssignment"],
     )
-    user_group_members = build_user_group_members(spark, subject_registry, config.ABAC_TABLE_ROW_TARGETS["UserGroupMembers"])
+    user_group_members = build_user_group_members(spark, subject_registry, row_targets["UserGroupMembers"])
     org_hierarchy_base = build_org_hierarchy_base(spark)
 
     return {

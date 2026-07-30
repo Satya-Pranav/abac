@@ -11,11 +11,15 @@ def build_org_registry(spark: SparkSession) -> DataFrame:
     return build_orghierarchy_df(spark).select("orgId", "parentOrgId")
 
 
-def build_subject_registry(spark: SparkSession) -> DataFrame:
-    users = add_id_column(base_row_id_df(spark, config.SUBJECT_REGISTRY_USER_COUNT), "subjectId", prefix="user_")
+def build_subject_registry(
+    spark: SparkSession, user_count: int | None = None, group_count: int | None = None,
+) -> DataFrame:
+    user_count = user_count if user_count is not None else config.SUBJECT_REGISTRY_USER_COUNT
+    group_count = group_count if group_count is not None else config.SUBJECT_REGISTRY_GROUP_COUNT
+    users = add_id_column(base_row_id_df(spark, user_count), "subjectId", prefix="user_")
     users = users.withColumn("subjectType", F.lit("USER_ID")).drop("_row_id")
 
-    groups = add_id_column(base_row_id_df(spark, config.SUBJECT_REGISTRY_GROUP_COUNT), "subjectId", prefix="group_")
+    groups = add_id_column(base_row_id_df(spark, group_count), "subjectId", prefix="group_")
     groups = groups.withColumn("subjectType", F.lit("USER_GROUP")).drop("_row_id")
 
     return users.unionByName(groups)
@@ -35,7 +39,33 @@ def _inventory_type_to_object_type_column():
     return expr
 
 
-def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
+def build_entitylink_v3_entity_piece(main_tables: dict) -> DataFrame:
+    """
+    entitylink_v3 is not in config.ENTITY_SOURCE_TABLES (unlike the other 7 governed-or-candidate
+    tables) — it links two entities per row, and only entityid1/entityid1typereference was chosen
+    to drive the row filter (design doc section 5). Kept as a standalone function (not folded into
+    ENTITY_SOURCE_TABLES) so Phase 1's entity_registry composition is provably unaffected even
+    though entitylink_v3 already exists as a Phase-1 main table.
+    """
+    df = main_tables["entitylink_v3"]
+    return (
+        df.select(
+            F.col("entityid1").alias("entityId"),
+            F.upper(F.col("entityid1typereference")).alias("objectType"),
+        )
+        .withColumn("orgId", F.lit(None).cast("string"))
+    )
+
+
+def build_entity_registry(
+    spark: SparkSession,
+    main_tables: dict,
+    extra_pieces: list | None = None,
+    standalone_per_type: int | None = None,
+) -> DataFrame:
+    standalone_per_type = (
+        standalone_per_type if standalone_per_type is not None else config.STANDALONE_ENTITIES_PER_TYPE
+    )
     pieces = []
 
     for table_name, (id_col, static_type) in config.ENTITY_SOURCE_TABLES.items():
@@ -48,6 +78,9 @@ def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
                 _inventory_type_to_object_type_column().alias("objectType"),
             )
         pieces.append(piece.withColumn("orgId", F.lit(None).cast("string")))
+
+    if extra_pieces:
+        pieces.extend(extra_pieces)
 
     harvested = pieces[0]
     for p in pieces[1:]:
@@ -66,11 +99,16 @@ def build_entity_registry(spark: SparkSession, main_tables: dict) -> DataFrame:
     covered_types |= set(config.INVENTORY_TYPE_TO_OBJECT_TYPE.values())  # the per-row inventory types
     all_types = {t for _, t in load_entity_type_reference_values()}
     uncovered_types = sorted(all_types - covered_types)
+    # NOTE: entitylink_v3's CONTROLTEMPLATE/EVIDENCETASKTEMPLATE object types are not in
+    # reportingmoduletoentityreferencemapping_v's vocabulary, so they never appear in
+    # uncovered_types/standalone entities — this is fine, they still reach the registry via
+    # extra_pieces above; standalone-entity generation is only a fallback for types with NO
+    # source table at all.
 
     standalone_pieces = []
     for object_type in uncovered_types:
         df = add_id_column(
-            base_row_id_df(spark, config.STANDALONE_ENTITIES_PER_TYPE),
+            base_row_id_df(spark, standalone_per_type),
             "entityId",
             prefix=f"{object_type.lower()}_",
         )

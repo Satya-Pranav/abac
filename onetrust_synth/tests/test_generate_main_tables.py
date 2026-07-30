@@ -42,3 +42,20 @@ def test_cmb_inventory_inventory_type_uses_real_vocabulary_not_corrupted_sample(
     tables = build_all_main_tables(spark, scale_factor=1.0)
     seen = {r["inventoryType"] for r in tables["cmb_inventory"].select("inventoryType").collect() if r["inventoryType"] is not None}
     assert seen <= set(config.INVENTORY_TYPE_TO_OBJECT_TYPE.keys())
+
+
+def test_build_all_main_tables_default_is_unchanged_11_tables(spark):
+    tables = build_all_main_tables(spark, scale_factor=0.1)
+    assert set(tables.keys()) == set(config.MAIN_TABLES.keys())
+    assert len(tables) == 11
+
+
+def test_build_all_main_tables_accepts_scale2_table_set(spark):
+    tables = build_all_main_tables(spark, scale_factor=0.01, table_row_counts=config.ALL_SCALE2_MAIN_TABLES)
+    assert len(tables) == 34
+    assert "entity_v3" in tables
+    assert "cmb_v_assessmenttag" in tables
+    # every one of the 23 new tables builds without raising (no nested-column columns present,
+    # per design doc section 3 — build_generic_table handles all of them)
+    for new_table in config.REMAINING_MAIN_TABLES:
+        assert tables[new_table].count() >= 0
