@@ -161,7 +161,18 @@ def _validate_specs():
 _validate_specs()
 
 
-def build_policies_sql(catalog: str, schema: str = "onetrust_sim", service_principal: str = "<SERVICE_PRINCIPAL>") -> list[str]:
+def build_policies_sql(
+    catalog: str,
+    schema: str = "onetrust_sim",
+    service_principal: str = "<SERVICE_PRINCIPAL>",
+    row_filter_fn: str = "abac_row_filter_wrapper",
+) -> list[str]:
+    """
+    row_filter_fn defaults to "abac_row_filter_wrapper" (the deterministic test-claim path built
+    by build_udf_sql), preserving prior behavior/tests. build_oauth_wiring_sql calls this with
+    row_filter_fn="abac_row_filter_wrapper_oauth" to re-point the same 8 policies at the live
+    OAuth wrapper instead of duplicating this table-building loop.
+    """
     q = f"{catalog}.{schema}"
     stmts = []
     tag_spec_by_table = {t: (id_c, type_c, org_c) for t, id_c, type_c, org_c in _TAG_SPEC}
@@ -186,7 +197,7 @@ def build_policies_sql(catalog: str, schema: str = "onetrust_sim", service_princ
         stmts.append(
             f"CREATE OR REPLACE POLICY {schema}_{table}_abac_policy\n"
             f"ON TABLE {q}.{table}\n"
-            f"ROW FILTER {q}.abac_row_filter_wrapper\n"
+            f"ROW FILTER {q}.{row_filter_fn}\n"
             f"TO `{service_principal}`\n"
             f"FOR TABLES\n"
             f"MATCH COLUMNS {', '.join(match_cols)}\n"
@@ -279,5 +290,69 @@ def build_seed_principals_sql(catalog: str, schema: str = "onetrust_sim") -> lis
         "WHERE entityid1typereference = 'ControlTemplate' ORDER BY entityid1",
         "u.entitylink.owner@example.com", "USER_ID", "'CONTROLTEMPLATE'",
     ))
+
+    return stmts
+
+
+def build_oauth_wiring_sql(catalog: str, schema: str = "onetrust_sim", service_principal: str = "<SERVICE_PRINCIPAL>") -> list[str]:
+    """
+    Parameterized re-emission of sql_onetrust/07_oauth_wiring.sql for a given catalog -- the
+    scale-2 catalog's missing piece: without this, its 8 policies stay bound to
+    abac_row_filter_wrapper (build_policies_sql's default), which reads get_test_user_context()'s
+    hardcoded literal identity, so every injected OAuth claim is silently ignored (positive cases
+    fail, negative cases vacuously pass) and the SP has no grants to even read the catalog.
+
+    Emits, in order:
+      - get_user_context()             : live identity, from_json(current_oauth_custom_identity_claim())
+      - abac_row_filter_wrapper_oauth  : calls abac_row_filter with get_user_context() instead of
+                                          get_test_user_context()
+      - all 8 governed-table policies (build_policies_sql's full _POLICY_SPEC, extended from 07's
+        original 4), re-pointed to abac_row_filter_wrapper_oauth
+      - grants: USE CATALOG/USE SCHEMA, SELECT on each of the 8 governed tables, SELECT+MODIFY on
+        OrgHierarchyBase (the self-seeding fixture target -- see Runner.setUpOnetrustFixture), and
+        EXECUTE on the 4 UDFs the OAuth wrapper's call chain needs.
+
+    get_test_user_context()/abac_row_filter_wrapper (built by build_udf_sql/build_policies_sql's
+    default) are left untouched, same as 07's own doc comment explains for the original catalog.
+    """
+    q = f"{catalog}.{schema}"
+    stmts = [
+        f"""CREATE OR REPLACE FUNCTION {q}.get_user_context()
+RETURNS STRUCT<tenant:INT, user:STRING, org:STRING, mode:STRING, root:STRING, permissions:ARRAY<STRING>>
+COMMENT 'Live ABAC context from the OAuth custom_claim -- see docs/deployment/oauth-jdbc-flow.md'
+RETURN from_json(
+  current_oauth_custom_identity_claim(),
+  'STRUCT<tenant:int, user:string, org:string, mode:string, root:string, permissions:array<string>>'
+);""",
+        f"""CREATE OR REPLACE FUNCTION {q}.abac_row_filter_wrapper_oauth(
+  entity_id STRING, object_type STRING, org_id STRING
+)
+RETURNS BOOLEAN
+RETURN {q}.abac_row_filter(
+  entity_id, {q}.entity_type_to_object_type(object_type), org_id,
+  {q}.get_user_context()
+);""",
+    ]
+
+    stmts.extend(
+        build_policies_sql(catalog, schema, service_principal, row_filter_fn="abac_row_filter_wrapper_oauth")
+    )
+
+    stmts.append(f"GRANT USE CATALOG ON CATALOG {catalog} TO `{service_principal}`;")
+    stmts.append(f"GRANT USE SCHEMA ON SCHEMA {q} TO `{service_principal}`;")
+
+    for table, _id_col, _type_col, _org_col in _TAG_SPEC:
+        stmts.append(f"GRANT SELECT ON TABLE {q}.{table} TO `{service_principal}`;")
+
+    # OrgHierarchyBase is not a policied table -- it's the self-seeding test fixture's target
+    # (Runner.java's onetrustFixtureInserts()/onetrustFixtureDeletes()). The fixture INSERTs are
+    # self-referential and the DELETE reads to scope its WHERE clause, so the SP needs BOTH
+    # SELECT and MODIFY here, not just one -- same shape as sql_onetrust/07's grant.
+    stmts.append(f"GRANT SELECT, MODIFY ON TABLE {q}.OrgHierarchyBase TO `{service_principal}`;")
+
+    stmts.append(f"GRANT EXECUTE ON FUNCTION {q}.abac_row_filter_wrapper_oauth TO `{service_principal}`;")
+    stmts.append(f"GRANT EXECUTE ON FUNCTION {q}.abac_row_filter TO `{service_principal}`;")
+    stmts.append(f"GRANT EXECUTE ON FUNCTION {q}.get_user_context TO `{service_principal}`;")
+    stmts.append(f"GRANT EXECUTE ON FUNCTION {q}.entity_type_to_object_type TO `{service_principal}`;")
 
     return stmts

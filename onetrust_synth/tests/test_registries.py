@@ -68,6 +68,22 @@ def test_entity_registry_includes_standalone_entities_for_uncovered_types(spark)
     assert count == config.STANDALONE_ENTITIES_PER_TYPE
 
 
+def test_entity_registry_accepts_standalone_per_type_override(spark):
+    # Regression guard for config.SCALE2_STANDALONE_ENTITIES_PER_TYPE being dead code: an override
+    # must actually change the BUILT ROW COUNT for uncovered entity types, not just be accepted
+    # and ignored.
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+
+    default_reg = build_entity_registry(spark, main_tables)
+    default_count = default_reg.filter(default_reg.objectType == "WORKPAPER").count()
+    assert default_count == config.STANDALONE_ENTITIES_PER_TYPE
+
+    overridden_reg = build_entity_registry(spark, main_tables, standalone_per_type=5)
+    overridden_count = overridden_reg.filter(overridden_reg.objectType == "WORKPAPER").count()
+    assert overridden_count == 5
+    assert overridden_count != default_count
+
+
 def test_entity_registry_entity_ids_are_unique_within_type(spark):
     main_tables = build_all_main_tables(spark, scale_factor=0.1)
     reg = build_entity_registry(spark, main_tables)

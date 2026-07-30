@@ -17,6 +17,17 @@ def test_seeded_claims_cover_all_8_governed_tables():
     assert '"user":"u.assessment.owner@example.com"' in SEEDED_CLAIMS_BY_TABLE["cmb_assessment"].replace(" ", "")
 
 
+def test_cmb_controlimplementation_claim_names_a_group_member_not_the_group_itself():
+    # Regression guard: abac_row_filter's group-membership branch requires ctx.user to be a
+    # MEMBER of the USER_GROUP subject (joined via UserGroupMembers.memberId), not the group's
+    # own subjectId -- a claim naming "test_group_1" itself would never match. The seed
+    # (governance_sql.build_seed_principals_sql) enrolls u.group.member@example.com as
+    # test_group_1's member, same claim OnetrustCases.java's OT-T5/OT-A5 already assert correctly.
+    claim = SEEDED_CLAIMS_BY_TABLE["cmb_controlimplementation"]
+    assert '"user":"u.group.member@example.com"' in claim.replace(" ", "")
+    assert '"user":"test_group_1"' not in claim.replace(" ", "")
+
+
 def test_claim_for_query_picks_first_governed_table():
     claim = claim_for_query("cmb_assessment, cmb_template")
     assert "u.assessment.owner@example.com" in claim

@@ -1,4 +1,6 @@
-from onetrust_synth.governance_sql import build_udf_sql, build_tags_sql, build_policies_sql, build_seed_principals_sql
+from onetrust_synth.governance_sql import (
+    build_udf_sql, build_tags_sql, build_policies_sql, build_seed_principals_sql, build_oauth_wiring_sql,
+)
 
 
 def test_build_udf_sql_is_catalog_qualified():
@@ -59,3 +61,61 @@ def test_build_seed_principals_sql_covers_all_8_tables():
     assert "WHERE upper(inventoryType) = 'ASSETS'" in joined
     assert "b99df4a4-2bf5-4c08-9483-bd636470bc11" in joined
     assert "WHERE entityid1typereference = 'ControlTemplate'" in joined
+
+
+def test_build_policies_sql_default_row_filter_fn_is_unchanged():
+    # Guards the refactor: no row_filter_fn arg must still bind the deterministic test-claim
+    # wrapper, exactly like before build_oauth_wiring_sql existed.
+    stmts = build_policies_sql("abac_onetrust_scale")
+    joined = "\n".join(stmts)
+    assert "ROW FILTER abac_onetrust_scale.onetrust_sim.abac_row_filter_wrapper\n" in joined
+    assert "abac_row_filter_wrapper_oauth" not in joined
+
+
+def test_build_policies_sql_accepts_row_filter_fn_override():
+    stmts = build_policies_sql("abac_onetrust_scale", row_filter_fn="abac_row_filter_wrapper_oauth")
+    joined = "\n".join(stmts)
+    assert len(stmts) == 8
+    assert "ROW FILTER abac_onetrust_scale.onetrust_sim.abac_row_filter_wrapper_oauth\n" in joined
+
+
+def test_build_oauth_wiring_sql_is_catalog_qualified():
+    stmts = build_oauth_wiring_sql("abac_onetrust_scale", service_principal="sp-app-id")
+    joined = "\n".join(stmts)
+    assert "abac_onetrust.onetrust_sim" not in joined  # never leaks the original catalog name
+    assert "abac_onetrust_scale.onetrust_sim.get_user_context" in joined
+    assert "current_oauth_custom_identity_claim()" in joined
+    assert "abac_onetrust_scale.onetrust_sim.abac_row_filter_wrapper_oauth" in joined
+
+
+def test_build_oauth_wiring_sql_repoints_all_8_policies_to_the_oauth_wrapper():
+    stmts = build_oauth_wiring_sql("abac_onetrust_scale", service_principal="sp-app-id")
+    policy_stmts = [s for s in stmts if s.startswith("CREATE OR REPLACE POLICY")]
+    assert len(policy_stmts) == 8
+    for stmt in policy_stmts:
+        assert "ROW FILTER abac_onetrust_scale.onetrust_sim.abac_row_filter_wrapper_oauth\n" in stmt
+        assert "TO `sp-app-id`" in stmt
+
+
+def test_build_oauth_wiring_sql_grants_cover_all_8_tables_plus_orghierarchybase():
+    stmts = build_oauth_wiring_sql("abac_onetrust_scale", service_principal="sp-app-id")
+    joined = "\n".join(stmts)
+    assert "GRANT USE CATALOG ON CATALOG abac_onetrust_scale TO `sp-app-id`;" in joined
+    assert "GRANT USE SCHEMA ON SCHEMA abac_onetrust_scale.onetrust_sim TO `sp-app-id`;" in joined
+    for table in [
+        "cmb_assessment", "cmb_controlimplementation", "cmb_template",
+        "cmb_v_inventoryaggregatedrisksummary", "cmb_riskrelatedobjects",
+        "cmb_inventory", "cmb_v_assessment_v4", "entitylink_v3",
+    ]:
+        assert f"GRANT SELECT ON TABLE abac_onetrust_scale.onetrust_sim.{table} TO `sp-app-id`;" in joined
+    assert "GRANT SELECT, MODIFY ON TABLE abac_onetrust_scale.onetrust_sim.OrgHierarchyBase TO `sp-app-id`;" in joined
+    assert "GRANT EXECUTE ON FUNCTION abac_onetrust_scale.onetrust_sim.abac_row_filter_wrapper_oauth TO `sp-app-id`;" in joined
+    assert "GRANT EXECUTE ON FUNCTION abac_onetrust_scale.onetrust_sim.abac_row_filter TO `sp-app-id`;" in joined
+    assert "GRANT EXECUTE ON FUNCTION abac_onetrust_scale.onetrust_sim.get_user_context TO `sp-app-id`;" in joined
+    assert "GRANT EXECUTE ON FUNCTION abac_onetrust_scale.onetrust_sim.entity_type_to_object_type TO `sp-app-id`;" in joined
+
+
+def test_build_oauth_wiring_sql_default_service_principal_placeholder():
+    stmts = build_oauth_wiring_sql("abac_onetrust_scale")
+    joined = "\n".join(stmts)
+    assert "TO `<SERVICE_PRINCIPAL>`" in joined

@@ -57,7 +57,15 @@ def build_entitylink_v3_entity_piece(main_tables: dict) -> DataFrame:
     )
 
 
-def build_entity_registry(spark: SparkSession, main_tables: dict, extra_pieces: list | None = None) -> DataFrame:
+def build_entity_registry(
+    spark: SparkSession,
+    main_tables: dict,
+    extra_pieces: list | None = None,
+    standalone_per_type: int | None = None,
+) -> DataFrame:
+    standalone_per_type = (
+        standalone_per_type if standalone_per_type is not None else config.STANDALONE_ENTITIES_PER_TYPE
+    )
     pieces = []
 
     for table_name, (id_col, static_type) in config.ENTITY_SOURCE_TABLES.items():
@@ -100,7 +108,7 @@ def build_entity_registry(spark: SparkSession, main_tables: dict, extra_pieces: 
     standalone_pieces = []
     for object_type in uncovered_types:
         df = add_id_column(
-            base_row_id_df(spark, config.STANDALONE_ENTITIES_PER_TYPE),
+            base_row_id_df(spark, standalone_per_type),
             "entityId",
             prefix=f"{object_type.lower()}_",
         )

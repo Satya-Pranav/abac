@@ -19,9 +19,12 @@ def build_all_abac_tables(
     registry_sizes: dict | None = None,
 ) -> dict:
     row_targets = row_targets if row_targets is not None else config.ABAC_TABLE_ROW_TARGETS
-    entity_registry = build_entity_registry(spark, main_tables, extra_pieces=extra_entity_pieces)
-    org_registry = build_org_registry(spark)
     registry_sizes = registry_sizes or {}
+    entity_registry = build_entity_registry(
+        spark, main_tables, extra_pieces=extra_entity_pieces,
+        standalone_per_type=registry_sizes.get("standalone_per_type"),
+    )
+    org_registry = build_org_registry(spark)
     subject_registry = build_subject_registry(
         spark, user_count=registry_sizes.get("users"), group_count=registry_sizes.get("groups"),
     )

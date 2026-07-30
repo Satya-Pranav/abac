@@ -12,7 +12,13 @@ from onetrust_synth.query_rewrite import load_all_annotated_queries, is_now_elig
 # from governance_sql, since governance_sql emits SQL strings, not claim JSON.
 SEEDED_CLAIMS_BY_TABLE = {
     "cmb_assessment": '{"tenant":1,"user":"u.assessment.owner@example.com","org":"100","mode":"ABAC","root":"ASSESSMENT","permissions":[]}',
-    "cmb_controlimplementation": '{"tenant":1,"user":"test_group_1","org":"100","mode":"ABAC","root":"CONTROL","permissions":[]}',
+    # user must be a MEMBER of test_group_1 (a USER_GROUP subject), not the group's own name --
+    # abac_row_filter's group-membership branch joins UserGroupMembers on ctx.user = ugm.memberId,
+    # so a claim naming the group itself never matches. governance_sql.build_seed_principals_sql
+    # seeds exactly this member (u.group.member@example.com) as test_group_1's member; the two
+    # OnetrustCases.java assertions of the same underlying fact (functionalCases's OT-T5,
+    # abacGroupCases's OT-A5) already use this claim correctly.
+    "cmb_controlimplementation": '{"tenant":1,"user":"u.group.member@example.com","org":"100","mode":"ABAC","root":"CONTROL","permissions":[]}',
     "cmb_template": '{"tenant":1,"user":"u.template.owner@example.com","org":"100","mode":"ABAC","root":"TEMPLATE","permissions":[]}',
     "cmb_v_inventoryaggregatedrisksummary": '{"tenant":1,"user":"u.assets.owner@example.com","org":"100","mode":"ABAC","root":"ASSETS","permissions":[]}',
     "cmb_riskrelatedobjects": '{"tenant":1,"user":"u.risk.owner@example.com","org":"100","mode":"ABAC","root":"INVENTORY","permissions":[]}',

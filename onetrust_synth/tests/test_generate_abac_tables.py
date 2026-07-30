@@ -42,6 +42,24 @@ def test_build_all_abac_tables_accepts_row_targets_override(spark):
     assert abac["ABAC_Assignment"].count() == 50
 
 
+def test_build_all_abac_tables_threads_standalone_per_type_through_registry_sizes(spark):
+    main_tables = build_all_main_tables(spark, scale_factor=0.1)
+    small_targets = {
+        "ABAC_Assignment": 50, "ABAC_AssignmentPermission": 200,
+        "ABAC_EntitySubjectAssignment": 500, "UserGroupMembers": 100,
+        "ABAC_OrgHierarchy": 183,
+    }
+    # registry_sizes["standalone_per_type"] must reach build_entity_registry without raising and
+    # without changing the ABAC table build itself -- the entity registry it drives isn't
+    # returned by build_all_abac_tables, so this is a wiring/no-crash check; the row-count-changes
+    # assertion for the underlying mechanism lives in test_registries.py.
+    abac = build_all_abac_tables(
+        spark, main_tables, row_targets=small_targets,
+        registry_sizes={"standalone_per_type": 5},
+    )
+    assert abac["ABAC_Assignment"].count() == 50
+
+
 def test_build_all_abac_tables_accepts_extra_entity_pieces(spark):
     main_tables = build_all_main_tables(spark, scale_factor=0.1)
     extra = build_entitylink_v3_entity_piece(main_tables)

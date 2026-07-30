@@ -49,7 +49,14 @@ public final class OnetrustCases {
         List<Case> cs = new ArrayList<>();
         cs.addAll(functionalCases());
         cs.addAll(abacGroupCases());
-        cs.addAll(newGovernedTableCases());
+        // newGovernedTableCases() deliberately NOT included here: SCHEMA above is hardcoded to
+        // the ORIGINAL abac_onetrust catalog, which never has (and per the design doc, never
+        // gets) the 4 newly-governed tables/seed data those 8 cases require. all() is what
+        // Runner.runOnetrustCasesOn() runs against abac_onetrust, so including them would
+        // regress a previously-green ~119-case suite with 8 spurious failures. CsvExporter is
+        // the only consumer of the scale-2-catalog-targeted 8 cases -- it concatenates them onto
+        // all() itself, after CsvExporter's own catalog-name rewrite (abac_onetrust ->
+        // abac_onetrust_scale) makes the "wrong catalog" problem moot for CSV-export purposes.
         cs.addAll(permGroupCases());
         cs.addAll(rbacGroupCases());
         cs.addAll(tenantOrgGroupCases());
