@@ -35,11 +35,39 @@ _SAMPLE_FILES = {
     "entitygroupconfig": "sample_monitoring_entitygroupconfig.csv",
 }
 
+_REMAINING_SAMPLE_FILES = {
+    "cmb_v_assessmentapprover": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentapprover.csv",
+    "cmb_v_assessmentinventory_v4": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentinventory_v4.csv",
+    "cmb_v_assessmentquestion": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentquestion.csv",
+    "cmb_v_assessmentquestionresponse_v3": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentquestionresponse_v3.csv",
+    "cmb_v_assessmentrelatedentities": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentrelatedentities.csv",
+    "cmb_v_assessmentrespondent": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentrespondent.csv",
+    "cmb_v_assessmentstagechangetracker_v4": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmentstagechangetracker_v4.csv",
+    "cmb_v_assessmenttag": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_assessmenttag.csv",
+    "cmb_v_controlimplementation_v4": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_controlimplementation_v4.csv",
+    "cmb_v_controlimplementationentitylink": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_controlimplementationentitylink.csv",
+    "cmb_v_inventory_v4": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_inventory_v4.csv",
+    "cmb_v_inventorylastassessment_v3": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_inventorylastassessment_v3.csv",
+    "cmb_v_inventorylinkv2": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_inventorylinkv2.csv",
+    "cmb_v_inventorypersonaldataassociation": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_inventorypersonaldataassociation.csv",
+    "cmb_v_inventorypersonaldataassociationclassification": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_inventorypersonaldataassociationclassification.csv",
+    "cmb_v_risk_v4": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_risk_v4.csv",
+    "cmb_v_riskapprover": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_riskapprover.csv",
+    "cmb_v_riskcategory": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_riskcategory.csv",
+    "cmb_v_riskowner": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_cmb_v_riskowner.csv",
+    "entity_v3": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_entity_v3.csv",
+    "entityworkflowstagechangetracker_v3": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_entityworkflowstagechangetracker_v3.csv",
+    "reportingmoduletorelatedentitiesmapping_v": "sample_auto_qa_e40yx52dkbjpcqazimno9yvh4k_reportingmoduletorelatedentitiesmapping_v.csv",
+    "dbxtenantschemaversion": "sample_monitoring_dbxtenantschemaversion.csv",
+}
+
 _TARGET_TENANT_SCHEMA = "auto_qa_e40yx52dkbjpcqazimno9yvh4k"
 
 
 def sample_file_path(table: str) -> str:
-    return os.path.join(config.SAMPLE_DATA_DIR, _SAMPLE_FILES[table])
+    if table in _SAMPLE_FILES:
+        return os.path.join(config.SAMPLE_DATA_DIR, _SAMPLE_FILES[table])
+    return os.path.join(config.REMAINING_SAMPLE_DATA_DIR, _REMAINING_SAMPLE_FILES[table])
 
 
 def _profile_schema_for(table: str) -> str:
@@ -48,6 +76,8 @@ def _profile_schema_for(table: str) -> str:
 
 def load_rows(table: str) -> list[dict]:
     profile = load_table_profile(config.PROFILE_CSV_PATH)
+    if (_profile_schema_for(table), table) not in profile:
+        profile = load_table_profile(config.REMAINING_PROFILE_CSV_PATH)
     real_columns = [c.name for c in get_columns(profile, _profile_schema_for(table), table)]
 
     with open(sample_file_path(table), newline="", encoding="utf-8", errors="replace") as f:
