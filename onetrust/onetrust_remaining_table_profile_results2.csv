@@ -1,0 +1,1164 @@
+schema,table,column_name,data_type,row_count,ndv,null_count,non_null_count,min_val,max_val,error
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeID,string,1350650,2264,0.0,1350650,001d0366db8138bc0f08a0681f7ebb9f,fff53a489b2245c38ccb6ca1d1d1896f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskID,string,1350650,1078,0.0,1350650,0019b168-aa50-45eb-8ef6-99ba53da1d60,ffcd43e0-1303-4dd4-8a4c-f977a6560ac0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskName,string,1350650,796,0.0,1350650,101,ww_root_risk_summary_884094,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskNumber,bigint,1350650,1078,0.0,1350650,1,1498,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeName,string,1350650,2264,0.0,1350650,001d0366db8138bc0f08a0681f7ebb9f,fff53a489b2245c38ccb6ca1d1d1896f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValue,string,1350650,11,0.0,1350650,0,Zero,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueNumeric,decimal,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-9-20260727.150507.724: 	For input string: ""Zero""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-9-20260727.150507.724: \tFor input string: \""Zero\"""", grpc_status:13, created_time:""2026-07-27T20:35:08.897432+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-10-20260727.150509.052: 	For input string: ""Yes""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:10.157792+05:30"", grpc_status:13, grpc_message:""Q348855-10-20260727.150509.052: \tFor input string: \""Yes\""""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-11-20260727.150510.304: 	For input string: ""Yes""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-11-20260727.150510.304: \tFor input string: \""Yes\"""", grpc_status:13, created_time:""2026-07-27T20:35:11.387995+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueLabel,string,1350650,2,568225.0,782425,Yes,Zero,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDate,date,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-13-20260727.150513.177: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:14.268416+05:30"", grpc_status:13, grpc_message:""Q348855-13-20260727.150513.177: \tDatetime pattern did not match: 0""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-14-20260727.150514.414: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:15.479402+05:30"", grpc_status:13, grpc_message:""Q348855-14-20260727.150514.414: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-15-20260727.150515.630: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-15-20260727.150515.630: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:16.70648+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDateYear,int,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-16-20260727.150516.852: 	Datetime pattern did not match: Yes""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-16-20260727.150516.852: \tDatetime pattern did not match: Yes"", grpc_status:13, created_time:""2026-07-27T20:35:17.943909+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-17-20260727.150518.093: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:19.159661+05:30"", grpc_status:13, grpc_message:""Q348855-17-20260727.150518.093: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-18-20260727.150519.305: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:20.358413+05:30"", grpc_status:13, grpc_message:""Q348855-18-20260727.150519.305: \tDatetime pattern did not match: 0""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDateMonth,string,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-19-20260727.150520.504: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:21.565425+05:30"", grpc_status:13, grpc_message:""Q348855-19-20260727.150520.504: \tDatetime pattern did not match: 0""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-20-20260727.150521.711: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:22.767611+05:30"", grpc_status:13, grpc_message:""Q348855-20-20260727.150521.711: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-21-20260727.150522.915: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:24.000842+05:30"", grpc_status:13, grpc_message:""Q348855-21-20260727.150522.915: \tDatetime pattern did not match: Zero""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDateMonthNumber,string,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-22-20260727.150524.146: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-22-20260727.150524.146: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:25.24965+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-23-20260727.150525.397: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:26.505591+05:30"", grpc_status:13, grpc_message:""Q348855-23-20260727.150525.397: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-24-20260727.150526.655: 	Datetime pattern did not match: Yes""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:27.704712+05:30"", grpc_status:13, grpc_message:""Q348855-24-20260727.150526.655: \tDatetime pattern did not match: Yes""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDateQuarter,string,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-25-20260727.150527.851: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:28.914996+05:30"", grpc_status:13, grpc_message:""Q348855-25-20260727.150527.851: \tDatetime pattern did not match: 0""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-26-20260727.150529.060: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:30.186591+05:30"", grpc_status:13, grpc_message:""Q348855-26-20260727.150529.060: \tDatetime pattern did not match: Zero""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-27-20260727.150530.333: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:31.451197+05:30"", grpc_status:13, grpc_message:""Q348855-27-20260727.150530.333: \tDatetime pattern did not match: 0""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDateTime,timestamp,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-28-20260727.150531.598: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-28-20260727.150531.598: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:32.73508+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-29-20260727.150532.881: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-29-20260727.150532.881: \tDatetime pattern did not match: Zero"", grpc_status:13, created_time:""2026-07-27T20:35:34.029928+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-30-20260727.150534.175: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-30-20260727.150534.175: \tDatetime pattern did not match: Zero"", grpc_status:13, created_time:""2026-07-27T20:35:35.344294+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDTDate,date,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-31-20260727.150535.509: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-31-20260727.150535.509: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:36.596862+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-32-20260727.150536.743: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:37.835933+05:30"", grpc_status:13, grpc_message:""Q348855-32-20260727.150536.743: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-33-20260727.150537.982: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:39.106629+05:30"", grpc_status:13, grpc_message:""Q348855-33-20260727.150537.982: \tDatetime pattern did not match: Zero""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDTDateYear,int,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-34-20260727.150539.252: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:40.323206+05:30"", grpc_status:13, grpc_message:""Q348855-34-20260727.150539.252: \tDatetime pattern did not match: 0""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-35-20260727.150540.468: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:41.576703+05:30"", grpc_status:13, grpc_message:""Q348855-35-20260727.150540.468: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-36-20260727.150541.723: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-36-20260727.150541.723: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:42.832695+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDTDateMonth,string,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-37-20260727.150542.978: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:44.0899+05:30"", grpc_status:13, grpc_message:""Q348855-37-20260727.150542.978: \tDatetime pattern did not match: 0""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-38-20260727.150544.236: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-38-20260727.150544.236: \tDatetime pattern did not match: Zero"", grpc_status:13, created_time:""2026-07-27T20:35:45.33321+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-39-20260727.150545.479: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-39-20260727.150545.479: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:46.533259+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDTDateMonthNumber,string,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-40-20260727.150546.679: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:47.711426+05:30"", grpc_status:13, grpc_message:""Q348855-40-20260727.150546.679: \tDatetime pattern did not match: Zero""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-41-20260727.150547.857: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:48.89426+05:30"", grpc_status:13, grpc_message:""Q348855-41-20260727.150547.857: \tDatetime pattern did not match: 0""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-42-20260727.150549.041: 	Datetime pattern did not match: Zero""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:50.080832+05:30"", grpc_status:13, grpc_message:""Q348855-42-20260727.150549.041: \tDatetime pattern did not match: Zero""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueDTDateQuarter,string,1350650,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-43-20260727.150550.226: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:35:51.285083+05:30"", grpc_status:13, grpc_message:""Q348855-43-20260727.150550.226: \tDatetime pattern did not match: 0""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-44-20260727.150551.431: 	Datetime pattern did not match: 0""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-44-20260727.150551.431: \tDatetime pattern did not match: 0"", grpc_status:13, created_time:""2026-07-27T20:35:52.477598+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-45-20260727.150552.624: 	Datetime pattern did not match: Yes""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-45-20260727.150552.624: \tDatetime pattern did not match: Yes"", grpc_status:13, created_time:""2026-07-27T20:35:53.649788+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueID,string,1350650,13,0.0,1350650,0,e72f8530-513c-4f14-a81b-73ed1b320c5c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskAttributeValueTranslationKey,string,1350650,13,0.0,1350650,0,OneTrustApp.RM.Risk.Attributes.a0755be7-385f-4f65-973c-1c396f1dbfb6,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,riskURL,string,1350650,1078,0.0,1350650,https://Risk/Risk/0019b168-aa50-45eb-8ef6-99ba53da1d60,https://Risk/Risk/ffcd43e0-1303-4dd4-8a4c-f977a6560ac0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,timeZoneID,string,1350650,595,0.0,1350650,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,orgID,string,1350650,2,0.0,1350650,6b055818-7a4a-497c-a9ba-407530f4a17d,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,orgName,string,1350650,2,0.0,1350650,OTAuto02,asset_org_1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue_v3,parentOrgID,string,1350650,2,0.0,1350650,6b055818-7a4a-497c-a9ba-407530f4a17d,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,entityTypeReference,string,4153100,40,0.0,4153100,Audit,tpdd-screening-usage,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,entityId,string,4153100,6970,0.0,4153100,000dbcd2-758d-4c10-a277-b061f15376c9,ffff3e91-d613-4627-914f-97d8276924a0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,entityNumber,bigint,4153100,745,2879800.0,1273300,1,1233,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,entityName,string,4153100,2738,2288965.0,1864135,,with_all_control_TC306357689,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,stageId,string,4153100,94,3643780.0,509320,018ed464-9b85-4aab-afd1-517e00917911,ffffe3a7-3693-4f51-8f2c-0a01c308b2b2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,workflowId,string,4153100,90,3643780.0,509320,002b2d18-d6ea-4a14-bb6d-9e2a6f8edc24,ff7e73eb-2754-4d7e-a861-9f9de88bd37e,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,workflow,string,4153100,97,3643780.0,509320,0add51d9-850f-4c6b-98de-df1c342c6904,workflow_9887224,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,stage,string,4153100,36,3643780.0,509320,06da0c0e-7b4a-497f-a540-f6000e1ac6c9,stage_7004672,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdBy,string,4153100,90,395675.0,3757425,Admin_3218801 CustomUser,projectowner user,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedBy,string,4153100,95,435540.0,3717560,Admin_3218801 CustomUser,projectowner user,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdDateTime,timestamp,4153100,80492,42840.0,4110260,2026-03-15T18:57:16.940+00:00,2026-04-06T21:10:52.083+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdDate,date,4153100,21,42840.0,4110260,2026-03-15,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdYear,int,4153100,1,42840.0,4110260,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdMonth,string,4153100,2,42840.0,4110260,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdMonthNumber,string,4153100,2,42840.0,4110260,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdQuarter,string,4153100,2,42840.0,4110260,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedDateTime,timestamp,4153100,89698,0.0,4153100,2026-03-15T18:57:16.940+00:00,2026-04-06T21:10:52.083+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedDate,date,4153100,22,0.0,4153100,2026-03-15,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedYear,int,4153100,1,0.0,4153100,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedMonth,string,4153100,2,0.0,4153100,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedMonthNumber,string,4153100,2,0.0,4153100,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,updatedQuarter,string,4153100,2,0.0,4153100,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,timeZoneID,string,4153100,595,0.0,4153100,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,orgId,string,4153100,21,550375.0,3602725,066fad65-3e7c-454c-aa26-27c4e61e8cc4,ffda898d-92b3-4460-a04d-2da0f46382ff,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,orgName,string,4153100,1,656285.0,3496815,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,parentOrgID,string,4153100,1,656285.0,3496815,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entity_v3,createdByUserEmail,string,4153100,92,395675.0,3757425,COMP_User_4536582@svc.onetrust.com,svc-otautotenant-qe+02@svc.onetrust.com,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,assessmentID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,assessmentName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,assessmentNumber,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,assessmentQuestionID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,questionID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,questionType,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,assessmentQuestion,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,rawResponse,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,response,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseNumeric,decimal,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseTimestamp,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseTimeStampDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseTimeStampYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseTimestampMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseTimestampMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseTimestampQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,responseValueID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,assessmentURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponseexploded,timeZoneID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValue,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueNumeric,decimal,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDateYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDateMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDateMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDateQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDateTime,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDTDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDTDateYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDTDateMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDTDateMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueDTDateQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlAttributeValueID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlImplementationID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlImplementationAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,controlImplementationURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,timeZoneID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue_v3,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,entityTypeReference,string,180880,4,0.0,180880,Objective,projects,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,id,bigint,180880,288,0.0,180880,1,431,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,entityId,string,180880,251,0.0,180880,01498062-52c2-4f2f-88dc-edc0805fccc6,ffff3e91-d613-4627-914f-97d8276924a0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,stageId,string,180880,58,0.0,180880,018ed464-9b85-4aab-afd1-517e00917911,ffffe3a7-3693-4f51-8f2c-0a01c308b2b2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,workflowId,string,180880,40,0.0,180880,00e89ee7-6a6d-4d72-a348-0471887e0996,f94d91a7-4b56-455b-aa86-96d854221448,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,workflow,string,180880,38,0.0,180880,6c3bac98-f644-4134-829c-43852ad38446,edited_test_contextMenu_workflow_9085712,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,stage,string,180880,5,0.0,180880,3dc83676-367e-40e0-8d88-abde1002af8c,Planning,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,previousStageId,string,180880,21,149345.0,31535,25756284-9af1-4ce4-9e4b-6b39014739d0,f5ebad06-807d-4c2d-acc8-bc7b5fcabc27,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,previousWorkflowId,string,180880,21,149345.0,31535,00e89ee7-6a6d-4d72-a348-0471887e0996,e0f547bc-154a-4e01-afef-9599aa49a4ef,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,previousWorkflow,string,180880,20,149345.0,31535,Default Workflow,Workflow_9741644,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,previousStage,string,180880,2,149345.0,31535,Ideation,Not Started,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,changedBy,string,180880,23,0.0,180880,FirstName_1600857 LastName_1600857,SubOrg_User_191_26032026 ProjectOwner,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,cycleNumber,bigint,180880,3,0.0,180880,1,3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageChangedDateTime,timestamp,180880,11552,0.0,180880,2026-03-17T21:28:35.017+00:00,2026-03-31T07:40:47.297+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageChangedDate,date,180880,14,0.0,180880,2026-03-17,2026-03-31,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageChangedYear,int,180880,1,0.0,180880,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageChangedMonth,string,180880,1,0.0,180880,March,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageChangedMonthNumber,string,180880,1,0.0,180880,03,03,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageChangedQuarter,string,180880,1,0.0,180880,Quarter 1,Quarter 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,oldStageChangedDateTime,timestamp,180880,2015,149345.0,31535,2026-03-17T21:28:54.213+00:00,2026-03-31T07:25:40.230+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,oldStageChangedDate,date,180880,14,149345.0,31535,2026-03-17,2026-03-31,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,oldStageChangedYear,int,180880,1,149345.0,31535,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,oldStageChangedMonth,string,180880,1,149345.0,31535,March,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,oldStageChangedMonthNumber,string,180880,1,149345.0,31535,03,03,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,oldStageChangedQuarter,string,180880,1,149345.0,31535,Quarter 1,Quarter 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,lastUpdatedStage,boolean,180880,2,0.0,180880,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,daysSpentInOldStage,double,180880,53,149345.0,31535,1.252777791685528E-4,0.0027292824095046077,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,newStageAgeInDays,double,180880,11552,0.0,180880,118.31175069444433,131.73689282407364,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityworkflowstagechangetracker_v3,timeZoneID,string,180880,595,0.0,180880,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,automatic,boolean,4760,1,0.0,4760,false,false,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,createdDateTime,timestamp,4760,304,0.0,4760,2026-04-05T14:20:48.000+00:00,2026-04-06T16:45:45.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,createdDate,date,4760,2,0.0,4760,2026-04-05,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,createdDateYear,int,4760,1,0.0,4760,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,createdDateMonth,string,4760,1,0.0,4760,April,April,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,createdDateMonthNumber,string,4760,1,0.0,4760,04,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,createdDateQuarter,string,4760,1,0.0,4760,Quarter 2,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,dateTimeClosed,timestamp,4760,1,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,dateClosed,date,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,dateClosedYear,int,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,dateClosedMonth,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,dateClosedMonthNumber,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,dateClosedQuarter,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,deadlineDateTime,timestamp,4760,191,1785.0,2975,2026-04-10T14:22:37.000+00:00,2026-04-11T16:45:43.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,deadlineDate,date,4760,2,1785.0,2975,2026-04-10,2026-04-11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,deadlineDateYear,int,4760,1,1785.0,2975,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,deadlineDateMonth,string,4760,1,1785.0,2975,April,April,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,deadlineDateMonthNumber,string,4760,1,1785.0,2975,04,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,deadlineDateQuarter,string,4760,1,1785.0,2975,Quarter 2,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,description,string,4760,8,0.0,4760,High_Risk_Description_3029572,low_risk_description_163271,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,id,string,4760,8,0.0,4760,004a86fe-351b-449b-9700-f6b10ca3af4a,fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentImpactLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentImpactLevelNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentImpactLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentLevel,string,4760,4,595.0,4165,HIGH,ZERO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentLevelID,string,4760,4,595.0,4165,0,3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentProbabilityLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentProbabilityLevelNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentProbabilityLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,inherentScore,double,4760,4,595.0,4165,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,justification,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,lastModifiedDateTime,timestamp,4760,304,0.0,4760,2026-04-05T14:20:49.000+00:00,2026-04-06T16:45:45.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,lastModifiedDate,date,4760,2,0.0,4760,2026-04-05,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,lastModifiedDateYear,int,4760,1,0.0,4760,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,lastModifiedDateMonth,string,4760,1,0.0,4760,April,April,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,lastModifiedDateMonthNumber,string,4760,1,0.0,4760,04,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,lastModifiedDateQuarter,string,4760,1,0.0,4760,Quarter 2,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,level,string,4760,4,595.0,4165,HIGH,ZERO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,levelID,string,4760,4,595.0,4165,0,3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,mitigatedDateTime,timestamp,4760,1,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,mitigatedDate,date,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,mitigatedDateYear,int,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,mitigatedDateMonth,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,mitigatedDateMonthNumber,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,mitigatedDateQuarter,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,name,string,4760,8,0.0,4760,RiskName_163271,Risk_Name_6845847,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,number,int,4760,8,0.0,4760,1488,1498,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,previousStateValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,previousStateValueID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,projectGUID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,projectVersion,int,4760,1,0.0,4760,0,0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,recommendation,string,4760,5,1785.0,2975,Low risk treatment Plan,Treatment plan asset_3631531,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,remediationProposal,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,reminderDays,int,4760,1,3570.0,1190,2,2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,requestedException,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualImpactLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualImpactLevelNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualImpactLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualLevel,string,4760,4,595.0,4165,HIGH,ZERO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualLevelID,string,4760,4,595.0,4165,0,3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualProbabilityLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualProbabilityLevelNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualProbabilityLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,residualScore,double,4760,4,595.0,4165,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,result,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,resultID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskImpactLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskOwner,string,4760,3,1190.0,3570,FName_3631531 LName,projectowner user,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskOwnerID,string,4760,3,1190.0,3570,79f09a0f-fbd7-4439-9e1e-d48abe62c98e,efca12aa-e43f-4bab-89d7-26970ad16d14,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskProbabilityLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskTemplate,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskTemplateID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,score,double,4760,4,595.0,4165,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,source,string,4760,6,1190.0,3570,asset_163271,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,sourceGUID,string,4760,6,1190.0,3570,3f6f740c-f9e2-4a34-b893-5054a5665ad3,dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,sourceID,string,4760,6,1190.0,3570,3f6f740c-f9e2-4a34-b893-5054a5665ad3,dea60936-a01d-4be2-9542-301368cd5429,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,sourceType,string,4760,1,1190.0,3570,INVENTORY,INVENTORY,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,stage,string,4760,2,0.0,4760,Evaluation,Identified,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,stageID,string,4760,2,0.0,4760,Evaluation,Identified,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,workflow,string,4760,1,0.0,4760,Default Risk Workflow,Default Risk Workflow,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,workflowID,string,4760,1,0.0,4760,9684290c-6240-4021-b599-a2dd8a864311,9684290c-6240-4021-b599-a2dd8a864311,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,stateValue,string,4760,2,0.0,4760,IDENTIFIED,RECOMMENDATION_ADDED,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,stateValueID,string,4760,2,0.0,4760,IDENTIFIED,RECOMMENDATION_ADDED,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetImpactLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetImpactLevelNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetImpactLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetProbabilityLevel,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetProbabilityLevelNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetProbabilityLevelID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,targetScore,double,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,threat,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,threatID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,treatment,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,treatmentPlan,string,4760,5,1785.0,2975,Low risk treatment Plan,Treatment plan asset_3631531,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,treatmentStatus,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,treatmentStatusID,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,type,string,4760,3,0.0,4760,Asset,Vendor,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskAppetite,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskAppetiteNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskTolerance,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskToleranceNumericValue,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskDomain,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,riskDomainId,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,reasonForClosure,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,closureNote,string,4760,0,4760.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,url,string,4760,8,0.0,4760,https://Risk/Risk/004a86fe-351b-449b-9700-f6b10ca3af4a,https://Risk/Risk/fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,timeZoneID,string,4760,595,0.0,4760,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,orgID,string,4760,1,0.0,4760,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,orgName,string,4760,1,0.0,4760,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_v4,parentOrgID,string,4760,1,0.0,4760,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkattributemap,joinID,string,1344,864,0.0,1344,009babdd-666b-45d4-8efb-7da00b297de4,ffc044ff-9d05-42e5-b3c0-20e6d6532e87,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkattributemap,relation,"struct<sourceEntityID:string,targetEntityID:string>",1344,672,0.0,1344,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-295-20260727.151236.664: 	java.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(VARCHAR sourceEntityID, VARCHAR targetEntityID) to type VARCHAR""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:42:36.785031+05:30"", grpc_status:13, grpc_message:""Q348855-295-20260727.151236.664: \tjava.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(VARCHAR sourceEntityID, VARCHAR targetEntityID) to type VARCHAR""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-296-20260727.151236.932: 	{RUNTIME ERROR} Unexpected Error During Query Execution!""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:42:37.551705+05:30"", grpc_status:13, grpc_message:""Q348855-296-20260727.151236.932: \t{RUNTIME ERROR} Unexpected Error During Query Execution!""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkattributemap,attributes,"map<unknown,struct<key:struct<relatedObjectType:string,attributeID:string>,value:LIST<struct<element:struct<value:string,valueKey:string,translationKey:string>>>>>",1344,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-298-20260727.151239.243: 	java.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR relatedObjectType, VARCHAR attributeID) key, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey, VARCHAR translationKey) ARRAY value) key_value) to type VARCHAR""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:42:39.372331+05:30"", grpc_status:13, grpc_message:""Q348855-298-20260727.151239.243: \tjava.lang.RuntimeException: Cast function cannot convert value of type RecordType:peek_no_expand(RecordType:peek_no_expand(RecordType:peek_no_expand(VARCHAR relatedObjectType, VARCHAR attributeID) key, RecordType:peek_no_expand(VARCHAR value, VARCHAR valueKey, VARCHAR translationKey) ARRAY value) key_value) to type VARCHAR""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-299-20260727.151239.531: 	{RUNTIME ERROR} Unexpected Error During Query Execution!""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:42:40.148089+05:30"", grpc_status:13, grpc_message:""Q348855-299-20260727.151239.531: \t{RUNTIME ERROR} Unexpected Error During Query Execution!""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-300-20260727.151240.293: 	Index 1 out of bounds for length 1""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-300-20260727.151240.293: \tIndex 1 out of bounds for length 1"", grpc_status:13, created_time:""2026-07-27T20:42:41.442587+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,joinID,string,3108,1938,0.0,3108,006573b3-ce9d-4e06-b9f6-939e6038dec8,ffe74d79-7de8-4c5b-953d-a59fbc016c02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,id,string,3108,1533,0.0,3108,0088ff3e-f930-4c55-958c-53bba11c3f48,ffd24aae-5772-45e5-ae7f-851909931ecf,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,sourceEntityId,string,3108,992,0.0,3108,007f6881-934f-4ec2-999d-0e48ee818d32,ffb70c53-aee5-407e-ac01-18cdda780ecb,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,sourceEntityName,string,3108,905,306.0,2802,Add_asset_43657_5856149,vendor_9676772,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,sourceEntityType,string,3108,5,214.0,2894,assets,vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,targetEntityId,string,3108,1060,0.0,3108,006573b3-ce9d-4e06-b9f6-939e6038dec8,ffe74d79-7de8-4c5b-953d-a59fbc016c02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,targetEntityName,string,3108,577,1082.0,2026,#$pa_69301_2243198,z_pa_1_1490_9150924,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,targetEntityType,string,3108,6,214.0,2894,assets,vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,relationshipType,string,3108,13,66.0,3042,Collection,SubProcessor,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,relationshipTypeID,string,3108,13,66.0,3042,2fbf97ed-2bf2-426f-972a-df60f976c66f,f1300850-5ebb-450f-9f03-4fdec88031f2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,relationshipTypeTranslationKey,string,3108,13,66.0,3042,InventoryLinking.CollectionNameKey,InventoryLinking.SubProcessorNameKey,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,processingActivityId,string,3108,0,3108.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,processingActivityName,string,3108,0,3108.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,createdDate,timestamp,3108,1256,306.0,2802,2026-03-19T16:14:58.000+00:00,2026-04-06T06:06:40.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,lastModifiedDate,timestamp,3108,1,3108.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,eventTime,timestamp,3108,1554,0.0,3108,2026-03-19T16:14:59.442+00:00,2026-04-06T06:06:40.754+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,recModifiedTime,timestamp,3108,221,0.0,3108,2026-03-19T16:33:16.949+00:00,2026-04-06T06:15:52.908+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,isDeleted,boolean,3108,2,0.0,3108,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinkv2,tenantHash,string,3108,1,0.0,3108,e40yx52dkbjpcqazimno9yvh4k,e40yx52dkbjpcqazimno9yvh4k,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,entityTypeReference,string,24387265,39,0.0,24387265,Audit,tpdd-screening-usage,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,entityId,string,24387265,6883,0.0,24387265,000dbcd2-758d-4c10-a277-b061f15376c9,fffdc5f5-52bf-4b32-a4dc-5f0deca978e5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,orgId,string,24387265,21,4597565.0,19789700,066fad65-3e7c-454c-aa26-27c4e61e8cc4,ffda898d-92b3-4460-a04d-2da0f46382ff,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeId,string,24387265,340,0.0,24387265,00e24cbe-b379-478d-8f98-b9aa802dfed6,thirdPartyId,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeName,string,24387265,273,0.0,24387265,Active,thirdPartyId,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeType,bigint,24387265,8,331415.0,24055850,10,80,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueId,string,24387265,11774,167195.0,24220070,,"§2871 et seq. of Article 1 of Chapter 10, Part 2, Division 1 of the California Public Utilities Code (Cal. Pub. Util. Code) (Automatic Dialing Law)",
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValue,string,24387265,11704,167195.0,24220070,,"§2871 et seq. of Article 1 of Chapter 10, Part 2, Division 1 of the California Public Utilities Code (Cal. Pub. Util. Code) (Automatic Dialing Law)",
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueNumeric,decimal,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-336-20260727.151337.989: 	For input string: ""9848bb82-b1b9-48d5-b1a9-5f63056fa641""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-336-20260727.151337.989: \tFor input string: \""9848bb82-b1b9-48d5-b1a9-5f63056fa641\"""", grpc_status:13, created_time:""2026-07-27T20:43:38.989451+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-337-20260727.151339.140: 	For input string: ""9848bb82-b1b9-48d5-b1a9-5f63056fa641""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:40.130484+05:30"", grpc_status:13, grpc_message:""Q348855-337-20260727.151339.140: \tFor input string: \""9848bb82-b1b9-48d5-b1a9-5f63056fa641\""""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-338-20260727.151340.276: 	For input string: ""9848bb82-b1b9-48d5-b1a9-5f63056fa641""""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:41.270942+05:30"", grpc_status:13, grpc_message:""Q348855-338-20260727.151340.276: \tFor input string: \""9848bb82-b1b9-48d5-b1a9-5f63056fa641\""""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDate,date,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-339-20260727.151341.419: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:42.409252+05:30"", grpc_status:13, grpc_message:""Q348855-339-20260727.151341.419: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-340-20260727.151342.555: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:43.550149+05:30"", grpc_status:13, grpc_message:""Q348855-340-20260727.151342.555: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-341-20260727.151343.696: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:44.690266+05:30"", grpc_status:13, grpc_message:""Q348855-341-20260727.151343.696: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDateYear,int,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-342-20260727.151344.836: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-342-20260727.151344.836: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:43:45.850692+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-343-20260727.151345.996: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:47.021699+05:30"", grpc_status:13, grpc_message:""Q348855-343-20260727.151345.996: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-344-20260727.151347.168: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:48.159088+05:30"", grpc_status:13, grpc_message:""Q348855-344-20260727.151347.168: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDateMonth,string,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-345-20260727.151348.306: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:49.299327+05:30"", grpc_status:13, grpc_message:""Q348855-345-20260727.151348.306: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-346-20260727.151349.445: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:50.43818+05:30"", grpc_status:13, grpc_message:""Q348855-346-20260727.151349.445: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-347-20260727.151350.585: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:51.576187+05:30"", grpc_status:13, grpc_message:""Q348855-347-20260727.151350.585: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDateMonthNumber,string,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-348-20260727.151351.722: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:52.707054+05:30"", grpc_status:13, grpc_message:""Q348855-348-20260727.151351.722: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-349-20260727.151352.853: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-349-20260727.151352.853: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:43:53.854548+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-350-20260727.151354.000: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-350-20260727.151354.000: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:43:55.001737+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDateQuarter,string,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-351-20260727.151355.148: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:56.148159+05:30"", grpc_status:13, grpc_message:""Q348855-351-20260727.151355.148: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-352-20260727.151356.298: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:57.305504+05:30"", grpc_status:13, grpc_message:""Q348855-352-20260727.151356.298: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-353-20260727.151357.452: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-353-20260727.151357.452: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:43:58.440477+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDateTime,timestamp,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-354-20260727.151358.590: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:43:59.594762+05:30"", grpc_status:13, grpc_message:""Q348855-354-20260727.151358.590: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-355-20260727.151359.740: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-355-20260727.151359.740: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:00.739282+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-356-20260727.151400.885: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-356-20260727.151400.885: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:01.884564+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDTDate,date,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-357-20260727.151402.031: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:03.064443+05:30"", grpc_status:13, grpc_message:""Q348855-357-20260727.151402.031: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-358-20260727.151403.215: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-358-20260727.151403.215: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:04.265374+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-359-20260727.151404.411: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-359-20260727.151404.411: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:05.448272+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDTDateYear,int,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-360-20260727.151405.608: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-360-20260727.151405.608: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:06.613696+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-361-20260727.151406.759: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:07.757232+05:30"", grpc_status:13, grpc_message:""Q348855-361-20260727.151406.759: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-362-20260727.151407.903: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:08.90478+05:30"", grpc_status:13, grpc_message:""Q348855-362-20260727.151407.903: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDTDateMonth,string,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-363-20260727.151409.050: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-363-20260727.151409.050: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:10.059378+05:30""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-364-20260727.151410.205: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-364-20260727.151410.205: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:11.206679+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-365-20260727.151411.356: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-365-20260727.151411.356: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:12.381118+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDTDateMonthNumber,string,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-366-20260727.151412.527: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:13.514359+05:30"", grpc_status:13, grpc_message:""Q348855-366-20260727.151412.527: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-367-20260727.151413.660: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-367-20260727.151413.660: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:14.661861+05:30""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-368-20260727.151414.825: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {grpc_message:""Q348855-368-20260727.151414.825: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641"", grpc_status:13, created_time:""2026-07-27T20:44:15.822441+05:30""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueDTDateQuarter,string,24387265,,,,,,"min/max with CAST failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-369-20260727.151415.968: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:16.985997+05:30"", grpc_status:13, grpc_message:""Q348855-369-20260727.151415.968: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; raw MIN/MAX also failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-370-20260727.151417.131: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:18.158418+05:30"", grpc_status:13, grpc_message:""Q348855-370-20260727.151417.131: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>; fallback failed: <_InactiveRpcError of RPC that terminated with:
+	status = StatusCode.INTERNAL
+	details = ""Q348855-371-20260727.151418.304: 	Datetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""
+	debug_error_string = ""UNKNOWN:Error received from peer  {created_time:""2026-07-27T20:44:19.294436+05:30"", grpc_status:13, grpc_message:""Q348855-371-20260727.151418.304: \tDatetime pattern did not match: 9848bb82-b1b9-48d5-b1a9-5f63056fa641""}""
+>"
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,attributeValueKey,string,24387265,201,18517590.0,5869675,0,projectowner user,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,allValues,string,24387265,11705,0.0,24387265,,"§2871 et seq. of Article 1 of Chapter 10, Part 2, Division 1 of the California Public Utilities Code (Cal. Pub. Util. Code) (Automatic Dialing Law)",
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,timeZoneID,string,24387265,595,0.0,24387265,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,orgName,string,24387265,1,5176500.0,19210765,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,entityattributevalue_v3,parentOrgID,string,24387265,1,5176500.0,19210765,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeValue,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeValueNumeric,decimal,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeValueDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeValueDateTime,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeValueID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskAttributeValueTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,riskURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskattributevalue,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,id,string,22610,38,0.0,22610,01e9c2d9-7167-4a4b-bcac-03a8c5c93469,fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,createDate,timestamp,22610,1368,0.0,22610,2026-03-16T00:49:03.000+00:00,2026-04-06T20:06:22.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,createdDate,date,22610,10,0.0,22610,2026-03-16,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,createdDateYear,int,22610,1,0.0,22610,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,createdDateMonth,string,22610,2,0.0,22610,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,createdDateMonthNumber,string,22610,2,0.0,22610,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,createdDateQuarter,string,22610,2,0.0,22610,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,inventoryStatus,string,22610,1,0.0,22610,active,active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,inventoryType,string,22610,3,0.0,22610,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,inventoryTypeID,int,22610,3,0.0,22610,20,50,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,lastModifiedDate,timestamp,22610,1330,0.0,22610,2026-03-16T00:49:03.000+00:00,2026-04-06T20:06:22.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,lastModified Date,date,22610,10,0.0,22610,2026-03-16,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,lastModifiedDateYear,int,22610,1,0.0,22610,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,lastModifiedDateMonth,string,22610,2,0.0,22610,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,lastModifiedDateMonthNumber,string,22610,2,0.0,22610,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,lastModifiedDateQuarter,string,22610,2,0.0,22610,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,name,string,22610,38,0.0,22610,Vendor_20260406050626-ssbh77,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,number,bigint,22610,38,0.0,22610,1,3360,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,riskScore,double,22610,4,19040.0,3570,0.0,3.0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,targetRiskScore,double,22610,0,22610.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,targetMitigated,string,22610,1,0.0,22610,Achieved,Achieved,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,url,string,22610,38,0.0,22610,https://Inventory/assets/0c00a859-e16b-4d41-8786-998095804a54,https://Inventory/vendors/fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,timeZoneID,string,22610,595,0.0,22610,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,orgID,string,22610,1,0.0,22610,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,orgName,string,22610,1,0.0,22610,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventory_v4,parentOrgID,string,22610,1,0.0,22610,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,category,string,2975,2,0.0,2975,Access Control,Personnel Security,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,categoryID,string,2975,2,0.0,2975,76145b8a-1222-48bb-9033-b358f1324cbb,9d844594-0f5a-41ba-96cd-7284e342e66c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,categoryTranslationKey,string,2975,2,0.0,2975,Access Control,Personnel Security,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,control,string,2975,4,0.0,2975, Access Agreements,automated_controlName_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,controlID,string,2975,4,0.0,2975,1cf3cf26-0729-4018-ba2f-3b4883d7df19,c961c592-7ff6-4fe9-8730-43d766d4d068,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,controlTranslationKey,string,2975,4,0.0,2975, Access Agreements,automated_controlName_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,controlStatus,string,2975,1,0.0,2975,Active,Active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,controlStatusID,string,2975,1,0.0,2975,Active,Active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,controlStatusTranslationKey,string,2975,1,0.0,2975,Active,Active,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,deadline,timestamp,2975,1,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,deadlineDate,date,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,deadlineDateYear,int,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,deadlineDateMonth,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,deadlineDateMonthNumber,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,deadlineDateQuarter,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,description,string,2975,1,1785.0,1190,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,effectiveness,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,effectivenessID,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,effectivenessTranslationKey,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,framework,string,2975,1,0.0,2975,FedRAMP,FedRAMP,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,frameworkID,string,2975,1,0.0,2975,8e029b33-7408-4620-a7c3-5053edfbf15b,8e029b33-7408-4620-a7c3-5053edfbf15b,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,frameworkTranslationKey,string,2975,1,0.0,2975,FedRAMP,FedRAMP,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,id,string,2975,5,0.0,2975,85b81f43-7b0a-425f-9fab-8890983bdbc4,d1d36033-00e4-42ff-8e19-a0b5d4c18eee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,identifier,string,2975,4,0.0,2975,AC-2,automated_controlID_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,identifierRank,string,2975,4,0.0,2975,ac-00002,ps-00006,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,lastModifiedDate,timestamp,2975,114,0.0,2975,2026-04-05T14:27:35.000+00:00,2026-04-06T16:27:39.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,lastModified Date,date,2975,2,0.0,2975,2026-04-05,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,lastModifiedDateYear,int,2975,1,0.0,2975,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,lastModifiedDateMonth,string,2975,1,0.0,2975,April,April,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,lastModifiedDateMonthNumber,string,2975,1,0.0,2975,04,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,lastModifiedDateQuarter,string,2975,1,0.0,2975,Quarter 2,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,masterControlID,string,2975,4,0.0,2975,1cf3cf26-0729-4018-ba2f-3b4883d7df19,c961c592-7ff6-4fe9-8730-43d766d4d068,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,maturity,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,maturityID,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,maturityTranslationKey,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,note,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,number,bigint,2975,5,0.0,2975,2563,2567,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,owner,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,ownerID,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,ownerTranslationKey,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,primaryEntity,string,2975,2,0.0,2975,RiskName_3029572,asset_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,primaryEntityID,string,2975,2,0.0,2975,5eb98ffa-b2b2-4076-b9c4-4906c44fb7fd,d9abd16e-5df1-48ee-b7b9-04e8ffbec31f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,primaryEntityTranslationKey,string,2975,2,0.0,2975,RiskName_3029572,asset_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,primaryEntityType,string,2975,2,0.0,2975,Assets,Risks,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,primaryEntityTypeID,string,2975,2,0.0,2975,Assets,Risks,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,primaryEntityTypeTranslationKey,string,2975,2,0.0,2975,Inventory.AssetControl,Risk.RiskControl,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,scope,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,scopeID,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,scopeTranslationKey,string,2975,0,2975.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,status,string,2975,1,0.0,2975,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,statusID,string,2975,1,0.0,2975,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,statusTranslationKey,string,2975,1,0.0,2975,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,workflowId,string,2975,1,0.0,2975,075069de-c608-4765-9775-c7fe426932f7,075069de-c608-4765-9775-c7fe426932f7,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,workflow,string,2975,1,0.0,2975,Default Control Workflow,Default Control Workflow,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,workflowStageId,string,2975,1,0.0,2975,PENDING,PENDING,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,workflowStage,string,2975,1,0.0,2975,PENDING,PENDING,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,url,string,2975,5,0.0,2975,https://Control/Control/85b81f43-7b0a-425f-9fab-8890983bdbc4,https://Control/Control/d1d36033-00e4-42ff-8e19-a0b5d4c18eee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,timeZoneID,string,2975,595,0.0,2975,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,orgID,string,2975,1,0.0,2975,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,orgName,string,2975,1,0.0,2975,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementation_v4,parentOrgID,string,2975,1,0.0,2975,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,reportingmoduletorelatedentitiesmapping_v,reportingModule,string,19,7,0.0,19,AI_GOVERNANCE,RISK,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,reportingmoduletorelatedentitiesmapping_v,entityTypeReference,string,19,11,0.0,19,AISYSTEMS,VENDORS,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,entityTypeReference,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,entityId,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,riskScore,decimal,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,impactLevelSortOrder,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,ImpactLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,ProbabilityLevelSortOrder,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,ProbabilityLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,colorCode,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,type,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,impactLevelValueId,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,ProbabilityLevelValueId,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,riskId,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,organizationID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmatrix,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentID,string,611065,871,0.0,611065,00360cc8-de6c-4943-a2ab-3151fef4008e,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentName,string,611065,863,0.0,611065,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentNumber,int,611065,871,0.0,611065,8,5080,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,inventoryID,string,611065,963,0.0,611065,008e8315-0406-45cf-9de2-cdcf83bc04fa,ffb70c53-aee5-407e-ac01-18cdda780ecb,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,inventoryName,string,611065,6,603925.0,7140,Vendor_20260406050819-exyrab,Vendor_20260406060620-tsf49h,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,inventoryNumber,bigint,611065,6,603925.0,7140,1855,1869,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,inventoryType,string,611065,4,0.0,611065,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,inventoryTypeID,string,611065,4,0.0,611065,20,60,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,linkType,string,611065,3,0.0,611065,AUTO,PRIMARY_PURPOSE,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentState,string,611065,4,0.0,611065,Completed,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentCompletedDateTime,timestamp,611065,8280,443870.0,167195,2026-03-19T04:15:24.000+00:00,2026-04-06T20:06:27.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentCompletedDate,date,611065,12,443870.0,167195,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentCompletedDateYear,int,611065,1,443870.0,167195,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentCompletedDateMonth,string,611065,2,443870.0,167195,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentCompletedDateMonthNumber,string,611065,2,443870.0,167195,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentCompletedDateQuarter,string,611065,2,443870.0,167195,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,assessmentURL,string,611065,871,0.0,611065,https://Assessment/Assessment/00360cc8-de6c-4943-a2ab-3151fef4008e,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,timeZoneID,string,611065,595,0.0,611065,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,orgName,string,611065,1,0.0,611065,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,orgID,string,611065,1,0.0,611065,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentinventory_v4,parentOrgID,string,611065,1,0.0,611065,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,assessmentID,string,2822,2666,0.0,2822,00214917-fe2b-4773-a003-56d7f8ff9e1b,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,assessmentName,string,2822,2649,0.0,2822,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,assessmentNumber,int,2822,2666,0.0,2822,4,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,respondent,string,2822,470,0.0,2822,Admin_3218801 CustomUser,user_5633969 PO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,userID,string,2822,477,0.0,2822,0084eb1d-bcd8-459b-9de6-28c4c6e47ccc,fef89c3a-5ec6-490a-8795-d114b753484d,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,assessmentURL,string,2822,2666,0.0,2822,https://Assessment/Assessment/00214917-fe2b-4773-a003-56d7f8ff9e1b,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,orgName,string,2822,3,0.0,2822,OTAuto02,asset_org_2_child,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,orgID,string,2822,3,0.0,2822,2cf501da-b928-4345-ae5a-f27ca9bdc56e,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrespondent,parentOrgID,string,2822,4,0.0,2822,2cf501da-b928-4345-ae5a-f27ca9bdc56e,ca7d34db-b12a-4ae2-ab00-d474099bc28a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,assessmentID,string,15791,2666,0.0,15791,00214917-fe2b-4773-a003-56d7f8ff9e1b,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,assessmentName,string,15791,2649,0.0,15791,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,assessmentNumber,int,15791,2666,0.0,15791,4,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,assessmentQuestionID,string,15791,15780,0.0,15791,000140b82d6fe24f26691a499c3fe326,fffef1246138426dbcc455b370dfdfdd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,attachmentCount,int,15791,3,0.0,15791,0,3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,commentCount,int,15791,2,0.0,15791,0,1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,responseSourceType,string,15791,5,15481.0,310,LAUNCH_FROM_INVENTORY,RESPONSE_DRIVEN_PRIMARY_SOURCE,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,dataType,string,15791,2,0.0,15791,datetime,text,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,name,string,15791,3091,0.0,15791, Is any of the personal data to be shared with the vendor considered sensitive in nature?,yes_no_question,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,projectQuestionID,string,15791,14755,0.0,15791,0001117d-5769-4625-b3e3-1820d83bf81e,fff37fd5-8214-4da0-8282-bd7de7380bd5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,questionID,string,15791,14745,0.0,15791,0001117d-5769-4625-b3e3-1820d83bf81e,fff37fd5-8214-4da0-8282-bd7de7380bd5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,questionType,string,15791,16,0.0,15791,ASSESS_CONTROL,YESNO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,sectionID,string,15791,2483,0.0,15791,00126b8a-4b19-4db4-b37d-bd6dfc72cffc,fff1d3b5-6448-4325-838e-145bd977a5ee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,sectionName,string,15791,538,0.0,15791, Project object ,test_sec_6093772,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,sectionSequence,int,15791,21,0.0,15791,1,21,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,sequence,int,15791,136,0.0,15791,1,136,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,state,string,15791,3,0.0,15791,Answered,Unanswered,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,assessmentURL,string,15791,2666,0.0,15791,https://Assessment/Assessment/00214917-fe2b-4773-a003-56d7f8ff9e1b,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,orgName,string,15791,3,0.0,15791,OTAuto02,asset_org_2_child,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,orgID,string,15791,3,0.0,15791,2cf501da-b928-4345-ae5a-f27ca9bdc56e,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestion,parentOrgID,string,15791,4,0.0,15791,2cf501da-b928-4345-ae5a-f27ca9bdc56e,ca7d34db-b12a-4ae2-ab00-d474099bc28a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,assessmentID,string,9493225,2666,0.0,9493225,00214917-fe2b-4773-a003-56d7f8ff9e1b,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,assessmentName,string,9493225,2649,0.0,9493225,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,assessmentNumber,int,9493225,2666,0.0,9493225,4,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,assessmentQuestionID,string,9493225,15772,0.0,9493225,000140b82d6fe24f26691a499c3fe326,fffef1246138426dbcc455b370dfdfdd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,questionID,string,9493225,14737,0.0,9493225,0001117d-5769-4625-b3e3-1820d83bf81e,fff37fd5-8214-4da0-8282-bd7de7380bd5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,questionType,string,9493225,16,0.0,9493225,ASSESS_CONTROL,YESNO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,assessmentQuestion,string,9493225,3083,0.0,9493225, Is any of the personal data to be shared with the vendor considered sensitive in nature?,yes_no_question,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,rawResponse,string,9493225,2181,0.0,9493225,!Vendor_50990_1_6464401 | OTAuto02 | Consulting,ตัวเลือกที่ 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,response,string,9493225,2178,0.0,9493225,!Vendor_50990_1_6464401 | OTAuto02 | Consulting,ตัวเลือกที่ 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponse,string,9493225,2181,0.0,9493225,!Vendor_50990_1_6464401 | OTAuto02 | Consulting,ตัวเลือกที่ 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,combinedResponse,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseNumeric,decimal,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseTimestamp,timestamp,9493225,1,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseTimeStampDate,date,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseTimeStampYear,int,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseTimestampMonth,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseTimestampMonthNumber,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseTimestampQuarter,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseDate,date,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseYear,int,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseMonth,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseMonthNumber,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parsedResponseQuarter,string,9493225,0,9493225.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,responseValueID,string,9493225,1203,875245.0,8617980,00743cca-41c2-42aa-b533-e9261fb10a12,op2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,assessmentURL,string,9493225,2666,0.0,9493225,https://Assessment/Assessment/00214917-fe2b-4773-a003-56d7f8ff9e1b,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,orgName,string,9493225,3,0.0,9493225,OTAuto02,asset_org_2_child,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,orgID,string,9493225,3,0.0,9493225,2cf501da-b928-4345-ae5a-f27ca9bdc56e,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,parentOrgID,string,9493225,4,0.0,9493225,2cf501da-b928-4345-ae5a-f27ca9bdc56e,ca7d34db-b12a-4ae2-ab00-d474099bc28a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentquestionresponse_v3,timeZoneID,string,9493225,595,0.0,9493225,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,assessmentID,string,3552745,2666,0.0,3552745,00214917-fe2b-4773-a003-56d7f8ff9e1b,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,assessmentName,string,3552745,2649,0.0,3552745,!PA-1_4468112 - automation_template_4468112,vendor_9590410 - automation_template_2694199,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,assessmentNumber,int,3552745,2666,0.0,3552745,4,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,cycleNumber,int,3552745,10,0.0,3552745,0,9,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,id,string,3552745,5963,0.0,3552745,000a3a45a820b8bda8eac5ba7498d6e5,ffedc630af9260185c4980beb01f3713,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStage,string,3552745,13,0.0,3552745,Approval_Stage1_8167495,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageID,string,3552745,13,0.0,3552745,Approval_Stage1_8167495,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageDateTime,timestamp,3552745,152912,0.0,3552745,2026-03-19T04:12:52.000+00:00,2026-04-06T20:06:29.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageDate,date,3552745,18,0.0,3552745,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageDateYear,int,3552745,1,0.0,3552745,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageDateMonth,string,3552745,2,0.0,3552745,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageDateMonthNumber,string,3552745,2,0.0,3552745,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,newStageDateQuarter,string,3552745,2,0.0,3552745,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStage,string,3552745,11,1591030.0,1961715,Approval_Stage1_8167495,Under Review,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageID,string,3552745,11,1591030.0,1961715,Approval_Stage1_8167495,UnderReview,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageDateTime,timestamp,3552745,97459,1591030.0,1961715,2026-03-19T04:12:52.000+00:00,2026-04-06T20:06:27.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageDate,date,3552745,18,1591030.0,1961715,2026-03-19,2026-04-06,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageDateYear,int,3552745,1,1591030.0,1961715,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageDateMonth,string,3552745,2,1591030.0,1961715,April,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageDateMonthNumber,string,3552745,2,1591030.0,1961715,03,04,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,oldStageDateQuarter,string,3552745,2,1591030.0,1961715,Quarter 1,Quarter 2,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,stageChangedBy,string,3552745,98,0.0,3552745,CustomUser_1152396 AssessmentApprove,user2_5217976 last_5217976,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,stageChangedByID,string,3552745,99,0.0,3552745,01df012a-e7ca-4339-b106-7486c9363009,fc101d95-5934-4a97-94cd-bc33fe1ea592,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,lastUpdatedStage,boolean,3552745,2,0.0,3552745,false,true,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,daysSpentInOldStage,double,3552745,223,1591030.0,1961715,0.0,0.3709953703703704,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,assessmentURL,string,3552745,2666,0.0,3552745,https://Assessment/Assessment/00214917-fe2b-4773-a003-56d7f8ff9e1b,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,timeZoneID,string,3552745,595,0.0,3552745,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,orgName,string,3552745,3,0.0,3552745,OTAuto02,asset_org_2_child,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,orgID,string,3552745,3,0.0,3552745,2cf501da-b928-4345-ae5a-f27ca9bdc56e,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentstagechangetracker_v4,parentOrgID,string,3552745,4,0.0,3552745,2cf501da-b928-4345-ae5a-f27ca9bdc56e,ca7d34db-b12a-4ae2-ab00-d474099bc28a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,assessmentID,string,18,15,0.0,18,0bd65119-260b-43c5-8143-c3cae1287c2a,fa06dca8-6c57-4229-bbd9-3875c68e6bc0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,assessmentName,string,18,15,0.0,18,Assessment_1522819,edited_Automated_Assessment_8767957,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,assessmentNumber,int,18,15,0.0,18,1246,4835,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,tag,string,18,15,0.0,18,UserTags_8190218,tags_2_3934722,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,assessmentURL,string,18,15,0.0,18,https://Assessment/Assessment/0bd65119-260b-43c5-8143-c3cae1287c2a,https://Assessment/Assessment/fa06dca8-6c57-4229-bbd9-3875c68e6bc0,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,orgID,string,18,2,0.0,18,6b055818-7a4a-497c-a9ba-407530f4a17d,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,orgName,string,18,2,0.0,18,OTAuto02,asset_org_1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmenttag,parentOrgID,string,18,2,0.0,18,6b055818-7a4a-497c-a9ba-407530f4a17d,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,approver,string,6,2,0.0,6,OneTrust Automation,privacyofficer user,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,approverID,string,6,2,0.0,6,79f09a0f-fbd7-4439-9e1e-d48abe62c98e,aa5e22c6-dc4f-473f-8aa5-46753f07d37d,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,riskID,string,6,6,0.0,6,004a86fe-351b-449b-9700-f6b10ca3af4a,fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,riskName,string,6,6,0.0,6,RiskName_163271,Risk_Name_6845847,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,riskNumber,bigint,6,6,0.0,6,1492,1498,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,riskURL,string,6,6,0.0,6,https://Risk/Risk/004a86fe-351b-449b-9700-f6b10ca3af4a,https://Risk/Risk/fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,orgID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,orgName,string,6,1,0.0,6,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskapprover,parentOrgID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,manager,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,managerType,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,managerID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,riskID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,riskName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,riskNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,riskURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskmanager,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,riskID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,parentid,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,riskName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,riskNumber,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,orphan,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,childrenRisks,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,hierarchyLevel,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,parent,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,source,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,type,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,stage,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,treatmentStatus,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,inherentRiskScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,inherentRiskRollUpScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,inherentRiskRollUpLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,inherentRiskLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,inherentRiskProbabilityLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,inherentRiskImpactLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,residualRiskScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,residualRiskRollUpScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,residualRiskRollUpLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,residualRiskLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,residualRiskProbabilityLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,residualRiskImpactLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,targetScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,score,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,reminderDays,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,riskOwner,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,riskCategory,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,level1,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,level2,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,level3,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,level4,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_risk_hierarchy,level5,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,riskName,string,6,6,0.0,6,RiskName_163271,Risk_Name_6845847,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,riskNumber,bigint,6,6,0.0,6,1492,1498,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,owner,string,6,3,0.0,6,FName_3631531 LName,projectowner user,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,ownerID,string,6,3,0.0,6,79f09a0f-fbd7-4439-9e1e-d48abe62c98e,efca12aa-e43f-4bab-89d7-26970ad16d14,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,riskID,string,6,6,0.0,6,004a86fe-351b-449b-9700-f6b10ca3af4a,fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,riskURL,string,6,6,0.0,6,https://Risk/Risk/004a86fe-351b-449b-9700-f6b10ca3af4a,https://Risk/Risk/fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,orgID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,orgName,string,6,1,0.0,6,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskowner,parentOrgID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,id,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,cycleNumber,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStage,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageDateTime,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageDateYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageDateMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageDateMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,newStageDateQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStage,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageDateTime,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageDateYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageDateMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageDateMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,oldStageDateQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,riskID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,riskNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,sequence,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,stageChangedBy,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,stageChangedByID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,stageChangedByTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,workflow,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,workflowID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,workflowTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,lastUpdatedStage,boolean,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,daysSpentInOldStage,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,riskURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,timeZoneID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskstagechangetracker_v4,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataCategoryName,string,38,3,35.0,3,data_category_3255_1_5089207,data_category_3255_1_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataCategoryID,string,38,3,35.0,3,82524fdb-3ae8-4af7-8541-80de3e7f1e76,f5176f0c-0a53-438e-8032-9a13c48aea94,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataElementName,string,38,3,35.0,3,de_3255_5089207,de_3255_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataElementID,string,38,3,35.0,3,19110ffa-4013-47f7-a982-5f14f07d4e05,53f06f65-5754-46d7-b14e-e4602a3e833d,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataSubjectName,string,38,3,35.0,3,new_data_subject_3255_5089207,new_data_subject_3255_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataSubjectTypeID,string,38,3,35.0,3,4a8d6011-a17f-4bda-887a-c470ef60dfde,f756b958-9b07-4dd0-91fa-e08d462fb03e,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,sourceType,string,38,1,35.0,3,Inventory,Inventory,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,sourceTypeID,string,38,1,35.0,3,Inventory,Inventory,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,sourceTypeTranslationKey,string,38,1,35.0,3,PersonalDataSourceInventory,PersonalDataSourceInventory,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dateLinked,timestamp,38,4,35.0,3,2026-03-20T01:10:58.000+00:00,2026-03-27T00:44:37.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataElementDescription,string,38,0,38.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataElementDescriptionID,string,38,0,38.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataElementDescriptionTranslationKey,string,38,0,38.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataCategoryDescription,string,38,3,35.0,3,data_category_desc_3255_5089207,data_category_desc_3255_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataCategoryDescriptionID,string,38,3,35.0,3,82524fdb-3ae8-4af7-8541-80de3e7f1e76,f5176f0c-0a53-438e-8032-9a13c48aea94,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataCategoryDescriptionTranslationKey,string,38,3,35.0,3,82524fdb-3ae8-4af7-8541-80de3e7f1e76Desc,f5176f0c-0a53-438e-8032-9a13c48aea94Desc,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataSubjectTypeDescription,string,38,3,35.0,3,new_data_subject_3255_desc_5089207,new_data_subject_3255_desc_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataSubjectTypeDescriptionID,string,38,3,35.0,3,4a8d6011-a17f-4bda-887a-c470ef60dfde,f756b958-9b07-4dd0-91fa-e08d462fb03e,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,dataSubjectTypeDescriptionTranslationKey,string,38,3,35.0,3,4a8d6011-a17f-4bda-887a-c470ef60dfdeDesc,f756b958-9b07-4dd0-91fa-e08d462fb03eDesc,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,id,string,38,38,0.0,38,00a3551c79b4b728fbba15285ebc1ced,f4b7b2e2fc51d3c307d2d1eb633f177a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,inventoryID,string,38,38,0.0,38,01e9c2d9-7167-4a4b-bcac-03a8c5c93469,fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,inventoryName,string,38,38,0.0,38,Vendor_20260406050626-ssbh77,vendor_8202604,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,inventoryNumber,bigint,38,38,0.0,38,1,3360,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,inventoryType,string,38,3,0.0,38,Assets,Vendors,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,inventoryTypeID,int,38,3,0.0,38,20,50,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,inventoryURL,string,38,38,0.0,38,https://Inventory/assets/0c00a859-e16b-4d41-8786-998095804a54,https://Inventory/vendors/fbd326dc-fe72-46f9-8332-8aff5453081c,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,orgID,string,38,1,0.0,38,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,orgName,string,38,1,0.0,38,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociation,parentOrgID,string,38,1,0.0,38,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,value,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueNumeric,decimal,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDateYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDateMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDateMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDateQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDateTime,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDTDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDTDateYear,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDTDateMonth,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDTDateMonthNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueDTDateQuarter,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,attributeValueID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,personalDataAssociationID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryType,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryTypeID,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,inventoryURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,timeZoneID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationattributevalue_v3,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,inventoryID,string,3,3,0.0,3,0ec505f9-ba70-4513-9e29-0768ee6adfac,6f731c31-e96e-4a15-8438-2268dc7af4fe,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,classificationID,string,3,3,0.0,3,59c163c5-0ec7-428b-a9a2-747ea7ec2189,ed1be139-92ab-4464-91ca-508b8d74c099,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,dataClassificationName,string,3,3,0.0,3,data_classification_3255_1_5089207,data_classification_3255_1_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,dataClassificationsDescriptions,string,3,3,0.0,3,data_classification_desc_3255_5089207,data_classification_desc_3255_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,dataClassificationsDescriptionsID,string,3,3,0.0,3,59c163c5-0ec7-428b-a9a2-747ea7ec2189,ed1be139-92ab-4464-91ca-508b8d74c099,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,dataClassificationsDescriptionsTranslationKey,string,3,3,0.0,3,59c163c5-0ec7-428b-a9a2-747ea7ec2189Desc,ed1be139-92ab-4464-91ca-508b8d74c099Desc,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,personalDataAssociationID,string,3,3,0.0,3,4920238349b778c85c8a8c1b9cc73d9c,af59713d366165fb411b806e8b11e225,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,inventoryName,string,3,3,0.0,3,asset_5089207,asset_8896235,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,inventoryNumber,bigint,3,3,0.0,3,1000,3027,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,inventoryType,string,3,1,0.0,3,Assets,Assets,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,inventoryTypeID,int,3,1,0.0,3,20,20,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,inventoryURL,string,3,3,0.0,3,https://Inventory/assets/0ec505f9-ba70-4513-9e29-0768ee6adfac,https://Inventory/assets/6f731c31-e96e-4a15-8438-2268dc7af4fe,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,orgID,string,3,1,0.0,3,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,orgName,string,3,1,0.0,3,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorypersonaldataassociationclassification,parentOrgID,string,3,1,0.0,3,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,controlImplementationID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,approver,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,approverID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,controlImplementationURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationapprover,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,controlImplementationID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,owner,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,ownerID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,ownerTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,controlImplementationURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationowner,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeValue,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeValueNumeric,decimal,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeValueDate,date,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeValueDateTime,timestamp,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlAttributeValueID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlImplementationID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlImplementationAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,controlImplementationURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationattributevalue,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,controlImplementationID,string,6,5,0.0,6,85b81f43-7b0a-425f-9fab-8890983bdbc4,d1d36033-00e4-42ff-8e19-a0b5d4c18eee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,entityID,string,6,2,0.0,6,5eb98ffa-b2b2-4076-b9c4-4906c44fb7fd,d9abd16e-5df1-48ee-b7b9-04e8ffbec31f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,entityType,string,6,2,0.0,6,Assets,Risks,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,organizationID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,inventoryID,string,6,1,5.0,1,5eb98ffa-b2b2-4076-b9c4-4906c44fb7fd,5eb98ffa-b2b2-4076-b9c4-4906c44fb7fd,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,inventoryName,string,6,1,5.0,1,asset_3029572,asset_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,inventoryNumber,bigint,6,1,5.0,1,3352,3352,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,riskID,string,6,1,1.0,5,d9abd16e-5df1-48ee-b7b9-04e8ffbec31f,d9abd16e-5df1-48ee-b7b9-04e8ffbec31f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,riskName,string,6,1,1.0,5,RiskName_3029572,RiskName_3029572,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,riskNumber,int,6,1,1.0,5,1494,1494,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,controlImplementationURL,string,6,5,0.0,6,https://Control/Control/85b81f43-7b0a-425f-9fab-8890983bdbc4,https://Control/Control/d1d36033-00e4-42ff-8e19-a0b5d4c18eee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,entityURL,string,6,2,0.0,6,https://Inventory/assets/5eb98ffa-b2b2-4076-b9c4-4906c44fb7fd,https://Risk/Risk/d9abd16e-5df1-48ee-b7b9-04e8ffbec31f,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,controlImplementationStatus,string,6,1,0.0,6,Pending,Pending,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,completedControlImplementationId,string,6,0,6.0,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,validControlImplementationId,string,6,5,0.0,6,85b81f43-7b0a-425f-9fab-8890983bdbc4,d1d36033-00e4-42ff-8e19-a0b5d4c18eee,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,orgID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,orgName,string,6,1,0.0,6,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_controlimplementationentitylink,parentOrgID,string,6,1,0.0,6,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,assessmentId,string,286,278,0.0,286,05b378e2-1363-4caa-8f38-c8dc0dac4ba6,fd056b42-285d-4120-b876-9af06790c73e,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,assessmentName,string,286,278,0.0,286,!Test_project_4930175 - A_template_instance_105_7941352,reassess_assessment_9109512,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,assessmentNumber,int,286,278,0.0,286,410,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,assessmentTemplateType,string,286,4,0.0,286,AIGOVERNANCE,VENDOR,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,entityId,string,286,183,0.0,286,01498062-52c2-4f2f-88dc-edc0805fccc6,ffe74d79-7de8-4c5b-953d-a59fbc016c02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,entityType,string,286,6,0.0,286,CONTROL_IMPLEMENTATION,projects,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,entityParentObjectId,string,286,64,183.0,103,011e487c-a5d4-44a9-b8fa-4905bcfe3431,ea83dcb5-941b-498c-a459-e15971fbbac3,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,linkType,string,286,3,0.0,286,AUTO,PRIMARY,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,orgID,string,286,2,0.0,286,6b055818-7a4a-497c-a9ba-407530f4a17d,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,OrgName,string,286,2,0.0,286,OTAuto02,asset_org_1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentrelatedentities,parentOrgID,string,286,2,0.0,286,6b055818-7a4a-497c-a9ba-407530f4a17d,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,assessmentID,string,1916,1826,0.0,1916,00214917-fe2b-4773-a003-56d7f8ff9e1b,fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,assessmentName,string,1916,1821,0.0,1916,!Test_project_4930175 - A_template_instance_105_7941352,vendor_91609_local_8906332,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,assessmentNumber,int,1916,1826,0.0,1916,4,5081,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,approver,string,1916,70,0.0,1916,AnyUser_1451987 AnyUser,user_5633969 PO,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,userID,string,1916,70,0.0,1916,01e2bd32-c54f-4691-b740-d058f9429445,fde7f7ea-a1e4-4127-9e22-f160451ecf72,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,assessmentURL,string,1916,1826,0.0,1916,https://Assessment/Assessment/00214917-fe2b-4773-a003-56d7f8ff9e1b,https://Assessment/Assessment/fff69e65-7256-468b-8ddd-fceaa5178616,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,orgName,string,1916,3,0.0,1916,OTAuto02,asset_org_2_child,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,orgID,string,1916,3,0.0,1916,2cf501da-b928-4345-ae5a-f27ca9bdc56e,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_assessmentapprover,parentOrgID,string,1916,4,0.0,1916,2cf501da-b928-4345-ae5a-f27ca9bdc56e,ca7d34db-b12a-4ae2-ab00-d474099bc28a,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,riskCategory,string,5,4,0.0,5,Availability,Geographic,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,riskCategoryID,string,5,4,0.0,5,1c074119-3050-42c8-a287-1faca3a99479,d75f1dfd-bf2e-47cf-9f90-9ab6ec693e43,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,riskID,string,5,5,0.0,5,004a86fe-351b-449b-9700-f6b10ca3af4a,fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,riskName,string,5,5,0.0,5,RiskName_216438,Risk_Name_6845847,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,riskNumber,bigint,5,5,0.0,5,1492,1498,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,riskURL,string,5,5,0.0,5,https://Risk/Risk/004a86fe-351b-449b-9700-f6b10ca3af4a,https://Risk/Risk/fd3ce0d9-4905-46ca-a286-f6096686aff5,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,orgID,string,5,1,0.0,5,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,orgName,string,5,1,0.0,5,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskcategory,parentOrgID,string,5,1,0.0,5,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,riskID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,riskName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,riskNumber,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,vulnerability,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,vulnerabilityID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,riskURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_riskvulnerability,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inventoryID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,entityID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,entityType,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,id,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,category,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inherentRiskLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inherentRiskLevelID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inherentRiskLevelTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inherentRiskScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,residualRiskLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,residualRiskLevelID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,residualRiskLevelTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,residualRiskScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,targetRiskLevel,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,targetRiskLevelID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,targetRiskLevelTranslationKey,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,targetRiskScore,double,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inventoryType,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inventoryTypeID,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inventoryName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inventoryNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,inventoryURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventoryaggregatedrisksummarybycategory,parentOrgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,inventoryID,string,580720,963,0.0,580720,008e8315-0406-45cf-9de2-cdcf83bc04fa,ffb70c53-aee5-407e-ac01-18cdda780ecb,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,inventoryName,string,580720,6,577150.0,3570,Vendor_20260406050819-exyrab,Vendor_20260406060620-tsf49h,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,inventoryNumber,bigint,580720,6,577150.0,3570,1855,1869,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,templateName,string,580720,745,0.0,580720,All_questions_type_Template_5415442,wf_template_8924918,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastAssessmentNumber,int,580720,831,0.0,580720,8,5080,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastCompletedDT,timestamp,580720,7364,434945.0,145775,2026-03-19T04:15:24.000+00:00,2026-03-28T02:03:22.000+00:00,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastCompleted,date,580720,7,434945.0,145775,2026-03-19,2026-03-28,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastCompletedDateYear,int,580720,1,434945.0,145775,2026,2026,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastCompletedDateMonth,string,580720,1,434945.0,145775,March,March,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastCompletedDateMonthNumber,string,580720,1,434945.0,145775,03,03,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,lastCompletedDateQuarter,string,580720,1,434945.0,145775,Quarter 1,Quarter 1,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,daysSinceCompleted,double,580720,196,434945.0,145775,122.14275357638796,129.9677304282398,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,inventoryURL,string,580720,6,577150.0,3570,https://Inventory/vendors/01e9c2d9-7167-4a4b-bcac-03a8c5c93469,https://Inventory/vendors/8d089a4f-b86d-4310-b65d-ac88e1342a63,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,orgName,string,580720,1,0.0,580720,OTAuto02,OTAuto02,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,orgID,string,580720,1,0.0,580720,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,parentOrgID,string,580720,1,0.0,580720,b99df4a4-2bf5-4c08-9483-bd636470bc11,b99df4a4-2bf5-4c08-9483-bd636470bc11,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylastassessment_v3,timeZoneID,string,580720,595,0.0,580720,Africa/Abidjan,Zulu,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,attributeName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,attributeType,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryType,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryTypeID,int,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,isEnumerated,boolean,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,linkTypeAttributeValue,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,linkTypeAttributeValueID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,relatedInventoryGroup,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,relatedInventoryID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,relatedInventoryName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,relatedInventoryNumber,bigint,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryLinkTypeAttributeID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,inventoryURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,relatedInventoryURL,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,orgID,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,orgName,string,0,0,,0,,,
+auto_qa_e40yx52dkbjpcqazimno9yvh4k,cmb_v_inventorylinktypeattributevalue,parentOrgID,string,0,0,,0,,,
+monitoring,dbxtenantschemaversion,binaryVersion,string,1070,1,0.0,1070,202607.1.0,202607.1.0,
+monitoring,dbxtenantschemaversion,allSchemaHash,string,1070,1,0.0,1070,9a5758a779ac33f9f7dcff143aacfc3e,9a5758a779ac33f9f7dcff143aacfc3e,
+monitoring,dbxtenantschemaversion,sharedDDLSchemaHash,string,1070,1,0.0,1070,03f2cb51d73545312671018058bbd39c,03f2cb51d73545312671018058bbd39c,
+monitoring,dbxtenantschemaversion,sharedDMLSchemaHash,string,1070,1,0.0,1070,45c0f676fb1f1e2de8b3a32d5a018cd5,45c0f676fb1f1e2de8b3a32d5a018cd5,
+monitoring,dbxtenantschemaversion,moduleDDLSchemaHash,string,1070,1,0.0,1070,6bd3a68b2801aa0b4b40dff2032bfaa0,6bd3a68b2801aa0b4b40dff2032bfaa0,
+monitoring,dbxtenantschemaversion,schemaHashVersion,int,1070,1,0.0,1070,1,1,
+monitoring,dbxtenantschemaversion,recModifiedDate,timestamp,1070,1051,0.0,1070,2026-07-27T12:59:32.849+00:00,2026-07-27T15:23:10.574+00:00,
+monitoring,dbxtenantschemaversion,schema,string,1070,1070,0.0,1070,auto_qa_024d1xlek07ht6gc2fhqxpttny,auto_qa_zzva0zt4zn7yut3pirysi5apjw,
