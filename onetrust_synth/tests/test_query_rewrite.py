@@ -306,6 +306,39 @@ def test_substitute_unreachable_literal_predicates_leaves_in_list_unchanged_when
     assert substitute_unreachable_literal_predicates(sql) == sql
 
 
+def test_substitute_unreachable_literal_predicates_resolves_unqualified_column_via_nearest_from():
+    # Real-CSV regression: a predicate inside a single-table subquery scope often skips the
+    # alias entirely (unambiguous with only one table in scope) -- e.g.
+    # "(SELECT DISTINCT(riskID) FROM cmb_riskrelatedobjects WHERE ucase(entityType) IN (...))".
+    # The alias.column-only patterns silently skip these; confirmed live 2026-07-31 this left
+    # 12 shortlisted queries still unfixed after the aliased-only version of this function.
+    # entity_v3.entityTypeReference's real sample data only ever contains
+    # 'evidence-task-implementation-link'.
+    sql = (
+        "SELECT main.* FROM abac_onetrust_scale.onetrust_sim.entity_v3 main "
+        "WHERE ucase(entityTypeReference) IN ('AISYSTEMS','MODELS','DATASETS')"
+    )
+    result = substitute_unreachable_literal_predicates(sql)
+    assert "AISYSTEMS" not in result
+    assert "'evidence-task-implementation-link'" in result
+
+
+def test_substitute_unreachable_literal_predicates_unqualified_uses_nearest_preceding_table():
+    # Two tables, two unqualified predicates in two different subquery scopes -- must resolve
+    # each to ITS OWN nearest FROM, not globally to whichever table appears first/last in the
+    # whole query (same per-table-correctness concern as the aliased case).
+    sql = (
+        "SELECT * FROM ("
+        "  SELECT * FROM abac_onetrust_scale.onetrust_sim.entity_v3 WHERE ucase(entityTypeReference) = ucase('NOPE1')"
+        ") a JOIN ("
+        "  SELECT * FROM abac_onetrust_scale.onetrust_sim.cmb_riskrelatedobjects WHERE ucase(entityType) = ucase('NOPE2')"
+        ") b ON 1=1"
+    )
+    result = substitute_unreachable_literal_predicates(sql)
+    assert "ucase('evidence-task-implementation-link')" in result
+    assert "ucase('DATASETS')" in result  # cmb_riskrelatedobjects's first real sample value
+
+
 def test_normalize_double_quoted_identifiers_leaves_comment_boundaries_intact():
     # Double-quoted (even JSON-shaped) content inside a /* ... */ comment is harmless to
     # convert -- Spark's parser strips the whole comment body regardless of its content, and

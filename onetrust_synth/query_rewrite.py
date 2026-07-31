@@ -158,6 +158,30 @@ _ALIASED_IN_PREDICATE = re.compile(
 )
 _MAX_IN_LIST_SUBSTITUTES = 10  # cap so a fix doesn't balloon a real IN list unreasonably
 
+# A predicate inside a single-table subquery/scope often skips the alias entirely (e.g. "(SELECT
+# ... FROM cmb_riskrelatedobjects WHERE ucase(entityType) IN (...))" -- unambiguous with only
+# one table in scope, so the alias.column form above never matches it at all. Requiring the
+# ucase(.../upper(...) wrap here (not optional, unlike the aliased patterns) is a deliberate
+# precision guard: a bare `\w+ = 'value'` with no qualifier is too easy to false-positive on
+# something that isn't a real column reference, but this specific wrapped-bare-identifier shape
+# is consistently a genuine column comparison in these BI-tool-generated queries.
+_UNQUALIFIED_EQUALITY_PREDICATE = re.compile(
+    rf"{_FUNC_WRAP}(\w+)\s*\)\s*=\s*(?:{_FUNC_WRAP})?'([^']*)'\)?", re.IGNORECASE,
+)
+_UNQUALIFIED_IN_PREDICATE = re.compile(
+    rf"{_FUNC_WRAP}(\w+)\s*\)\s+IN\s*\(([^)]*)\)", re.IGNORECASE,
+)
+_FROM_TABLE = re.compile(r"\bFROM\s+(?:[\w.]+\.)?(\w+)\b", re.IGNORECASE)
+
+
+def _nearest_preceding_table(sql: str, position: int) -> str | None:
+    """The table named by the closest FROM before `position` -- a pragmatic (not truly
+    scope-aware, since regex can't fully parse nested SQL) stand-in for "which table is this
+    unqualified column actually on," but correct for the straightforward nested-SELECT shape
+    these BI-tool-generated queries consistently use."""
+    matches = list(_FROM_TABLE.finditer(sql, 0, position))
+    return matches[-1].group(1) if matches else None
+
 
 @functools.lru_cache(maxsize=None)
 def _cached_column_values(table: str, column: str) -> tuple:
@@ -223,8 +247,35 @@ def substitute_unreachable_literal_predicates(sql: str) -> str:
         replacement = ", ".join(f"'{v}'" for v in samples[:_MAX_IN_LIST_SUBSTITUTES])
         return match.group(0).replace(list_content, replacement, 1)
 
+    def _replace_unqualified_equality(match):
+        column, value = match.group(1), match.group(2)
+        table = _nearest_preceding_table(sql, match.start())
+        if not table:
+            return match.group(0)
+        samples = _cached_column_values(table, column)
+        if not samples or value.lower() in {s.lower() for s in samples}:
+            return match.group(0)
+        return match.group(0).replace(f"'{value}'", f"'{samples[0]}'", 1)
+
+    def _replace_unqualified_in_list(match):
+        column, list_content = match.group(1), match.group(2)
+        table = _nearest_preceding_table(sql, match.start())
+        if not table:
+            return match.group(0)
+        samples = _cached_column_values(table, column)
+        if not samples:
+            return match.group(0)
+        values = re.findall(r"'([^']*)'", list_content)
+        samples_lower = {s.lower() for s in samples}
+        if any(v.lower() in samples_lower for v in values):
+            return match.group(0)
+        replacement = ", ".join(f"'{v}'" for v in samples[:_MAX_IN_LIST_SUBSTITUTES])
+        return match.group(0).replace(list_content, replacement, 1)
+
     sql = _ALIASED_IN_PREDICATE.sub(_replace_in_list, sql)
     sql = _ALIASED_EQUALITY_PREDICATE.sub(_replace_equality, sql)
+    sql = _UNQUALIFIED_IN_PREDICATE.sub(_replace_unqualified_in_list, sql)
+    sql = _UNQUALIFIED_EQUALITY_PREDICATE.sub(_replace_unqualified_equality, sql)
     return sql
 
 
