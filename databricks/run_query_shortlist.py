@@ -104,6 +104,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("catalog", help="e.g. abac_onetrust_scale")
     parser.add_argument("--out", default="query_shortlist_results.csv")
+    parser.add_argument(
+        "--claim-mode", choices=["narrow", "broad"], default="narrow",
+        help="narrow (default): SEEDED_CLAIMS_BY_TABLE, each claim makes exactly one seeded "
+             "row visible -- for ABAC-correctness testing. broad: perf_claim_for_query, each "
+             "claim makes every row of the queried table visible -- for performance testing, "
+             "where a real query's own filters/grouping need actual row volume to run against.",
+    )
     args = parser.parse_args()
 
     client_id = os.environ["CLIENT_ID"]
@@ -111,7 +118,7 @@ def main():
     workspace_host = os.environ["WORKSPACE_HOST"]
     warehouse_id = os.environ["WAREHOUSE_ID"]
 
-    rows = build_shortlist_rows(args.catalog)
+    rows = build_shortlist_rows(args.catalog, claim_mode=args.claim_mode)
     print(f"Loaded {len(rows)} shortlisted queries against {args.catalog}.")
 
     distinct_claims = sorted({row["claim"] for row in rows})

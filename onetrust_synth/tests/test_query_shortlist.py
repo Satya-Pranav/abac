@@ -1,10 +1,11 @@
 import csv
+import json
 import os
 import tempfile
 
 from onetrust_synth import config
 from onetrust_synth.query_shortlist import (
-    SEEDED_CLAIMS_BY_TABLE, claim_for_query, build_shortlist_rows, write_shortlist_csv,
+    SEEDED_CLAIMS_BY_TABLE, claim_for_query, perf_claim_for_query, build_shortlist_rows, write_shortlist_csv,
 )
 
 
@@ -64,6 +65,48 @@ def test_build_shortlist_rows_requalifies_stale_catalog_in_reused_modified_query
     for r in real_query_rows:
         assert f"{config.CATALOG}.onetrust_sim." not in r["query"]
         assert f"{config.CATALOG}.monitoring." not in r["query"]
+
+
+def test_perf_claim_for_query_grants_broad_access_via_permissions_branch():
+    # For a single-literal-type table, the perf claim's root must NOT equal that type (else
+    # the root branch's narrow explicit-assignment path would apply instead of the intended
+    # permissions branch), and permissions must contain exactly that type.
+    claim = json.loads(perf_claim_for_query("cmb_assessment"))
+    assert claim["mode"] == "ABAC"
+    assert claim["root"] != "ASSESSMENT"
+    assert claim["permissions"] == ["ASSESSMENT"]
+
+
+def test_perf_claim_for_query_covers_every_synthetic_value_for_per_row_type_table():
+    # cmb_riskrelatedobjects.entityType varies per row (not a single literal) -- the perf
+    # claim needs every value entity_type_to_object_type() can normalize it to, or rows of
+    # types not listed would still be filtered out despite the "broad access" intent.
+    claim = json.loads(perf_claim_for_query("cmb_riskrelatedobjects"))
+    assert set(claim["permissions"]) == {
+        "DATASETS", "ENGAGEMENT", "GRA", "INCIDENT", "INVENTORY", "MODELS", "PIA", "PROJECTS",
+    }
+
+
+def test_perf_claim_for_query_falls_back_to_disable_when_ungoverned():
+    claim = perf_claim_for_query("orghierarchy")
+    assert claim == '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}'
+
+
+def test_build_shortlist_rows_broad_mode_uses_perf_claims_not_seeded_claims():
+    rows = build_shortlist_rows("abac_onetrust_scale", claim_mode="broad")
+    seeded_claim_values = set(SEEDED_CLAIMS_BY_TABLE.values())
+    governed_rows = [r for r in rows if json.loads(r["claim"]).get("permissions")]
+    assert governed_rows  # sanity: at least one shortlisted query hits a governed table
+    for r in governed_rows:
+        assert r["claim"] not in seeded_claim_values
+
+
+def test_build_shortlist_rows_rejects_unknown_claim_mode():
+    try:
+        build_shortlist_rows("abac_onetrust_scale", claim_mode="bogus")
+        assert False, "expected ValueError"
+    except ValueError:
+        pass
 
 
 def test_build_shortlist_rows_normalizes_double_quoted_identifiers():

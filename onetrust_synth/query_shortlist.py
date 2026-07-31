@@ -3,6 +3,7 @@ Pairs every shortlisted real query with a claim, then (when a live Spark/Unity C
 is available — see run_shortlist) executes each and records pass/fail. Design doc section 7-8.
 """
 import csv
+import json
 
 from onetrust_synth import config
 from onetrust_synth.query_rewrite import (
@@ -30,6 +31,54 @@ SEEDED_CLAIMS_BY_TABLE = {
     "entitylink_v3": '{"tenant":1,"user":"u.entitylink.owner@example.com","org":"100","mode":"ABAC","root":"CONTROLTEMPLATE","permissions":[]}',
 }
 _DISABLE_PROBE_CLAIM = '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}'
+
+# Table -> every real object_type value that table's type column can actually take in the
+# SYNTHETIC data specifically (not the full real-world vocabulary where they differ -- bounded
+# by the same limited real sample main_tables.build_generic_table draws categorical values
+# from). Used by perf_claim_for_query to grant "see every row of this table" visibility via
+# abac_row_filter's permissions branch (ctx.root <> object_type AND
+# array_contains(ctx.permissions, object_type)) -- unlike SEEDED_CLAIMS_BY_TABLE's claims,
+# which by design only ever make ONE seeded row visible (for ABAC-correctness testing), this
+# is for performance testing, where a real query's own filters/grouping need actual row volume
+# to run against. Single-literal-type tables need only their one type (matching _POLICY_SPEC's
+# literal_type); per-row-varying tables need every value entity_type_to_object_type() can
+# normalize their type column to -- cmb_riskrelatedobjects.entityType's real ndv=9 sample
+# ('DATASETS','Engagement','GRA','INCIDENT','INVENTORY','Incident','MODELS','PIA','projects')
+# collapses to 8 after uppercasing ('Incident'/'INCIDENT' merge); entitylink_v3's real
+# vocabulary has 5 values but the same 500-row sample the generator itself draws from only
+# ever captured 'ControlTemplate', so that's genuinely the only value the synthetic column
+# contains (same caveat documented in registries.build_entity_registry).
+_ALL_OBJECT_TYPES_BY_TABLE = {
+    "cmb_assessment": ["ASSESSMENT"],
+    "cmb_controlimplementation": ["CONTROL"],
+    "cmb_template": ["TEMPLATE"],
+    "cmb_v_inventoryaggregatedrisksummary": ["ASSETS", "VENDORS", "PROCESSING-ACTIVITIES"],
+    "cmb_riskrelatedobjects": ["DATASETS", "ENGAGEMENT", "GRA", "INCIDENT", "INVENTORY", "MODELS", "PIA", "PROJECTS"],
+    "cmb_inventory": ["ASSETS", "VENDORS", "PROCESSING-ACTIVITIES"],
+    "cmb_v_assessment_v4": ["ASSESSMENT"],
+    "entitylink_v3": ["CONTROLTEMPLATE"],
+}
+# Guaranteed to never equal any real object_type, so the permissions branch (not the root
+# branch's explicit-assignment/RBAC_ABAC paths) is what grants visibility here.
+_PERF_PROBE_ROOT = "__PERF_PROBE__"
+
+
+def perf_claim_for_query(tables_used: str, query: str = "") -> str:
+    """
+    A "see every row" claim for performance testing. mode stays "ABAC" (not "DISABLE") so the
+    row filter still evaluates the permissions branch's array_contains(...) per row --
+    DISABLE short-circuits before that (and before the root branch's EXISTS join too), which
+    would under-represent real query cost against a governed table.
+    """
+    tables = tables_referenced(tables_used) or extract_tables_from_query_schema_refs(query)
+    for table in tables:
+        types = _ALL_OBJECT_TYPES_BY_TABLE.get(table.lower()) or _ALL_OBJECT_TYPES_BY_TABLE.get(table)
+        if types:
+            return json.dumps({
+                "tenant": 1, "user": "perf-test", "org": "100",
+                "mode": "ABAC", "root": _PERF_PROBE_ROOT, "permissions": types,
+            })
+    return _DISABLE_PROBE_CLAIM
 
 
 def claim_for_query(tables_used: str, query: str = "") -> str:
@@ -68,7 +117,17 @@ def _catalog_qualified_query(row: dict, catalog: str) -> str:
     return sql.replace(f"{config.CATALOG}.", f"{catalog}.")
 
 
-def build_shortlist_rows(catalog: str) -> list[dict]:
+def build_shortlist_rows(catalog: str, claim_mode: str = "narrow") -> list[dict]:
+    """
+    claim_mode="narrow" (default): SEEDED_CLAIMS_BY_TABLE's claims, each making exactly one
+    seeded row visible -- for ABAC-correctness testing (proving the row filter restricts
+    correctly). claim_mode="broad": perf_claim_for_query's "see every row" claims -- for
+    performance testing, where a real query's own filters/grouping need actual row volume.
+    """
+    if claim_mode not in ("narrow", "broad"):
+        raise ValueError(f"claim_mode must be 'narrow' or 'broad', got {claim_mode!r}")
+    claim_fn = perf_claim_for_query if claim_mode == "broad" else claim_for_query
+
     all_rows = load_all_annotated_queries()
     available_tables = set(config.ALL_SCALE2_MAIN_TABLES.keys())
     rows = []
@@ -81,7 +140,7 @@ def build_shortlist_rows(catalog: str) -> list[dict]:
             "query_id": row["query_alias"],
             "source": "real_query",
             "tables_used": row.get("tables_used", ""),
-            "claim": claim_for_query(row.get("tables_used", ""), row.get("query", "")),
+            "claim": claim_fn(row.get("tables_used", ""), row.get("query", "")),
             "query": _catalog_qualified_query(row, catalog),
             "expected_or_observed": "",  # filled in by run_shortlist
             "verified_status": "",  # filled in by run_shortlist
