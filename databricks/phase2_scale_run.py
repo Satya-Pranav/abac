@@ -168,7 +168,17 @@ print(f"Seeded {seed_count} test-principal ESA rows.")
 # bound to abac_row_filter_wrapper (Step 5), which reads the hardcoded get_test_user_context()
 # literal, so every real OAuth claim would be silently ignored and the SP would have no grants to
 # even read the catalog.
-for stmt in build_oauth_wiring_sql(CATALOG, MAIN_SCHEMA, SERVICE_PRINCIPAL):
+#
+# Statements 0-1 (get_user_context, abac_row_filter_wrapper_oauth) are skipped here -- their
+# CREATE FUNCTION bodies reference current_oauth_custom_identity_claim(), which Databricks'
+# InlineUserInfoExpressions Catalyst rule eagerly analyzes at creation time. This notebook's
+# cluster session has no custom_claim-bearing OAuth token, so running them here throws
+# OAUTH_CUSTOM_IDENTITY_CLAIM_NOT_PROVIDED -- confirmed live 2026-07-31. They must be created
+# beforehand via databricks/run_oauth_functions_via_sp.sh, which mints a token with a
+# custom_claim request parameter specifically to satisfy that check (see
+# docs/deployment/oauth-jdbc-flow.md section 2).
+oauth_wiring_stmts = build_oauth_wiring_sql(CATALOG, MAIN_SCHEMA, SERVICE_PRINCIPAL)
+for stmt in oauth_wiring_stmts[2:]:
     spark.sql(stmt)
 print("OAuth wiring applied: get_user_context, abac_row_filter_wrapper_oauth, "
       "8 policies re-pointed to it, grants issued.")
