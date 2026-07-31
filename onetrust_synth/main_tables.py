@@ -11,9 +11,17 @@ _NUMERIC_TYPES = ("int", "bigint", "double", "decimal")  # tuple: str.startswith
 _TEMPORAL_TYPES = {"timestamp", "date"}
 
 
-def _is_id_like(col: ColumnProfile, row_count: int) -> bool:
+def _is_id_like(col: ColumnProfile, real_row_count: int) -> bool:
+    # Compared against the REAL profiled row count, not the (possibly scale_factor-inflated)
+    # generation target -- col.ndv is bounded by the real sample size, so at scale_factor=5
+    # comparing it against 5x the real count made this comparison mathematically impossible
+    # for any genuine id column to pass, silently collapsing "unique per row" ids into a
+    # small reused categorical pool. Confirmed live 2026-07-31: cmb_assessment.id had 51
+    # duplicate rows sharing the same id on abac_onetrust_scale's full-scale run. Whether a
+    # column is "genuinely unique-per-row" is a property of the real data, not of how much
+    # synthetic volume we're generating from it -- scaling shouldn't change the verdict.
     name_hits = col.name.endswith(_ID_LIKE_SUFFIXES) or col.name == "id"
-    high_cardinality = row_count > 0 and col.ndv >= row_count * 0.9
+    high_cardinality = real_row_count > 0 and col.ndv >= real_row_count * 0.9
     return name_hits and high_cardinality
 
 
@@ -34,7 +42,16 @@ def _with_null_injection(df: DataFrame, col_name: str, value, null_rate: float, 
     return df.withColumn(col_name, value)
 
 
-def build_generic_table(spark: SparkSession, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup) -> DataFrame:
+def build_generic_table(
+    spark: SparkSession, table: str, row_count: int, columns: list[ColumnProfile], sample_lookup,
+    real_row_count: int | None = None,
+) -> DataFrame:
+    # real_row_count defaults to row_count for callers generating at 1x (including every
+    # existing direct test of this function) -- only generate_main_tables.py, which knows the
+    # real profiled count separately from the scale_factor-scaled target, needs to pass the
+    # true value explicitly. See _is_id_like for why this distinction matters.
+    real_row_count = real_row_count if real_row_count is not None else row_count
+
     if row_count == 0:
         schema_fields = ", ".join(f"`{c.name}` STRING" for c in columns)
         return spark.createDataFrame([], schema=schema_fields)
@@ -43,7 +60,7 @@ def build_generic_table(spark: SparkSession, table: str, row_count: int, columns
 
     for col in columns:
         dtype = col.data_type.lower()
-        if _is_id_like(col, row_count):
+        if _is_id_like(col, real_row_count):
             df = add_id_column(df, col.name, prefix=f"{table}_")
         elif dtype == "boolean":
             df = add_categorical_column(df, col.name, [True, False], null_rate=col.null_rate, salt=f"{table}.{col.name}")

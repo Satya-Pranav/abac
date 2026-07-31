@@ -50,6 +50,21 @@ def test_build_all_main_tables_default_is_unchanged_11_tables(spark):
     assert len(tables) == 11
 
 
+def test_id_columns_stay_unique_at_scale_factor_above_one(spark):
+    # Regression test: _is_id_like used to compare a column's real ndv (bounded by the real
+    # profiled sample size) against the SCALED target row count, not the real profiled count.
+    # At scale_factor=5 that comparison is mathematically impossible for any genuine id column
+    # to pass, so id columns silently fell back to a small reused categorical pool instead of
+    # generating true unique-per-row ids. Confirmed live 2026-07-31: cmb_assessment.id had 51
+    # duplicate rows sharing the same id on abac_onetrust_scale's real (scale_factor=5) run.
+    tables = build_all_main_tables(
+        spark, scale_factor=5.0, table_row_counts={"cmb_assessment": config.MAIN_TABLES["cmb_assessment"]}
+    )
+    ids = [r["id"] for r in tables["cmb_assessment"].select("id").collect()]
+    assert len(ids) == len(set(ids))
+    assert len(ids) == round(config.MAIN_TABLES["cmb_assessment"] * 5.0)
+
+
 def test_build_all_main_tables_accepts_scale2_table_set(spark):
     tables = build_all_main_tables(spark, scale_factor=0.01, table_row_counts=config.ALL_SCALE2_MAIN_TABLES)
     assert len(tables) == 34

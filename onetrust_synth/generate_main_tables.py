@@ -42,7 +42,7 @@ def build_all_main_tables(
             except (FileNotFoundError, KeyError, ValueError):
                 return []
 
-        df = build_generic_table(spark, table_name, row_count, cols, sample_lookup)
+        df = build_generic_table(spark, table_name, row_count, cols, sample_lookup, real_row_count=table_row_counts[table_name])
 
         if table_name == "cmb_assessment":
             df = attach_cmb_assessment_nested_columns(df)
