@@ -106,16 +106,27 @@ def build_abac_entity_subject_assignment(
     df = df.join(subj_reg_indexed.withColumnRenamed("subjectId", "_subjectId").withColumnRenamed("subjectType", "_subjectType"), on="_s_idx", how="inner").drop("_s_idx")
     df = df.withColumnRenamed("_subjectId", "subjectId").withColumnRenamed("_subjectType", "subjectType")
 
-    # pick an assignment whose objectType matches this row's entity objectType
+    # pick an assignment whose objectType matches this row's entity objectType. A plain
+    # join-then-filter (join on objectType, then rank+filter to 1) fans out every row to ALL
+    # assignments sharing its objectType before trimming back down -- with ~100k assignments
+    # spread across ~20 types (~5k/type), that's ~5k intermediate rows per input row, i.e.
+    # trillions of rows at 1B scale (confirmed live 2026-07-31: Step 3 stalled 48+ min at 1B
+    # ESA scale on a 32-core/256GB cluster). Indexing each objectType's assignments and
+    # picking by a per-row local index instead makes this a clean 1:1 join -- same
+    # deterministic-index-then-join pattern already used above for entity/subject, just
+    # grouped by objectType instead of global.
     assignment_by_type = assignment_df.select(F.col("id").alias("assignmentId"), "objectType")
-    df = df.join(assignment_by_type, on="objectType", how="inner")
-    # a broadcast join on objectType can multiply rows if several assignments share
-    # a type; pick one deterministically per source row instead of keeping all matches
-    df = df.withColumn(
-        "_pick",
-        F.row_number().over(Window.partitionBy("_row_id").orderBy(F.xxhash64(F.col("_row_id"), F.col("assignmentId")))),
+    assignment_indexed = assignment_by_type.withColumn(
+        "_local_idx", F.row_number().over(Window.partitionBy("objectType").orderBy("assignmentId")) - 1
     )
-    df = df.filter(F.col("_pick") == 1).drop("_pick")
+    type_counts = assignment_by_type.groupBy("objectType").agg(F.count("*").alias("_type_count"))
+
+    df = df.join(F.broadcast(type_counts), on="objectType", how="inner")
+    df = df.withColumn(
+        "_local_idx",
+        F.pmod(F.xxhash64(F.col("_row_id"), F.lit("esa.assignment_pick")), F.col("_type_count")),
+    ).drop("_type_count")
+    df = df.join(F.broadcast(assignment_indexed), on=["objectType", "_local_idx"], how="inner").drop("_local_idx")
 
     org_array = F.array(*[F.lit(o) for o in org_ids]) if org_ids else F.array(F.lit(None).cast("string"))
     org_idx = deterministic_index(F.col("_row_id"), "esa.org", max(len(org_ids), 1))
