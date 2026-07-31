@@ -257,6 +257,19 @@ def test_substitute_unreachable_literal_predicates_leaves_predicate_unchanged_wh
     assert substitute_unreachable_literal_predicates(sql) == sql
 
 
+def test_substitute_unreachable_literal_predicates_resolves_table_and_column_case_insensitively():
+    # Real-CSV regression: a query referenced OrgHierarchy.parentOrgID, but the real
+    # table/column are orghierarchy/parentOrgId -- sample_csv._SAMPLE_FILES keys are all
+    # lowercase and the real column keeps the real profile's own casing, neither of which a
+    # query's own casing has any reason to match (SQL identifiers are case-insensitive).
+    # Confirmed live 2026-07-31 this silently left 2 queries unresolved even though real data
+    # existed. Real orghierarchy.parentOrgId sample data includes '013cf75c-...'.
+    sql = "SELECT o.* FROM abac_onetrust_scale.onetrust_sim.OrgHierarchy o WHERE o.parentOrgID = '00000000-0000-0000-0000-000000000000'"
+    result = substitute_unreachable_literal_predicates(sql)
+    assert "00000000-0000-0000-0000-000000000000" not in result
+    assert "013cf75c-cd8e-4f11-b2bd-689b8a6b3f85" in result
+
+
 def test_substitute_unreachable_literal_predicates_resolves_each_alias_to_its_own_table():
     # Real-data regression: cmb_riskrelatedobjects.organizationID's real sample data does NOT
     # contain the same value entity_v3.parentOrgID's does -- a single global substitute value

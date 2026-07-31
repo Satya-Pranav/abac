@@ -16,7 +16,7 @@ import functools
 import re
 
 from onetrust_synth import config
-from onetrust_synth.sample_csv import load_column_values
+from onetrust_synth.sample_csv import load_rows
 
 _TABLE_MISSING_REASON_MARKERS = ("references table(s) outside our", "outside our 11")
 _KNOWN_SCHEMAS = ("onetrust_sim", "monitoring")
@@ -185,10 +185,23 @@ def _nearest_preceding_table(sql: str, position: int) -> str | None:
 
 @functools.lru_cache(maxsize=None)
 def _cached_column_values(table: str, column: str) -> tuple:
+    # SQL identifiers are case-insensitive, but a query's own casing of a table/column
+    # reference has no reason to match sample_csv's canonical casing (its _SAMPLE_FILES keys
+    # are all lowercase; real column names keep whatever case the real profile data uses).
+    # Confirmed live 2026-07-31: a query referenced OrgHierarchy.parentOrgID, but the real
+    # table/column are orghierarchy/parentOrgId -- table AND column case both differed, so a
+    # direct load_column_values(table, column) call found nothing despite real data existing.
     try:
-        return tuple(load_column_values(table, column))
+        rows = load_rows(table.lower())
     except (FileNotFoundError, KeyError, ValueError):
         return ()
+    if not rows:
+        return ()
+    real_column = next((k for k in rows[0].keys() if k.lower() == column.lower()), None)
+    if not real_column:
+        return ()
+    values = {r[real_column] for r in rows if r.get(real_column) not in (None, "")}
+    return tuple(sorted(values))
 
 
 def substitute_unreachable_literal_predicates(sql: str) -> str:
