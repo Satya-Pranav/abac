@@ -52,7 +52,7 @@ main_tables = build_all_main_tables(spark, scale_factor=scale_factor, table_row_
 # add/remove during iteration raises); list(...) is used anyway for defensiveness.
 for table_name, df in list(main_tables.items()):
     schema = MONITORING_SCHEMA if table_name in config.MONITORING_TABLES else MAIN_SCHEMA
-    write_delta_table(df, CATALOG, schema, table_name)
+    write_delta_table(df, CATALOG, schema, table_name, enable_column_mapping=True)
     main_tables[table_name] = spark.table(f"{CATALOG}.{schema}.{table_name}")
     print(f"Wrote {CATALOG}.{schema}.{table_name}: {main_tables[table_name].count()} rows")
 
@@ -79,7 +79,7 @@ abac_tables = build_all_abac_tables(
 for table_name, df in list(abac_tables.items()):
     write_table_name = "OrgHierarchyBase" if table_name == "ABAC_OrgHierarchy" else table_name
     partition_by = ["objectType"] if table_name in config.ABAC_PARTITIONED_TABLES else None
-    write_delta_table(df, CATALOG, MAIN_SCHEMA, write_table_name, partition_by=partition_by)
+    write_delta_table(df, CATALOG, MAIN_SCHEMA, write_table_name, partition_by=partition_by, enable_column_mapping=True)
     abac_tables[table_name] = spark.table(f"{CATALOG}.{MAIN_SCHEMA}.{write_table_name}")
     print(f"Wrote {CATALOG}.{MAIN_SCHEMA}.{write_table_name}: {abac_tables[table_name].count()} rows")
 
