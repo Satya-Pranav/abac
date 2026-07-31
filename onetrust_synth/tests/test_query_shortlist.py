@@ -171,6 +171,20 @@ def test_build_shortlist_rows_uppercases_substitutes_under_ucase_wrap():
     assert "'evidence-task-implementation-link'" not in row["query"]
 
 
+def test_build_shortlist_rows_substitutes_unreachable_locate_search_terms():
+    """
+    Real-CSV regression check: this row filters LOCATE('asset_rep_3', COALESCE(inventoryName,
+    ''), 1) >= 1 -- 'asset_rep_3' is a real customer's naming convention, never generated into
+    this project's synthetic inventoryName values. Confirmed live 2026-07-31 this predicate
+    stayed at 0 rows even after every = / IN predicate on the same query was fixed, since
+    LOCATE()'s substring search isn't covered by that substitution at all.
+    """
+    rows = build_shortlist_rows("abac_onetrust_scale")
+    row = next(r for r in rows if r["query_id"] == "d5dc4b5156925c72582b7a2a0780051cb37e7b1dafef947b96c254f55100704e")
+    assert "asset_rep_3" not in row["query"]
+    assert "LOCATE(" in row["query"]
+
+
 def test_write_shortlist_csv_produces_expected_columns():
     rows = [{
         "query_id": "q1", "source": "real_query", "tables_used": "cmb_assessment",

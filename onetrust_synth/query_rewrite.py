@@ -192,6 +192,83 @@ def _nearest_preceding_table(sql: str, position: int) -> str | None:
     return matches[-1].group(1) if matches else None
 
 
+_LOCATE_START = re.compile(r"\bLOCATE\s*\(", re.IGNORECASE)
+_FIRST_STRING_LITERAL = re.compile(r"'([^']*)'")
+_BACKTICKED_IDENTIFIER = re.compile(r"`(\w+)`")
+_BARE_IDENTIFIER_BEFORE_DELIM = re.compile(r"\b([A-Za-z_]\w*)\s*[,)]")
+
+
+def _find_matching_close_paren(sql: str, open_paren_index: int) -> int:
+    """sql[open_paren_index] must be '(' -- returns the index of its matching ')', tracking
+    nesting depth so a call like LOCATE('x', COALESCE(col, ''), 1) doesn't get confused by
+    COALESCE's own inner parens/commas. Returns len(sql) if unbalanced (caller treats that as
+    "give up on this match")."""
+    depth = 1
+    i = open_paren_index + 1
+    while i < len(sql) and depth > 0:
+        if sql[i] == "(":
+            depth += 1
+        elif sql[i] == ")":
+            depth -= 1
+        i += 1
+    return i - 1 if depth == 0 else len(sql)
+
+
+def substitute_unreachable_locate_predicates(sql: str) -> str:
+    """
+    LOCATE(searchTerm, column, ...) substring-search predicates aren't covered by
+    substitute_unreachable_literal_predicates (that only handles = and IN) -- confirmed live
+    2026-07-31: LOCATE('asset_rep_3', COALESCE(inventoryName, ''), 1) >= 1 stayed at 0 rows
+    even after every other predicate on the same query was fixed, because 'asset_rep_3' is a
+    real customer's naming convention that was never generated into this project's synthetic
+    inventoryName values (real sample: 'asset_163271', 'asset_2812240_rep', ...).
+
+    Can't reuse the alias.column / IN(...) regexes here -- the arguments can themselves
+    contain commas and nested parens (COALESCE(col, '') is the observed real-world shape), so
+    this manually walks bracket depth to find each LOCATE(...) call's true extent, pulls the
+    first string-literal argument as the search term and the first identifier after it as the
+    column being searched, and only rewrites when that search term isn't already a substring
+    of any real sample value for that (table, column). Replaces with a real sample value
+    wholesale (not an extracted substring) -- LOCATE(real_value, real_value, 1) trivially
+    matches regardless of what portion of the string the original query intended to search.
+    """
+    replacements = []
+    for m in _LOCATE_START.finditer(sql):
+        call_start = m.start()
+        open_paren = m.end() - 1
+        close_paren = _find_matching_close_paren(sql, open_paren)
+        if close_paren >= len(sql):
+            continue
+        args_text = sql[open_paren + 1 : close_paren]
+
+        lit_match = _FIRST_STRING_LITERAL.search(args_text)
+        if not lit_match:
+            continue
+        search_term = lit_match.group(1)
+
+        rest = args_text[lit_match.end():]
+        col_match = _BACKTICKED_IDENTIFIER.search(rest) or _BARE_IDENTIFIER_BEFORE_DELIM.search(rest)
+        if not col_match:
+            continue
+        column = col_match.group(1)
+
+        table = _nearest_preceding_table(sql, call_start)
+        if not table:
+            continue
+        samples = _cached_column_values(table, column)
+        if not samples or any(search_term.lower() in s.lower() for s in samples):
+            continue
+
+        lit_start = open_paren + 1 + lit_match.start()
+        lit_end = open_paren + 1 + lit_match.end()
+        replacements.append((lit_start, lit_end, f"'{samples[0]}'"))
+
+    result = sql
+    for start, end, new_text in sorted(replacements, key=lambda r: -r[0]):
+        result = result[:start] + new_text + result[end:]
+    return result
+
+
 @functools.lru_cache(maxsize=None)
 def _cached_column_values(table: str, column: str) -> tuple:
     # SQL identifiers are case-insensitive, but a query's own casing of a table/column

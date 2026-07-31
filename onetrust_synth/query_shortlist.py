@@ -9,7 +9,7 @@ from onetrust_synth import config
 from onetrust_synth.query_rewrite import (
     load_all_annotated_queries, is_now_eligible, build_modified_query, tables_referenced,
     extract_tables_from_query_schema_refs, normalize_double_quoted_identifiers,
-    substitute_unreachable_literal_predicates,
+    substitute_unreachable_literal_predicates, substitute_unreachable_locate_predicates,
 )
 
 # One claim per governed table, matching governance_sql.build_seed_principals_sql's seeded
@@ -112,7 +112,9 @@ def _catalog_qualified_query(row: dict, catalog: str) -> str:
     modified_query"). So re-point any already-baked-in old-catalog prefix to the target catalog here;
     a no-op for rows freshly derived via catalog_qualify(), which never contain the old prefix.
     """
-    sql = substitute_unreachable_literal_predicates(normalize_double_quoted_identifiers(build_modified_query(row, catalog)))
+    sql = substitute_unreachable_locate_predicates(
+        substitute_unreachable_literal_predicates(normalize_double_quoted_identifiers(build_modified_query(row, catalog)))
+    )
     if catalog == config.CATALOG:
         return sql
     return sql.replace(f"{config.CATALOG}.", f"{catalog}.")

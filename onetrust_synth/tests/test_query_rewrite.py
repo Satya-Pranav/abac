@@ -1,7 +1,7 @@
 from onetrust_synth.query_rewrite import (
     load_all_annotated_queries, tables_referenced, is_now_eligible, catalog_qualify, build_modified_query,
     _extract_tables_from_reason, extract_tables_from_query_schema_refs, normalize_double_quoted_identifiers,
-    substitute_unreachable_literal_predicates,
+    substitute_unreachable_literal_predicates, substitute_unreachable_locate_predicates,
 )
 from onetrust_synth import config
 
@@ -353,6 +353,39 @@ def test_substitute_unreachable_literal_predicates_unqualified_uses_nearest_prec
     result = substitute_unreachable_literal_predicates(sql)
     assert "ucase('EVIDENCE-TASK-IMPLEMENTATION-LINK')" in result
     assert "ucase('DATASETS')" in result  # cmb_riskrelatedobjects's first real sample value -- already uppercase
+
+
+def test_substitute_unreachable_locate_predicates_swaps_unreachable_search_term():
+    # Real-CSV regression: 'asset_rep_3' is a real customer's naming convention, never
+    # generated into this project's synthetic inventoryName values (real sample:
+    # 'asset_163271', 'asset_2812240_rep', ...). Confirmed live 2026-07-31 this predicate
+    # stayed at 0 rows even after every other predicate on the same query got fixed.
+    sql = (
+        "SELECT `inventoryName` FROM ("
+        "  SELECT main.* FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main"
+        ") AS `_` WHERE LOCATE('asset_rep_3', COALESCE(`inventoryName`, ''), 1) >= 1"
+    )
+    result = substitute_unreachable_locate_predicates(sql)
+    assert "asset_rep_3" not in result
+    assert "LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1" in result
+
+
+def test_substitute_unreachable_locate_predicates_leaves_reachable_search_term_unchanged():
+    # 'asset_1' is a genuine substring of the real sample value 'asset_163271' -- already
+    # reachable, so left untouched.
+    sql = (
+        "SELECT * FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main "
+        "WHERE LOCATE('asset_1', COALESCE(`inventoryName`, ''), 1) >= 1"
+    )
+    assert substitute_unreachable_locate_predicates(sql) == sql
+
+
+def test_substitute_unreachable_locate_predicates_leaves_unchanged_when_no_sample_data():
+    sql = (
+        "SELECT * FROM abac_onetrust_scale.onetrust_sim.entityworkflowstagechangetracker_v3 AS main "
+        "WHERE LOCATE('whatever', COALESCE(`someMissingColumn`, ''), 1) >= 1"
+    )
+    assert substitute_unreachable_locate_predicates(sql) == sql
 
 
 def test_normalize_double_quoted_identifiers_leaves_comment_boundaries_intact():
