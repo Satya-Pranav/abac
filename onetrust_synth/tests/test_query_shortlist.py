@@ -139,6 +139,21 @@ def test_build_shortlist_rows_substitutes_unreachable_uuid_predicates():
     assert "b99df4a4-2bf5-4c08-9483-bd636470bc11" in row["query"]
 
 
+def test_build_shortlist_rows_substitutes_unreachable_in_list_predicates():
+    """
+    Real-CSV regression check: the SAME row (Q894769-192) also filters
+    ucase(entityTypeReference) IN ('AISYSTEMS','MODELS','DATASETS','PROJECTS','AIAGENTS') --
+    entity_v3.entityTypeReference's real sample data only ever contains
+    'evidence-task-implementation-link', so this branch was independently unreachable even
+    after the parentOrgID fix (every ANDed predicate has to be satisfiable, not just one).
+    Confirmed live 2026-07-31.
+    """
+    rows = build_shortlist_rows("abac_onetrust_scale")
+    row = next(r for r in rows if r["query_id"] == "Q894769-192-20260518.123121.785")
+    assert "AISYSTEMS" not in row["query"]
+    assert "evidence-task-implementation-link" in row["query"]
+
+
 def test_write_shortlist_csv_produces_expected_columns():
     rows = [{
         "query_id": "q1", "source": "real_query", "tables_used": "cmb_assessment",

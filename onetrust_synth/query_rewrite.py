@@ -145,9 +145,18 @@ def normalize_double_quoted_identifiers(sql: str) -> str:
 # alias names across nesting levels in practice, and a predicate's real column source is
 # always the innermost FROM/JOIN using that alias, wherever in the query text it appears.
 _TABLE_ALIAS_PATTERN = re.compile(r"\b(?:FROM|JOIN)\s+(?:[\w.]+\.)?(\w+)\s+(?:AS\s+)?(\w+)\b", re.IGNORECASE)
-_ALIASED_UUID_PREDICATE = re.compile(
-    r"(\w+)\.(\w+)\s*=\s*'([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'"
+
+# alias.column, optionally wrapped in ucase(...)/upper(...) on either or both sides -- the
+# consistent style these BI-tool-generated queries use for case-insensitive comparison.
+_FUNC_WRAP = r"(?:ucase|upper)\s*\(\s*"
+_COL_REF = r"(\w+)\.(\w+)"
+_ALIASED_EQUALITY_PREDICATE = re.compile(
+    rf"(?:{_FUNC_WRAP})?{_COL_REF}\)?\s*=\s*(?:{_FUNC_WRAP})?'([^']*)'\)?", re.IGNORECASE,
 )
+_ALIASED_IN_PREDICATE = re.compile(
+    rf"(?:{_FUNC_WRAP})?{_COL_REF}\)?\s+IN\s*\(([^)]*)\)", re.IGNORECASE,
+)
+_MAX_IN_LIST_SUBSTITUTES = 10  # cap so a fix doesn't balloon a real IN list unreasonably
 
 
 @functools.lru_cache(maxsize=None)
@@ -158,39 +167,65 @@ def _cached_column_values(table: str, column: str) -> tuple:
         return ()
 
 
-def substitute_unreachable_uuid_predicates(sql: str) -> str:
+def substitute_unreachable_literal_predicates(sql: str) -> str:
     """
-    Real captured queries often hardcode a UUID filter (e.g. parentOrgID = '<real customer's
-    org id>') from whichever real tenant they were originally captured against -- this
-    project's synthetic data was never generated to match that specific value, so the query
-    parses and runs fine but returns 0 rows regardless of ABAC claim. Confirmed live
-    2026-07-31: 73 occurrences across the shortlist, one single substitute value does NOT work
-    universally (a value real for one table's sample data isn't necessarily real for
-    another's) -- this resolves each predicate's alias back to its real table via the query's
-    own FROM/JOIN clauses, then swaps in a value verified present in THAT table's real local
-    sample data (sample_csv.load_column_values, the same source generate_main_tables.py's
-    categorical generation draws from) -- a real generation-time value, not a guess.
+    Real captured queries often hardcode literal filter values (org UUIDs, timezone names,
+    enum-like type codes, ...) from whichever real tenant/context they were originally
+    captured against -- this project's synthetic data was never generated to match those
+    specific values, so a query parses and runs fine but returns 0 rows regardless of ABAC
+    claim, no matter how many OTHER predicates on the same query got fixed. Confirmed live
+    2026-07-31: fixing just the UUID-shaped predicates left many queries still at 0 rows
+    because a SECOND predicate on the same query (e.g. entity_v3.entityTypeReference IN
+    ('AISYSTEMS','MODELS',...), when that column's real sample data only ever contains
+    'evidence-task-implementation-link') was independently unreachable too -- every predicate
+    in an ANDed WHERE clause has to be satisfiable, not just one.
 
-    Only rewrites the predicate when the original value is confirmed ABSENT from real sample
-    data for that specific (table, column) pair -- if it's already present, or the pair has no
-    local sample data to check against at all, the predicate is left untouched.
+    Resolves each predicate's alias back to its real table via the query's own FROM/JOIN
+    clauses, then checks that specific (table, column) pair's real local sample data
+    (sample_csv.load_column_values, the same source generate_main_tables.py's categorical
+    generation draws from). Handles both `col = 'value'` and `col IN ('v1','v2',...)`, each
+    optionally wrapped in ucase(...)/upper(...) (matched case-insensitively either way, since
+    that wrapping signals the query's own intent is a case-insensitive comparison).
+
+    Only rewrites when NONE of a predicate's value(s) are confirmed present in real sample
+    data for that (table, column) pair -- if at least one already matches, or the pair has no
+    local sample data to check against at all, the predicate is left untouched rather than
+    guessed at. An IN list gets its values replaced (capped at 10) with real ones, not just
+    appended to, since the original values are equally unreachable.
     """
     alias_to_table = {}
     for table, alias in _TABLE_ALIAS_PATTERN.findall(sql):
         alias_to_table[alias] = table
         alias_to_table.setdefault(table, table)  # unaliased table.column references too
 
-    def _replace(match):
+    def _replace_equality(match):
         alias, column, value = match.group(1), match.group(2), match.group(3)
         table = alias_to_table.get(alias)
         if not table:
             return match.group(0)
         samples = _cached_column_values(table, column)
-        if not samples or value in samples:
+        if not samples or value.lower() in {s.lower() for s in samples}:
             return match.group(0)
-        return f"{alias}.{column} = '{samples[0]}'"
+        return match.group(0).replace(f"'{value}'", f"'{samples[0]}'", 1)
 
-    return _ALIASED_UUID_PREDICATE.sub(_replace, sql)
+    def _replace_in_list(match):
+        alias, column, list_content = match.group(1), match.group(2), match.group(3)
+        table = alias_to_table.get(alias)
+        if not table:
+            return match.group(0)
+        samples = _cached_column_values(table, column)
+        if not samples:
+            return match.group(0)
+        values = re.findall(r"'([^']*)'", list_content)
+        samples_lower = {s.lower() for s in samples}
+        if any(v.lower() in samples_lower for v in values):
+            return match.group(0)
+        replacement = ", ".join(f"'{v}'" for v in samples[:_MAX_IN_LIST_SUBSTITUTES])
+        return match.group(0).replace(list_content, replacement, 1)
+
+    sql = _ALIASED_IN_PREDICATE.sub(_replace_in_list, sql)
+    sql = _ALIASED_EQUALITY_PREDICATE.sub(_replace_equality, sql)
+    return sql
 
 
 def catalog_qualify(sql: str, catalog: str, schemas: tuple = _KNOWN_SCHEMAS) -> str:
