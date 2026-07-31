@@ -31,19 +31,21 @@
 #   export CLIENT_ID=... CLIENT_SECRET=... WORKSPACE_HOST=... WAREHOUSE_ID=...
 #   python3 databricks/run_query_shortlist.py abac_onetrust_scale --out shortlist_results.csv
 #
-# Requires no pip installs -- stdlib only (urllib), reusing onetrust_synth.query_shortlist for
-# the claim-pairing/catalog-qualification logic already tested in that module.
+# Requires no pip installs -- reuses onetrust_synth.query_shortlist for the claim-pairing/
+# catalog-qualification logic already tested in that module, and shells out to curl for the
+# actual HTTPS calls (subprocess, not urllib) -- macOS python.org framework builds don't trust
+# the system keychain by default and fail with SSLCertVerificationError on networks with a
+# TLS-inspecting proxy (confirmed live 2026-07-31), while curl already works fine here (same
+# calls run_claim_query.sh/run_oauth_functions_via_sp.sh make successfully), so reuse that
+# instead of fighting Python's SSL trust store on someone else's machine.
 
 import argparse
-import base64
 import csv
 import json
 import os
+import subprocess
 import sys
 import time
-import urllib.error
-import urllib.parse
-import urllib.request
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -55,35 +57,39 @@ _CSV_FIELDNAMES = [
 ]
 
 
+def _curl_json(args: list) -> dict:
+    # -S (not just -s) so curl still prints its own error line on failure instead of nothing --
+    # -s alone suppresses that too, which is why the original version's error message here had
+    # to guess at the cause.
+    result = subprocess.run(["curl", "-sSf"] + args, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"curl failed (exit {result.returncode}): {result.stderr.strip()}")
+    return json.loads(result.stdout)
+
+
 def mint_token(workspace_host: str, client_id: str, client_secret: str, custom_claim: str) -> str:
-    data = urllib.parse.urlencode({
-        "grant_type": "client_credentials",
-        "scope": "all-apis",
-        "custom_claim": custom_claim,
-    }).encode()
-    auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
-    req = urllib.request.Request(
-        f"https://{workspace_host}/oidc/v1/token", data=data,
-        headers={"Authorization": f"Basic {auth}", "Content-Type": "application/x-www-form-urlencoded"},
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.load(resp)["access_token"]
+    result = _curl_json([
+        "-u", f"{client_id}:{client_secret}",
+        "-X", "POST", f"https://{workspace_host}/oidc/v1/token",
+        "--data-urlencode", "grant_type=client_credentials",
+        "--data-urlencode", "scope=all-apis",
+        "--data-urlencode", f"custom_claim={custom_claim}",
+    ])
+    return result["access_token"]
 
 
 def _get_json(url: str, token: str) -> dict:
-    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-    with urllib.request.urlopen(req) as resp:
-        return json.load(resp)
+    return _curl_json(["-H", f"Authorization: Bearer {token}", url])
 
 
 def submit_statement(workspace_host: str, token: str, warehouse_id: str, statement: str) -> tuple:
-    payload = json.dumps({"warehouse_id": warehouse_id, "statement": statement, "wait_timeout": "30s"}).encode()
-    req = urllib.request.Request(
-        f"https://{workspace_host}/api/2.0/sql/statements", data=payload,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, method="POST",
-    )
-    with urllib.request.urlopen(req) as resp:
-        result = json.load(resp)
+    payload = json.dumps({"warehouse_id": warehouse_id, "statement": statement, "wait_timeout": "30s"})
+    result = _curl_json([
+        "-X", "POST", f"https://{workspace_host}/api/2.0/sql/statements",
+        "-H", f"Authorization: Bearer {token}",
+        "-H", "Content-Type: application/json",
+        "-d", payload,
+    ])
 
     statement_id = result.get("statement_id", "")
     state = result.get("status", {}).get("state", "UNKNOWN")
@@ -121,8 +127,8 @@ def main():
         start = time.time()
         try:
             state, result = submit_statement(workspace_host, token, warehouse_id, wrapped)
-        except urllib.error.HTTPError as e:
-            state, result = "HTTP_ERROR", {"status": {"error": {"message": e.read().decode(errors='replace')[:300]}}}
+        except (RuntimeError, json.JSONDecodeError) as e:
+            state, result = "REQUEST_ERROR", {"status": {"error": {"message": str(e)[:300]}}}
         row["duration_seconds"] = f"{time.time() - start:.2f}"
 
         if state == "SUCCEEDED":
