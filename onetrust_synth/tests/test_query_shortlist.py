@@ -66,6 +66,21 @@ def test_build_shortlist_rows_requalifies_stale_catalog_in_reused_modified_query
         assert f"{config.CATALOG}.monitoring." not in r["query"]
 
 
+def test_build_shortlist_rows_normalizes_double_quoted_identifiers():
+    """
+    Real-CSV regression check: Q894769-192 (a "different tenant schema" newly-eligible row)
+    uses a BI-tool-generated derived-table alias literally named "$Table", double-quoted
+    throughout -- Databricks' default SQL dialect parses double quotes as string literals,
+    not identifiers, so this failed with PARSE_SYNTAX_ERROR when actually run against a real
+    warehouse (confirmed live 2026-07-31). Locks in that build_shortlist_rows converts these
+    to backtick-quoted identifiers instead.
+    """
+    rows = build_shortlist_rows("abac_onetrust_scale")
+    row = next(r for r in rows if r["query_id"] == "Q894769-192-20260518.123121.785")
+    assert '"' not in row["query"]
+    assert "`$Table`" in row["query"]
+
+
 def test_write_shortlist_csv_produces_expected_columns():
     rows = [{
         "query_id": "q1", "source": "real_query", "tables_used": "cmb_assessment",

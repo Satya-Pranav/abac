@@ -1,6 +1,6 @@
 from onetrust_synth.query_rewrite import (
     load_all_annotated_queries, tables_referenced, is_now_eligible, catalog_qualify, build_modified_query,
-    _extract_tables_from_reason, extract_tables_from_query_schema_refs,
+    _extract_tables_from_reason, extract_tables_from_query_schema_refs, normalize_double_quoted_identifiers,
 )
 from onetrust_synth import config
 
@@ -205,3 +205,38 @@ def test_real_data_exactly_one_newly_eligible_row():
     # Verify it's the dbxtenantschemaversion one
     eligible_reason = newly_eligible[0].get("reason", "")
     assert "dbxtenantschemaversion" in eligible_reason.lower()
+
+
+def test_normalize_double_quoted_identifiers_converts_to_backticks():
+    sql = 'select "$Table"."entityId" as "entityId" from (select 1) "$Table"'
+    result = normalize_double_quoted_identifiers(sql)
+    assert result == 'select `$Table`.`entityId` as `entityId` from (select 1) `$Table`'
+    assert '"' not in result
+
+
+def test_normalize_double_quoted_identifiers_preserves_single_quoted_string_literals():
+    sql = "select \"col\" from t where status = 'automatic'"
+    result = normalize_double_quoted_identifiers(sql)
+    assert result == "select `col` from t where status = 'automatic'"
+
+
+def test_normalize_double_quoted_identifiers_handles_spaces_in_identifiers():
+    # Real OneTrust column names like "lastModified Date" -- backticks support spaces the
+    # same way double-quoted identifiers do.
+    sql = 'select "lastModified Date" from t'
+    assert normalize_double_quoted_identifiers(sql) == 'select `lastModified Date` from t'
+
+
+def test_normalize_double_quoted_identifiers_is_a_noop_when_no_double_quotes_present():
+    sql = "select `col` from t where status = 'automatic'"
+    assert normalize_double_quoted_identifiers(sql) == sql
+
+
+def test_normalize_double_quoted_identifiers_leaves_comment_boundaries_intact():
+    # Double-quoted (even JSON-shaped) content inside a /* ... */ comment is harmless to
+    # convert -- Spark's parser strips the whole comment body regardless of its content, and
+    # backtick conversion can't introduce a premature closing */.
+    sql = 'select `col` /* debug: {"cid":"abc-123"} */ from t'
+    result = normalize_double_quoted_identifiers(sql)
+    assert result == 'select `col` /* debug: {`cid`:`abc-123`} */ from t'
+    assert result.count("/*") == 1 and result.count("*/") == 1

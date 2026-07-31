@@ -112,6 +112,31 @@ def _extract_tables_from_reason(reason: str) -> list[str]:
     return result
 
 
+_DOUBLE_QUOTED_TOKEN = re.compile(r'"([^"]*)"')
+
+
+def normalize_double_quoted_identifiers(sql: str) -> str:
+    """
+    Converts ANSI-style double-quoted identifiers ("colName") to Databricks' native
+    backtick-quoted identifiers (`colName`). Databricks' default SQL dialect parses double
+    quotes as string literals, not identifiers (spark.sql.ansi.doubleQuotedIdentifiers
+    defaults to false even under ANSI mode) -- so a query captured from a system that treats
+    double quotes as identifiers (e.g. a BI tool that always wraps its generated derived-table
+    alias in double quotes, like "$Table"/"_") fails to parse at all on Databricks. Confirmed
+    live 2026-07-31: dozens of shortlisted queries hit exactly this
+    ([PARSE_SYNTAX_ERROR] at the first double-quoted token) once run for real.
+
+    Backticks support the same spaces/special characters double-quoted identifiers do (real
+    OneTrust columns like "lastModified Date" need this), so this is a purely syntactic swap --
+    it doesn't change what the query selects. Safe to apply unconditionally: a no-op for
+    queries with no double-quoted text, and harmless even inside a /* ... */ comment (some of
+    the CSV's original in_scope=yes queries carry a debug comment with embedded, escaped JSON --
+    Spark's parser strips comment bodies wholesale regardless of their content, and this
+    substitution can't introduce a premature `*/`).
+    """
+    return _DOUBLE_QUOTED_TOKEN.sub(lambda m: f"`{m.group(1)}`", sql)
+
+
 def catalog_qualify(sql: str, catalog: str, schemas: tuple = _KNOWN_SCHEMAS) -> str:
     result = sql
     # Any tenant's schema hash (ours or a different tenant's) maps to our onetrust_sim
