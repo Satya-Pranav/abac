@@ -124,6 +124,21 @@ def test_build_shortlist_rows_normalizes_double_quoted_identifiers():
     assert "`$Table`" in row["query"]
 
 
+def test_build_shortlist_rows_substitutes_unreachable_uuid_predicates():
+    """
+    Real-CSV regression check: Q894769-192 hardcodes entity_v3.parentOrgID =
+    'c862237b-9c3e-49fa-bfd1-8161f4245f3e' -- a real customer's org id from whichever tenant
+    this query was originally captured against, never generated into this project's synthetic
+    data. Confirmed live 2026-07-31: this exact pattern made 47+ shortlisted queries return 0
+    rows regardless of ABAC claim. Locks in that build_shortlist_rows swaps it for a value
+    confirmed present in entity_v3.parentOrgID's real local sample data.
+    """
+    rows = build_shortlist_rows("abac_onetrust_scale")
+    row = next(r for r in rows if r["query_id"] == "Q894769-192-20260518.123121.785")
+    assert "c862237b-9c3e-49fa-bfd1-8161f4245f3e" not in row["query"]
+    assert "b99df4a4-2bf5-4c08-9483-bd636470bc11" in row["query"]
+
+
 def test_write_shortlist_csv_produces_expected_columns():
     rows = [{
         "query_id": "q1", "source": "real_query", "tables_used": "cmb_assessment",

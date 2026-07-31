@@ -1,6 +1,7 @@
 from onetrust_synth.query_rewrite import (
     load_all_annotated_queries, tables_referenced, is_now_eligible, catalog_qualify, build_modified_query,
     _extract_tables_from_reason, extract_tables_from_query_schema_refs, normalize_double_quoted_identifiers,
+    substitute_unreachable_uuid_predicates,
 )
 from onetrust_synth import config
 
@@ -230,6 +231,47 @@ def test_normalize_double_quoted_identifiers_handles_spaces_in_identifiers():
 def test_normalize_double_quoted_identifiers_is_a_noop_when_no_double_quotes_present():
     sql = "select `col` from t where status = 'automatic'"
     assert normalize_double_quoted_identifiers(sql) == sql
+
+
+def test_substitute_unreachable_uuid_predicates_swaps_value_absent_from_real_sample_data():
+    # entity_v3.parentOrgID's real sample data does not contain this made-up UUID -- confirmed
+    # live 2026-07-31 this exact pattern (a real captured query's hardcoded org UUID from
+    # whichever tenant it was originally captured against) made 47+ shortlisted queries return
+    # 0 rows regardless of ABAC claim, since the value was never generated into synthetic data.
+    sql = "SELECT main.* FROM abac_onetrust_scale.onetrust_sim.entity_v3 main WHERE main.parentOrgID = '00000000-0000-0000-0000-000000000000'"
+    result = substitute_unreachable_uuid_predicates(sql)
+    assert "00000000-0000-0000-0000-000000000000" not in result
+    assert "main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'" in result
+
+
+def test_substitute_unreachable_uuid_predicates_leaves_already_valid_value_unchanged():
+    sql = "SELECT main.* FROM abac_onetrust_scale.onetrust_sim.entity_v3 main WHERE main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'"
+    assert substitute_unreachable_uuid_predicates(sql) == sql
+
+
+def test_substitute_unreachable_uuid_predicates_leaves_predicate_unchanged_when_no_sample_data():
+    # entityworkflowstagechangetracker_v3 has no real parentOrgID column at all (confirmed
+    # against the real profile) -- nothing to substitute from, so the predicate (however
+    # broken) is left as-is rather than guessed at.
+    sql = "SELECT main.* FROM abac_onetrust_scale.onetrust_sim.entityworkflowstagechangetracker_v3 main WHERE main.parentOrgID = '00000000-0000-0000-0000-000000000000'"
+    assert substitute_unreachable_uuid_predicates(sql) == sql
+
+
+def test_substitute_unreachable_uuid_predicates_resolves_each_alias_to_its_own_table():
+    # Real-data regression: cmb_riskrelatedobjects.organizationID's real sample data does NOT
+    # contain the same value entity_v3.parentOrgID's does -- a single global substitute value
+    # would be wrong for at least one of these two tables. Confirmed live 2026-07-31 that even
+    # after fixing the dominant bad UUID everywhere, 26 queries already using the "right"
+    # value for ONE table still returned 0 because it wasn't the right value for THEIRS.
+    sql = (
+        "SELECT e.*, r.* FROM abac_onetrust_scale.onetrust_sim.entity_v3 e "
+        "JOIN abac_onetrust_scale.onetrust_sim.cmb_riskrelatedobjects r ON r.entityId = e.entityId "
+        "WHERE e.parentOrgID = '00000000-0000-0000-0000-000000000000' "
+        "AND r.organizationID = '11111111-1111-1111-1111-111111111111'"
+    )
+    result = substitute_unreachable_uuid_predicates(sql)
+    assert "e.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'" in result
+    assert "r.organizationID = '6b055818-7a4a-497c-a9ba-407530f4a17d'" in result
 
 
 def test_normalize_double_quoted_identifiers_leaves_comment_boundaries_intact():

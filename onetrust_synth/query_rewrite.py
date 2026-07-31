@@ -12,9 +12,11 @@ modified_query transformation observed on the existing 50 in-scope rows is exact
 (design doc section 7).
 """
 import csv
+import functools
 import re
 
 from onetrust_synth import config
+from onetrust_synth.sample_csv import load_column_values
 
 _TABLE_MISSING_REASON_MARKERS = ("references table(s) outside our", "outside our 11")
 _KNOWN_SCHEMAS = ("onetrust_sim", "monitoring")
@@ -135,6 +137,60 @@ def normalize_double_quoted_identifiers(sql: str) -> str:
     substitution can't introduce a premature `*/`).
     """
     return _DOUBLE_QUOTED_TOKEN.sub(lambda m: f"`{m.group(1)}`", sql)
+
+
+# table [AS] alias, from either FROM or JOIN -- catalog/schema prefix (if already qualified)
+# is skipped so the captured group is always the bare table name sample_csv.load_column_values
+# expects. Global (not scope-aware) on purpose: these BI-tool-generated queries don't reuse
+# alias names across nesting levels in practice, and a predicate's real column source is
+# always the innermost FROM/JOIN using that alias, wherever in the query text it appears.
+_TABLE_ALIAS_PATTERN = re.compile(r"\b(?:FROM|JOIN)\s+(?:[\w.]+\.)?(\w+)\s+(?:AS\s+)?(\w+)\b", re.IGNORECASE)
+_ALIASED_UUID_PREDICATE = re.compile(
+    r"(\w+)\.(\w+)\s*=\s*'([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})'"
+)
+
+
+@functools.lru_cache(maxsize=None)
+def _cached_column_values(table: str, column: str) -> tuple:
+    try:
+        return tuple(load_column_values(table, column))
+    except (FileNotFoundError, KeyError, ValueError):
+        return ()
+
+
+def substitute_unreachable_uuid_predicates(sql: str) -> str:
+    """
+    Real captured queries often hardcode a UUID filter (e.g. parentOrgID = '<real customer's
+    org id>') from whichever real tenant they were originally captured against -- this
+    project's synthetic data was never generated to match that specific value, so the query
+    parses and runs fine but returns 0 rows regardless of ABAC claim. Confirmed live
+    2026-07-31: 73 occurrences across the shortlist, one single substitute value does NOT work
+    universally (a value real for one table's sample data isn't necessarily real for
+    another's) -- this resolves each predicate's alias back to its real table via the query's
+    own FROM/JOIN clauses, then swaps in a value verified present in THAT table's real local
+    sample data (sample_csv.load_column_values, the same source generate_main_tables.py's
+    categorical generation draws from) -- a real generation-time value, not a guess.
+
+    Only rewrites the predicate when the original value is confirmed ABSENT from real sample
+    data for that specific (table, column) pair -- if it's already present, or the pair has no
+    local sample data to check against at all, the predicate is left untouched.
+    """
+    alias_to_table = {}
+    for table, alias in _TABLE_ALIAS_PATTERN.findall(sql):
+        alias_to_table[alias] = table
+        alias_to_table.setdefault(table, table)  # unaliased table.column references too
+
+    def _replace(match):
+        alias, column, value = match.group(1), match.group(2), match.group(3)
+        table = alias_to_table.get(alias)
+        if not table:
+            return match.group(0)
+        samples = _cached_column_values(table, column)
+        if not samples or value in samples:
+            return match.group(0)
+        return f"{alias}.{column} = '{samples[0]}'"
+
+    return _ALIASED_UUID_PREDICATE.sub(_replace, sql)
 
 
 def catalog_qualify(sql: str, catalog: str, schemas: tuple = _KNOWN_SCHEMAS) -> str:
