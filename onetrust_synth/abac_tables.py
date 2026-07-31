@@ -3,7 +3,7 @@ from pyspark.sql import functions as F
 from pyspark.sql import SparkSession, DataFrame, Window
 
 from onetrust_synth import config
-from onetrust_synth.generator import base_row_id_df, add_categorical_column, deterministic_index
+from onetrust_synth.generator import base_row_id_df, add_categorical_column, deterministic_index, add_zip_index
 from onetrust_synth.sample_csv import load_entity_type_reference_values
 from onetrust_synth.verbatim_tables import build_orghierarchy_df
 
@@ -41,10 +41,11 @@ def build_abac_assignment_permission(spark: SparkSession, assignment_df: DataFra
     assignment_ids = assignment_df.select("id", "objectType").withColumnRenamed("id", "assignmentId")
     df = base_row_id_df(spark, row_count)
 
-    idx = deterministic_index(F.col("_row_id"), "perm.assignment_pick", assignment_ids.count())
-    indexed_assignments = assignment_ids.withColumn(
-        "_pick_idx", F.row_number().over(Window.orderBy("assignmentId")) - 1
-    )
+    # add_zip_index, not row_number().over(Window.orderBy(...)) -- see the ESA build's identical
+    # fix for why (single-partition global sort). assignment_ids is small (bounded by
+    # ABAC_Assignment's row target), but this keeps the indexing idiom consistent everywhere.
+    indexed_assignments = add_zip_index(assignment_ids, "_pick_idx").cache()
+    idx = deterministic_index(F.col("_row_id"), "perm.assignment_pick", indexed_assignments.count())
     df = df.withColumn("_pick_idx", idx).join(indexed_assignments, on="_pick_idx", how="inner").drop("_pick_idx")
 
     df = add_categorical_column(df, "_suffix", _ASSIGNMENT_PERMISSION_SUFFIXES, salt="perm.suffix")
@@ -86,15 +87,19 @@ def build_abac_entity_subject_assignment(
     assignment_object_types = [r["objectType"] for r in assignment_df.select("objectType").distinct().collect()]
     entity_registry = entity_registry.filter(F.col("objectType").isin(assignment_object_types))
 
-    entity_reg_indexed = entity_registry.withColumn(
-        "_e_idx", F.row_number().over(Window.orderBy("entityId")) - 1
-    )
-    n_entities = entity_registry.count()
+    # add_zip_index, not row_number().over(Window.orderBy(...)) -- the latter has no
+    # partitionBy, so Spark funnels every row through a single partition to compute the
+    # global order (its own runtime warning: "No Partition Defined for Window operation!
+    # ... serious performance degradation") -- confirmed live 2026-07-31 as the actual
+    # bottleneck once entity/subject registries reach real scale-2 size. .cache() is required
+    # here: zipWithIndex's index depends on physical partition/row order, so without caching,
+    # the .count() below and the later join could each independently re-derive the index from
+    # a different physical execution.
+    entity_reg_indexed = add_zip_index(entity_registry, "_e_idx").cache()
+    n_entities = entity_reg_indexed.count()
 
-    subj_reg_indexed = subject_registry.withColumn(
-        "_s_idx", F.row_number().over(Window.orderBy("subjectId")) - 1
-    )
-    n_subjects = subject_registry.count()
+    subj_reg_indexed = add_zip_index(subject_registry, "_s_idx").cache()
+    n_subjects = subj_reg_indexed.count()
 
     org_ids = [r["orgId"] for r in org_registry.select("orgId").distinct().collect()]
 
@@ -103,7 +108,13 @@ def build_abac_entity_subject_assignment(
     df = df.join(entity_reg_indexed, on="_e_idx", how="inner").drop("_e_idx")
 
     df = df.withColumn("_s_idx", deterministic_index(F.col("_row_id"), "esa.subject", n_subjects))
-    df = df.join(subj_reg_indexed.withColumnRenamed("subjectId", "_subjectId").withColumnRenamed("subjectType", "_subjectType"), on="_s_idx", how="inner").drop("_s_idx")
+    # subject_registry is bounded (SCALE2_SUBJECT_REGISTRY_USER_COUNT + _GROUP_COUNT =
+    # 230k rows at real scale) -- small enough to always broadcast rather than shuffle the
+    # 1B-row side of this join by _s_idx.
+    subj_reg_broadcast = F.broadcast(
+        subj_reg_indexed.withColumnRenamed("subjectId", "_subjectId").withColumnRenamed("subjectType", "_subjectType")
+    )
+    df = df.join(subj_reg_broadcast, on="_s_idx", how="inner").drop("_s_idx")
     df = df.withColumnRenamed("_subjectId", "subjectId").withColumnRenamed("_subjectType", "subjectType")
 
     # pick an assignment whose objectType matches this row's entity objectType. A plain
@@ -144,14 +155,18 @@ def build_abac_entity_subject_assignment(
 
 
 def build_user_group_members(spark: SparkSession, subject_registry: DataFrame, row_count: int) -> DataFrame:
-    users = subject_registry.filter(subject_registry.subjectType == "USER_ID").select(
-        F.col("subjectId").alias("memberId")
-    ).withColumn("_u_idx", F.row_number().over(Window.orderBy("memberId")) - 1)
+    # add_zip_index, not row_number().over(Window.orderBy(...)) -- see the ESA build's identical
+    # fix for why (single-partition global sort, ~200k/~30k rows at real scale).
+    users = add_zip_index(
+        subject_registry.filter(subject_registry.subjectType == "USER_ID").select(F.col("subjectId").alias("memberId")),
+        "_u_idx",
+    ).cache()
     n_users = users.count()
 
-    groups = subject_registry.filter(subject_registry.subjectType == "USER_GROUP").select(
-        F.col("subjectId").alias("groupId")
-    ).withColumn("_g_idx", F.row_number().over(Window.orderBy("groupId")) - 1)
+    groups = add_zip_index(
+        subject_registry.filter(subject_registry.subjectType == "USER_GROUP").select(F.col("subjectId").alias("groupId")),
+        "_g_idx",
+    ).cache()
     n_groups = groups.count()
 
     df = base_row_id_df(spark, row_count)

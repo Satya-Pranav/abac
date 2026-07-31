@@ -20,16 +20,20 @@ def build_all_abac_tables(
 ) -> dict:
     row_targets = row_targets if row_targets is not None else config.ABAC_TABLE_ROW_TARGETS
     registry_sizes = registry_sizes or {}
+    # Cached because each is read multiple times downstream (inside build_abac_entity_subject_
+    # assignment's joins/counts, plus again later by the caller's referential-integrity
+    # validation) -- without caching, every read re-executes the full build lineage (for
+    # entity_registry: a union across ~20 source tables + dropDuplicates) from scratch each time.
     entity_registry = build_entity_registry(
         spark, main_tables, extra_pieces=extra_entity_pieces,
         standalone_per_type=registry_sizes.get("standalone_per_type"),
-    )
-    org_registry = build_org_registry(spark)
+    ).cache()
+    org_registry = build_org_registry(spark).cache()
     subject_registry = build_subject_registry(
         spark, user_count=registry_sizes.get("users"), group_count=registry_sizes.get("groups"),
-    )
+    ).cache()
 
-    assignment = build_abac_assignment(spark, row_targets["ABAC_Assignment"])
+    assignment = build_abac_assignment(spark, row_targets["ABAC_Assignment"]).cache()
     assignment_permission = build_abac_assignment_permission(
         spark, assignment, row_targets["ABAC_AssignmentPermission"]
     )
