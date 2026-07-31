@@ -5,7 +5,10 @@ is available — see run_shortlist) executes each and records pass/fail. Design 
 import csv
 
 from onetrust_synth import config
-from onetrust_synth.query_rewrite import load_all_annotated_queries, is_now_eligible, build_modified_query, tables_referenced
+from onetrust_synth.query_rewrite import (
+    load_all_annotated_queries, is_now_eligible, build_modified_query, tables_referenced,
+    extract_tables_from_query_schema_refs,
+)
 
 # One claim per governed table, matching governance_sql.build_seed_principals_sql's seeded
 # subjects exactly (design doc section 5/7.4) — kept as a literal here rather than importing
@@ -29,8 +32,16 @@ SEEDED_CLAIMS_BY_TABLE = {
 _DISABLE_PROBE_CLAIM = '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}'
 
 
-def claim_for_query(tables_used: str) -> str:
-    for table in tables_referenced(tables_used):
+def claim_for_query(tables_used: str, query: str = "") -> str:
+    # tables_used is often empty by construction, not just missing -- the 64 "different tenant
+    # schema" shortlist rows (query_rewrite.is_now_eligible) never populate it, since that
+    # exclusion reason's tables only ever show up in the raw query text itself (auto_qa_<hash>.
+    # <table>/monitoring.<table> refs), never in the CSV's own tables_used column. Confirmed
+    # live 2026-07-31: without this fallback, 74/115 shortlisted queries silently fell back to
+    # the DISABLE probe claim instead of a real per-table claim, even though most of them do
+    # reference a governed table -- just not somewhere claim_for_query was looking.
+    tables = tables_referenced(tables_used) or extract_tables_from_query_schema_refs(query)
+    for table in tables:
         claim = SEEDED_CLAIMS_BY_TABLE.get(table.lower()) or SEEDED_CLAIMS_BY_TABLE.get(table)
         if claim:
             return claim
@@ -70,7 +81,7 @@ def build_shortlist_rows(catalog: str) -> list[dict]:
             "query_id": row["query_alias"],
             "source": "real_query",
             "tables_used": row.get("tables_used", ""),
-            "claim": claim_for_query(row.get("tables_used", "")),
+            "claim": claim_for_query(row.get("tables_used", ""), row.get("query", "")),
             "query": _catalog_qualified_query(row, catalog),
             "expected_or_observed": "",  # filled in by run_shortlist
             "verified_status": "",  # filled in by run_shortlist

@@ -1,6 +1,6 @@
 from onetrust_synth.query_rewrite import (
     load_all_annotated_queries, tables_referenced, is_now_eligible, catalog_qualify, build_modified_query,
-    _extract_tables_from_reason, _extract_tables_from_query_schema_refs,
+    _extract_tables_from_reason, extract_tables_from_query_schema_refs,
 )
 from onetrust_synth import config
 
@@ -44,13 +44,13 @@ def test_extract_tables_from_query_schema_refs_finds_tenant_hash_and_monitoring_
         "SELECT a.id FROM auto_qa_jreh7hspwyy0tukt4lt3zn3ea.cmb_assessment a "
         "JOIN monitoring.EntityGroupConfig e ON a.id = e.entityId"
     )
-    result = _extract_tables_from_query_schema_refs(query)
+    result = extract_tables_from_query_schema_refs(query)
     assert result == ["cmb_assessment", "EntityGroupConfig"]
 
 
 def test_extract_tables_from_query_schema_refs_dedupes_case_insensitively():
     query = "SELECT * FROM auto_qa_abc123.cmb_template t1 JOIN auto_qa_xyz789.CMB_Template t2 ON t1.id = t2.id"
-    result = _extract_tables_from_query_schema_refs(query)
+    result = extract_tables_from_query_schema_refs(query)
     assert len(result) == 1
 
 

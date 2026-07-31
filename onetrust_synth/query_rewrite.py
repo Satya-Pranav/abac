@@ -41,7 +41,7 @@ def tables_referenced(tables_used: str) -> list[str]:
     return [t.strip() for t in tables_used.split(",") if t.strip()]
 
 
-def _extract_tables_from_query_schema_refs(query: str) -> list[str]:
+def extract_tables_from_query_schema_refs(query: str) -> list[str]:
     """Pull distinct table names out of every auto_qa_<hash>.<table>/monitoring.<table>
     reference in raw SQL text. Used for the 'different tenant schema' exclusion reason,
     which -- unlike the missing-table reason -- never lists its tables anywhere in the
@@ -62,7 +62,7 @@ def is_now_eligible(row: dict, available_tables: set[str]) -> bool:
     available_lower = {t.lower() for t in available_tables}
 
     if reason == _DIFFERENT_TENANT_SCHEMA_REASON:
-        tables = _extract_tables_from_query_schema_refs(row.get("query", ""))
+        tables = extract_tables_from_query_schema_refs(row.get("query", ""))
         return bool(tables) and all(t.lower() in available_lower for t in tables)
 
     if not any(marker in reason for marker in _TABLE_MISSING_REASON_MARKERS):
