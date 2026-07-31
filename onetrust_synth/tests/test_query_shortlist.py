@@ -151,7 +151,24 @@ def test_build_shortlist_rows_substitutes_unreachable_in_list_predicates():
     rows = build_shortlist_rows("abac_onetrust_scale")
     row = next(r for r in rows if r["query_id"] == "Q894769-192-20260518.123121.785")
     assert "AISYSTEMS" not in row["query"]
-    assert "evidence-task-implementation-link" in row["query"]
+    # Uppercase, not the real value's own lowercase case -- see
+    # test_build_shortlist_rows_uppercases_substitutes_under_ucase_wrap for why this matters.
+    assert "EVIDENCE-TASK-IMPLEMENTATION-LINK" in row["query"]
+
+
+def test_build_shortlist_rows_uppercases_substitutes_under_ucase_wrap():
+    """
+    Real-CSV regression check: confirmed live 2026-07-31 against the actual warehouse --
+    entity_v3.entityTypeReference's one real value is 'evidence-task-implementation-link'
+    (all lowercase), and Q894769-192's own diagnostics (isolated down to just this predicate)
+    showed ucase(entityTypeReference) IN ('evidence-task-implementation-link') matched ZERO
+    live rows despite that being the table's ONLY real value -- ucase() only transforms the
+    column side, so a lowercase literal never matches an uppercased column value. Fixed by
+    uppercasing the substitute whenever the column side is ucase(.../upper(...-wrapped.
+    """
+    rows = build_shortlist_rows("abac_onetrust_scale")
+    row = next(r for r in rows if r["query_id"] == "Q894769-192-20260518.123121.785")
+    assert "'evidence-task-implementation-link'" not in row["query"]
 
 
 def test_write_shortlist_csv_produces_expected_columns():

@@ -172,6 +172,15 @@ _UNQUALIFIED_IN_PREDICATE = re.compile(
     rf"{_FUNC_WRAP}(\w+)\s*\)\s+IN\s*\(([^)]*)\)", re.IGNORECASE,
 )
 _FROM_TABLE = re.compile(r"\bFROM\s+(?:[\w.]+\.)?(\w+)\b", re.IGNORECASE)
+_STARTS_WITH_FUNC_WRAP = re.compile(rf"^{_FUNC_WRAP}", re.IGNORECASE)
+
+
+def _is_lhs_wrapped(matched_text: str) -> bool:
+    """True when the matched predicate's column side is wrapped in ucase(.../upper(... -- the
+    wrap is always the first thing in the pattern when present, so checking match.group(0)'s
+    own prefix tells us whether THIS specific match actually used it (the aliased patterns
+    make the wrap optional, so not every match has one)."""
+    return bool(_STARTS_WITH_FUNC_WRAP.match(matched_text))
 
 
 def _nearest_preceding_table(sql: str, position: int) -> str | None:
@@ -229,6 +238,16 @@ def substitute_unreachable_literal_predicates(sql: str) -> str:
     local sample data to check against at all, the predicate is left untouched rather than
     guessed at. An IN list gets its values replaced (capped at 10) with real ones, not just
     appended to, since the original values are equally unreachable.
+
+    When the column side is wrapped in ucase(.../upper(..., the substituted value(s) are
+    UPPERCASED too, not inserted in their real (often lowercase) case. Confirmed live
+    2026-07-31: entity_v3.entityTypeReference's one real value is
+    'evidence-task-implementation-link' (all lowercase), but
+    "ucase(entityTypeReference) IN ('evidence-task-implementation-link')" still matched ZERO
+    rows -- ucase() only transforms the column side, so a lowercase literal compared against
+    an uppercased column value never matches. Upper-casing the substitute is always safe here
+    regardless of whether the literal side happens to ALSO be wrapped (ucase() is idempotent
+    on an already-uppercase string).
     """
     alias_to_table = {}
     for table, alias in _TABLE_ALIAS_PATTERN.findall(sql):
@@ -243,7 +262,8 @@ def substitute_unreachable_literal_predicates(sql: str) -> str:
         samples = _cached_column_values(table, column)
         if not samples or value.lower() in {s.lower() for s in samples}:
             return match.group(0)
-        return match.group(0).replace(f"'{value}'", f"'{samples[0]}'", 1)
+        substitute = samples[0].upper() if _is_lhs_wrapped(match.group(0)) else samples[0]
+        return match.group(0).replace(f"'{value}'", f"'{substitute}'", 1)
 
     def _replace_in_list(match):
         alias, column, list_content = match.group(1), match.group(2), match.group(3)
@@ -257,7 +277,8 @@ def substitute_unreachable_literal_predicates(sql: str) -> str:
         samples_lower = {s.lower() for s in samples}
         if any(v.lower() in samples_lower for v in values):
             return match.group(0)
-        replacement = ", ".join(f"'{v}'" for v in samples[:_MAX_IN_LIST_SUBSTITUTES])
+        substitutes = [s.upper() for s in samples] if _is_lhs_wrapped(match.group(0)) else samples
+        replacement = ", ".join(f"'{v}'" for v in substitutes[:_MAX_IN_LIST_SUBSTITUTES])
         return match.group(0).replace(list_content, replacement, 1)
 
     def _replace_unqualified_equality(match):
@@ -268,7 +289,8 @@ def substitute_unreachable_literal_predicates(sql: str) -> str:
         samples = _cached_column_values(table, column)
         if not samples or value.lower() in {s.lower() for s in samples}:
             return match.group(0)
-        return match.group(0).replace(f"'{value}'", f"'{samples[0]}'", 1)
+        # unlike the aliased pattern, the wrap is mandatory here -- always uppercase
+        return match.group(0).replace(f"'{value}'", f"'{samples[0].upper()}'", 1)
 
     def _replace_unqualified_in_list(match):
         column, list_content = match.group(1), match.group(2)
@@ -282,7 +304,7 @@ def substitute_unreachable_literal_predicates(sql: str) -> str:
         samples_lower = {s.lower() for s in samples}
         if any(v.lower() in samples_lower for v in values):
             return match.group(0)
-        replacement = ", ".join(f"'{v}'" for v in samples[:_MAX_IN_LIST_SUBSTITUTES])
+        replacement = ", ".join(f"'{v.upper()}'" for v in samples[:_MAX_IN_LIST_SUBSTITUTES])
         return match.group(0).replace(list_content, replacement, 1)
 
     sql = _ALIASED_IN_PREDICATE.sub(_replace_in_list, sql)

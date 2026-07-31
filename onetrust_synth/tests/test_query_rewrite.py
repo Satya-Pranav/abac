@@ -294,7 +294,10 @@ def test_substitute_unreachable_literal_predicates_handles_ucase_wrapped_equalit
     sql = "SELECT main.* FROM abac_onetrust_scale.onetrust_sim.entity_v3 main WHERE ucase(main.timeZoneID) = ucase('UTC')"
     result = substitute_unreachable_literal_predicates(sql)
     assert "'UTC'" not in result
-    assert "ucase(main.timeZoneID) = ucase('Africa/Abidjan')" in result
+    # uppercased, not the real value's own mixed case ("Africa/Abidjan") -- the column side is
+    # ucase()-wrapped, so the literal must be too or the comparison never matches (confirmed
+    # live 2026-07-31: this exact mismatch made a query stay at 0 rows even with a "real" value).
+    assert "ucase(main.timeZoneID) = ucase('AFRICA/ABIDJAN')" in result
 
 
 def test_substitute_unreachable_literal_predicates_replaces_in_list_when_none_match():
@@ -306,7 +309,7 @@ def test_substitute_unreachable_literal_predicates_replaces_in_list_when_none_ma
     )
     result = substitute_unreachable_literal_predicates(sql)
     assert "AISYSTEMS" not in result
-    assert "'evidence-task-implementation-link'" in result
+    assert "'EVIDENCE-TASK-IMPLEMENTATION-LINK'" in result
 
 
 def test_substitute_unreachable_literal_predicates_leaves_in_list_unchanged_when_one_value_matches():
@@ -333,7 +336,7 @@ def test_substitute_unreachable_literal_predicates_resolves_unqualified_column_v
     )
     result = substitute_unreachable_literal_predicates(sql)
     assert "AISYSTEMS" not in result
-    assert "'evidence-task-implementation-link'" in result
+    assert "'EVIDENCE-TASK-IMPLEMENTATION-LINK'" in result
 
 
 def test_substitute_unreachable_literal_predicates_unqualified_uses_nearest_preceding_table():
@@ -348,8 +351,8 @@ def test_substitute_unreachable_literal_predicates_unqualified_uses_nearest_prec
         ") b ON 1=1"
     )
     result = substitute_unreachable_literal_predicates(sql)
-    assert "ucase('evidence-task-implementation-link')" in result
-    assert "ucase('DATASETS')" in result  # cmb_riskrelatedobjects's first real sample value
+    assert "ucase('EVIDENCE-TASK-IMPLEMENTATION-LINK')" in result
+    assert "ucase('DATASETS')" in result  # cmb_riskrelatedobjects's first real sample value -- already uppercase
 
 
 def test_normalize_double_quoted_identifiers_leaves_comment_boundaries_intact():
