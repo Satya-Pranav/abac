@@ -1824,20 +1824,20 @@ GROUP BY
   `inventoryName`
 LIMIT 1000001",1,PASS,1.94
 GEN-ESA-Q1-owner-active,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.assessmentresponse.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, r.assessmentQuestionID, r.response, r.parsedResponse, r.parsedResponseNumeric
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",,PENDING,
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",405411,PASS,2.25
 GEN-ESA-Q1-owner-inactive,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.inactive.grant@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, r.assessmentQuestionID, r.response, r.parsedResponse, r.parsedResponseNumeric
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",,PENDING,
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",0,PASS,2.14
 GEN-ESA-Q1-no-grant,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.nobody@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, r.assessmentQuestionID, r.response, r.parsedResponse, r.parsedResponseNumeric
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",,PENDING,
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",0,PASS,2.18
 GEN-ESA-Q2-owner-active,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.assessmentresponse.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, count(*) AS visible_response_count
 FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-GROUP BY r.assessmentID",,PENDING,
+GROUP BY r.assessmentID",1,PASS,1.75
 GEN-ESA-Q2-owner-inactive,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.inactive.grant@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, count(*) AS visible_response_count
 FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-GROUP BY r.assessmentID",,PENDING,
+GROUP BY r.assessmentID",0,PASS,1.78
 GEN-ESA-Q2-no-grant,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.nobody@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, count(*) AS visible_response_count
 FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-GROUP BY r.assessmentID",,PENDING,
+GROUP BY r.assessmentID",0,PASS,1.83
 GEN-ESA-Q3-owner-active-crosscheck,generated_perf_query,"cmb_v_assessmentquestion, cmb_assessment, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""u.assessment.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT main.assessmentID, main.assessmentQuestionID, main.questionID, main.questionType,
        aqr.response, aqr.parsedResponse, aqr.parsedResponseNumeric, aqr.parsedResponseTimestamp
 FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestion main
@@ -1846,7 +1846,7 @@ INNER JOIN abac_onetrust_scale.onetrust_sim.cmb_assessment a
 LEFT OUTER JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 aqr
   ON aqr.assessmentID = main.assessmentID
  AND aqr.assessmentQuestionID = main.assessmentQuestionID
- AND aqr.parentOrgID = main.parentOrgID",,PENDING,
+ AND aqr.parentOrgID = main.parentOrgID",0,PASS,2.10
 GEN-ESA-Q3-broad-perf,generated_perf_query,"cmb_v_assessmentquestion, cmb_assessment, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT main.assessmentID, main.assessmentQuestionID, main.questionID, main.questionType,
        aqr.response, aqr.parsedResponse, aqr.parsedResponseNumeric, aqr.parsedResponseTimestamp
 FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestion main
@@ -1855,7 +1855,7 @@ INNER JOIN abac_onetrust_scale.onetrust_sim.cmb_assessment a
 LEFT OUTER JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 aqr
   ON aqr.assessmentID = main.assessmentID
  AND aqr.assessmentQuestionID = main.assessmentQuestionID
- AND aqr.parentOrgID = main.parentOrgID",,PENDING,
+ AND aqr.parentOrgID = main.parentOrgID",0,PASS,2.13
 GEN-ESA-Q3-disable-baseline,generated_perf_query,"cmb_v_assessmentquestion, cmb_assessment, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT main.assessmentID, main.assessmentQuestionID, main.questionID, main.questionType,
        aqr.response, aqr.parsedResponse, aqr.parsedResponseNumeric, aqr.parsedResponseTimestamp
 FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestion main
@@ -1864,124 +1864,223 @@ INNER JOIN abac_onetrust_scale.onetrust_sim.cmb_assessment a
 LEFT OUTER JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 aqr
   ON aqr.assessmentID = main.assessmentID
  AND aqr.assessmentQuestionID = main.assessmentQuestionID
- AND aqr.parentOrgID = main.parentOrgID",,PENDING,
-GEN-BIG-STAGE-broad-perf,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT
-  s.newStage,
-  count(DISTINCT s.assessmentID) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
-  ON s.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
-GROUP BY s.newStage
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-STAGE-disable-baseline,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT
-  s.newStage,
-  count(DISTINCT s.assessmentID) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
-  ON s.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
-GROUP BY s.newStage
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-STAGE-crossjoin-owner,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT
-  s.newStage,
-  count(DISTINCT s.assessmentID) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
-  ON s.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
-GROUP BY s.newStage
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-INVENTORY-broad-perf,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT
+ AND aqr.parentOrgID = main.parentOrgID",0,PASS,1.98
+GEN-BIG-STAGE-broad-perf,generated_perf_query,"cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+),
+inventory_agg AS (
+  SELECT assessmentID, count(DISTINCT inventoryID) AS inventory_count
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4
+  GROUP BY assessmentID
+)
+SELECT
+  sa.current_stage,
+  count(DISTINCT sa.assessmentID) AS assessment_count,
+  sum(sa.stage_change_count) AS total_stage_changes,
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(coalesce(ia.inventory_count, 0)) AS total_inventory_links
+FROM stage_agg sa
+JOIN response_agg ra ON ra.assessmentID = sa.assessmentID
+LEFT JOIN inventory_agg ia ON ia.assessmentID = sa.assessmentID
+GROUP BY sa.current_stage
+ORDER BY total_responses DESC",4,PASS,3.10
+GEN-BIG-STAGE-disable-baseline,generated_perf_query,"cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+),
+inventory_agg AS (
+  SELECT assessmentID, count(DISTINCT inventoryID) AS inventory_count
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4
+  GROUP BY assessmentID
+)
+SELECT
+  sa.current_stage,
+  count(DISTINCT sa.assessmentID) AS assessment_count,
+  sum(sa.stage_change_count) AS total_stage_changes,
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(coalesce(ia.inventory_count, 0)) AS total_inventory_links
+FROM stage_agg sa
+JOIN response_agg ra ON ra.assessmentID = sa.assessmentID
+LEFT JOIN inventory_agg ia ON ia.assessmentID = sa.assessmentID
+GROUP BY sa.current_stage
+ORDER BY total_responses DESC",3,PASS,2.67
+GEN-BIG-STAGE-crossjoin-owner,generated_perf_query,"cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+),
+inventory_agg AS (
+  SELECT assessmentID, count(DISTINCT inventoryID) AS inventory_count
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4
+  GROUP BY assessmentID
+)
+SELECT
+  sa.current_stage,
+  count(DISTINCT sa.assessmentID) AS assessment_count,
+  sum(sa.stage_change_count) AS total_stage_changes,
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(coalesce(ia.inventory_count, 0)) AS total_inventory_links
+FROM stage_agg sa
+JOIN response_agg ra ON ra.assessmentID = sa.assessmentID
+LEFT JOIN inventory_agg ia ON ia.assessmentID = sa.assessmentID
+GROUP BY sa.current_stage
+ORDER BY total_responses DESC",1,PASS,5.24
+GEN-BIG-INVENTORY-broad-perf,generated_perf_query,"cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentstagechangetracker_v4","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+)
+SELECT
   inv.inventoryType,
   count(DISTINCT inv.assessmentID) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
-  ON inv.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(sa.stage_change_count) AS total_stage_changes
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+JOIN response_agg ra ON ra.assessmentID = inv.assessmentID
+JOIN stage_agg sa ON sa.assessmentID = inv.assessmentID
 GROUP BY inv.inventoryType
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-INVENTORY-disable-baseline,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT
+ORDER BY total_responses DESC",4,PASS,3.11
+GEN-BIG-INVENTORY-disable-baseline,generated_perf_query,"cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentstagechangetracker_v4","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+)
+SELECT
   inv.inventoryType,
   count(DISTINCT inv.assessmentID) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
-  ON inv.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(sa.stage_change_count) AS total_stage_changes
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+JOIN response_agg ra ON ra.assessmentID = inv.assessmentID
+JOIN stage_agg sa ON sa.assessmentID = inv.assessmentID
 GROUP BY inv.inventoryType
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-INVENTORY-crossjoin-owner,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT
+ORDER BY total_responses DESC",4,PASS,3.29
+GEN-BIG-INVENTORY-crossjoin-owner,generated_perf_query,"cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentstagechangetracker_v4","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+)
+SELECT
   inv.inventoryType,
   count(DISTINCT inv.assessmentID) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
-  ON inv.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(sa.stage_change_count) AS total_stage_changes
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+JOIN response_agg ra ON ra.assessmentID = inv.assessmentID
+JOIN stage_agg sa ON sa.assessmentID = inv.assessmentID
 GROUP BY inv.inventoryType
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-4WAY-broad-perf,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT
-  s.newStage,
+ORDER BY total_responses DESC",4,PASS,4.27
+GEN-BIG-COMBINED-broad-perf,generated_perf_query,"cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+)
+SELECT
+  sa.current_stage,
   inv.inventoryType,
-  count(DISTINCT a.id) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response,
-  max(s.newStageDateTime) AS latest_stage_change
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
-  ON s.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
-  ON inv.assessmentID = a.id
-GROUP BY s.newStage, inv.inventoryType
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-4WAY-disable-baseline,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT
-  s.newStage,
+  count(DISTINCT sa.assessmentID) AS assessment_count,
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(sa.stage_change_count) AS total_stage_changes
+FROM stage_agg sa
+JOIN response_agg ra ON ra.assessmentID = sa.assessmentID
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv ON inv.assessmentID = sa.assessmentID
+GROUP BY sa.current_stage, inv.inventoryType
+ORDER BY total_responses DESC",12,PASS,3.36
+GEN-BIG-COMBINED-disable-baseline,generated_perf_query,"cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+)
+SELECT
+  sa.current_stage,
   inv.inventoryType,
-  count(DISTINCT a.id) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response,
-  max(s.newStageDateTime) AS latest_stage_change
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
-  ON s.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
-  ON inv.assessmentID = a.id
-GROUP BY s.newStage, inv.inventoryType
-ORDER BY response_count DESC",,PENDING,
-GEN-BIG-4WAY-crossjoin-owner,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT
-  s.newStage,
+  count(DISTINCT sa.assessmentID) AS assessment_count,
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(sa.stage_change_count) AS total_stage_changes
+FROM stage_agg sa
+JOIN response_agg ra ON ra.assessmentID = sa.assessmentID
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv ON inv.assessmentID = sa.assessmentID
+GROUP BY sa.current_stage, inv.inventoryType
+ORDER BY total_responses DESC",16,PASS,3.34
+GEN-BIG-COMBINED-crossjoin-owner,generated_perf_query,"cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","WITH response_agg AS (
+  SELECT assessmentID, count(*) AS response_count, avg(parsedResponseNumeric) AS avg_numeric_response
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3
+  GROUP BY assessmentID
+),
+stage_agg AS (
+  SELECT assessmentID, count(*) AS stage_change_count,
+         max_by(newStage, newStageDateTime) AS current_stage
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4
+  GROUP BY assessmentID
+)
+SELECT
+  sa.current_stage,
   inv.inventoryType,
-  count(DISTINCT a.id) AS assessment_count,
-  count(r.responseValueID) AS response_count,
-  avg(r.parsedResponseNumeric) AS avg_numeric_response,
-  max(s.newStageDateTime) AS latest_stage_change
-FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
-  ON s.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
-  ON r.assessmentID = a.id
-JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
-  ON inv.assessmentID = a.id
-GROUP BY s.newStage, inv.inventoryType
-ORDER BY response_count DESC",,PENDING,
+  count(DISTINCT sa.assessmentID) AS assessment_count,
+  sum(ra.response_count) AS total_responses,
+  avg(ra.avg_numeric_response) AS avg_numeric_response,
+  sum(sa.stage_change_count) AS total_stage_changes
+FROM stage_agg sa
+JOIN response_agg ra ON ra.assessmentID = sa.assessmentID
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv ON inv.assessmentID = sa.assessmentID
+GROUP BY sa.current_stage, inv.inventoryType
+ORDER BY total_responses DESC",4,PASS,5.33
