@@ -9,6 +9,13 @@ only used for the scale-2 catalog.
 Extends coverage from the original 4 governed tables to 8 (design doc section 5): the 4 new
 ones (cmb_riskrelatedobjects, cmb_inventory, cmb_v_assessment_v4, entitylink_v3) use real
 per-row columns rather than literals wherever the profile data confirmed one exists.
+
+POC-scoped extension to 10 (not in the design doc): cmb_v_assessmentquestionresponse_v3
+(9.49M rows) and cmb_v_assessmentstagechangetracker_v4 (3.55M rows) -- the two biggest tables
+in the dataset -- were previously ungoverned, so any claim/identity passed against them was
+inert (no CREATE POLICY row filter existed to read it). Added so the GEN-ESA/GEN-BIG
+performance-shortlist queries exercise real Unity Catalog ABAC enforcement instead of a
+hand-simulated join against ABAC_EntitySubjectAssignment in the query text.
 """
 
 
@@ -100,6 +107,8 @@ _TAG_SPEC = [
     ("cmb_inventory", "id", "inventoryType", None),
     ("cmb_v_assessment_v4", "id", None, "orgID"),
     ("entitylink_v3", "entityid1", "entityid1typereference", None),
+    ("cmb_v_assessmentquestionresponse_v3", "assessmentID", None, "orgID"),
+    ("cmb_v_assessmentstagechangetracker_v4", "assessmentID", None, "orgID"),
 ]
 
 
@@ -125,6 +134,8 @@ _POLICY_SPEC = {
     "cmb_inventory": (None, "100"),
     "cmb_v_assessment_v4": ("ASSESSMENT", None),
     "entitylink_v3": (None, "100"),
+    "cmb_v_assessmentquestionresponse_v3": ("ASSESSMENT", None),
+    "cmb_v_assessmentstagechangetracker_v4": ("ASSESSMENT", None),
 }
 
 
@@ -234,6 +245,24 @@ def build_seed_principals_sql(catalog: str, schema: str = "onetrust_sim") -> lis
             f"FROM (SELECT {id_col} AS entity_id FROM {q}.{table} {filter_clause} LIMIT 1) ent;"
         )
 
+    def esa_insert_from_subquery(aid, entity_id_select_sql, subject, subject_type, object_type_expr):
+        """
+        Same shape as esa_insert, but for a subject that must be visible across MULTIPLE governed
+        tables at once. abac_row_filter's EXISTS branch matches purely on (entityId, objectType)
+        value equality -- it never looks at which table triggered the check -- so ONE ESA row
+        whose entityId is verified (via a JOIN) to exist in every target table's id/assessmentID
+        column grants that subject visibility into all of them for that one shared entity,
+        without needing one ESA row per table.
+        """
+        return (
+            f"INSERT INTO {q}.ABAC_EntitySubjectAssignment "
+            "(assignmentId, policyId, entityId, entityOrganizationId, subjectId, subjectType, "
+            "objectType, updateDT, eventTime, recModifiedTime, tenantHash, isDeleted)\n"
+            f"SELECT {aid}, NULL, entity_id, NULL, '{subject}', '{subject_type}', {object_type_expr}, "
+            "current_timestamp(), current_timestamp(), current_timestamp(), 'phase2-test-seed', false\n"
+            f"FROM ({entity_id_select_sql}) ent;"
+        )
+
     # --- original 4, replayed verbatim (same subjects/tables as sql_onetrust/05, new catalog) ---
     stmts.append(assignment_insert(900001, "ASSESSMENT"))
     stmts.append(assignment_insert(900002, "ASSESSMENT", is_active="false"))
@@ -289,6 +318,36 @@ def build_seed_principals_sql(catalog: str, schema: str = "onetrust_sim") -> lis
         900009, "entitylink_v3", "entityid1",
         "WHERE entityid1typereference = 'ControlTemplate' ORDER BY entityid1",
         "u.entitylink.owner@example.com", "USER_ID", "'CONTROLTEMPLATE'",
+    ))
+
+    # --- 2 new big governed tables (POC-scoped, see module docstring) ---
+    stmts.append(assignment_insert(900010, "ASSESSMENT"))
+    stmts.append(esa_insert(
+        900010, "cmb_v_assessmentquestionresponse_v3", "assessmentID",
+        "ORDER BY assessmentID",
+        "u.assessmentresponse.owner@example.com", "USER_ID", "'ASSESSMENT'",
+    ))
+
+    stmts.append(assignment_insert(900011, "ASSESSMENT"))
+    stmts.append(esa_insert(
+        900011, "cmb_v_assessmentstagechangetracker_v4", "assessmentID",
+        "ORDER BY assessmentID",
+        "u.assessmentstage.owner@example.com", "USER_ID", "'ASSESSMENT'",
+    ))
+
+    # A subject visible across BOTH new tables at once, for complex-join queries that need a
+    # non-vacuous narrow claim. cmb_v_assessmentquestionresponse_v3.assessmentID and
+    # cmb_v_assessmentstagechangetracker_v4.assessmentID share the same ndv (2666) in the real
+    # profile -- strong evidence they're the same underlying assessment id domain -- so this
+    # entity_id is picked via a JOIN across both rather than assumed to overlap.
+    stmts.append(assignment_insert(900012, "ASSESSMENT"))
+    stmts.append(esa_insert_from_subquery(
+        900012,
+        f"""SELECT r.assessmentID AS entity_id
+        FROM {q}.cmb_v_assessmentquestionresponse_v3 r
+        JOIN {q}.cmb_v_assessmentstagechangetracker_v4 s ON s.assessmentID = r.assessmentID
+        ORDER BY entity_id LIMIT 1""",
+        "u.assessment.crossjoin.owner@example.com", "USER_ID", "'ASSESSMENT'",
     ))
 
     return stmts

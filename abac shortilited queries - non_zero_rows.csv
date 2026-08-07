@@ -1,0 +1,1987 @@
+query_id,source,tables_used,claim,query,m,verified_status,duration_seconds
+Q894769-192-20260518.123121.785,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","select `$Table`.`entityTypeReference` as `entityTypeReference`,
+    `$Table`.`entityId` as `entityId`,
+    `$Table`.`entityNumber` as `entityNumber`,
+    `$Table`.`entityName` as `entityName`,
+    `$Table`.`stageId` as `stageId`,
+    `$Table`.`workflowId` as `workflowId`,
+    `$Table`.`workflow` as `workflow`,
+    `$Table`.`stage` as `stage`,
+    `$Table`.`createdBy` as `createdBy`,
+    `$Table`.`updatedBy` as `updatedBy`,
+    `$Table`.`createdDateTime` as `createdDateTime`,
+    `$Table`.`createdDate` as `createdDate`,
+    `$Table`.`createdYear` as `createdYear`,
+    `$Table`.`createdMonth` as `createdMonth`,
+    `$Table`.`createdMonthNumber` as `createdMonthNumber`,
+    `$Table`.`createdQuarter` as `createdQuarter`,
+    `$Table`.`updatedDateTime` as `updatedDateTime`,
+    `$Table`.`updatedDate` as `updatedDate`,
+    `$Table`.`updatedYear` as `updatedYear`,
+    `$Table`.`updatedMonth` as `updatedMonth`,
+    `$Table`.`updatedMonthNumber` as `updatedMonthNumber`,
+    `$Table`.`updatedQuarter` as `updatedQuarter`,
+    `$Table`.`timeZoneID` as `timeZoneID`,
+    `$Table`.`orgId` as `orgId`,
+    `$Table`.`orgName` as `orgName`,
+    `$Table`.`parentOrgID` as `parentOrgID`,
+    `$Table`.`createdByUserEmail` as `createdByUserEmail`,
+    `$Table`.`CompletedDateTime` as `CompletedDateTime`
+from 
+(
+    
+SELECT  main.*, ews.newStageChangedDateTime as CompletedDateTime
+FROM    abac_onetrust_scale.onetrust_sim.entity_v3 main
+        left outer join abac_onetrust_scale.onetrust_sim.entityworkflowstagechangetracker_v3 ews 
+            on ews.entityId = main.entityId 
+            and ews.entityTypeReference = main.entityTypeReference 
+            and ews.timeZoneID = main.timeZoneID 
+            and ucase(ews.stage) = 'NOT STARTED'
+WHERE   main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11' 
+        and ucase(main.timeZoneID) = ucase('AFRICA/ABIDJAN') 
+        and ucase(main.entityTypeReference) in ('EVIDENCE-TASK-IMPLEMENTATION-LINK')
+group by all
+
+) `$Table`
+limit 1000",1000,PASS,317.39
+Q894769-142-20260518.123040.105,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","select `$Table`.`category` as `category`,
+    `$Table`.`categoryID` as `categoryID`,
+    `$Table`.`categoryTranslationKey` as `categoryTranslationKey`,
+    `$Table`.`control` as `control`,
+    `$Table`.`controlID` as `controlID`,
+    `$Table`.`controlTranslationKey` as `controlTranslationKey`,
+    `$Table`.`controlStatus` as `controlStatus`,
+    `$Table`.`controlStatusID` as `controlStatusID`,
+    `$Table`.`controlStatusTranslationKey` as `controlStatusTranslationKey`,
+    `$Table`.`deadline` as `deadline`,
+    `$Table`.`deadlineDate` as `deadlineDate`,
+    `$Table`.`deadlineDateYear` as `deadlineDateYear`,
+    `$Table`.`deadlineDateMonth` as `deadlineDateMonth`,
+    `$Table`.`deadlineDateMonthNumber` as `deadlineDateMonthNumber`,
+    `$Table`.`deadlineDateQuarter` as `deadlineDateQuarter`,
+    `$Table`.`description` as `description`,
+    `$Table`.`effectiveness` as `effectiveness`,
+    `$Table`.`effectivenessID` as `effectivenessID`,
+    `$Table`.`effectivenessTranslationKey` as `effectivenessTranslationKey`,
+    `$Table`.`framework` as `framework`,
+    `$Table`.`frameworkID` as `frameworkID`,
+    `$Table`.`frameworkTranslationKey` as `frameworkTranslationKey`,
+    `$Table`.`id` as `id`,
+    `$Table`.`identifier` as `identifier`,
+    `$Table`.`identifierRank` as `identifierRank`,
+    `$Table`.`lastModifiedDate` as `lastModifiedDate`,
+    `$Table`.`lastModified Date` as `lastModified Date`,
+    `$Table`.`lastModifiedDateYear` as `lastModifiedDateYear`,
+    `$Table`.`lastModifiedDateMonth` as `lastModifiedDateMonth`,
+    `$Table`.`lastModifiedDateMonthNumber` as `lastModifiedDateMonthNumber`,
+    `$Table`.`lastModifiedDateQuarter` as `lastModifiedDateQuarter`,
+    `$Table`.`masterControlID` as `masterControlID`,
+    `$Table`.`maturity` as `maturity`,
+    `$Table`.`maturityID` as `maturityID`,
+    `$Table`.`maturityTranslationKey` as `maturityTranslationKey`,
+    `$Table`.`note` as `note`,
+    `$Table`.`number` as `number`,
+    `$Table`.`owner` as `owner`,
+    `$Table`.`ownerID` as `ownerID`,
+    `$Table`.`ownerTranslationKey` as `ownerTranslationKey`,
+    `$Table`.`primaryEntity` as `primaryEntity`,
+    `$Table`.`primaryEntityID` as `primaryEntityID`,
+    `$Table`.`primaryEntityTranslationKey` as `primaryEntityTranslationKey`,
+    `$Table`.`primaryEntityType` as `primaryEntityType`,
+    `$Table`.`primaryEntityTypeID` as `primaryEntityTypeID`,
+    `$Table`.`primaryEntityTypeTranslationKey` as `primaryEntityTypeTranslationKey`,
+    `$Table`.`scope` as `scope`,
+    `$Table`.`scopeID` as `scopeID`,
+    `$Table`.`scopeTranslationKey` as `scopeTranslationKey`,
+    `$Table`.`status` as `status`,
+    `$Table`.`statusID` as `statusID`,
+    `$Table`.`statusTranslationKey` as `statusTranslationKey`,
+    `$Table`.`workflowId` as `workflowId`,
+    `$Table`.`workflow` as `workflow`,
+    `$Table`.`workflowStageId` as `workflowStageId`,
+    `$Table`.`workflowStage` as `workflowStage`,
+    `$Table`.`url` as `url`,
+    `$Table`.`timeZoneID` as `timeZoneID`,
+    `$Table`.`orgID` as `orgID`,
+    `$Table`.`orgName` as `orgName`,
+    `$Table`.`parentOrgID` as `parentOrgID`
+from 
+(
+    
+SELECT  main.* 
+FROM    abac_onetrust_scale.onetrust_sim.cmb_v_controlimplementation_v4 main 
+WHERE   ucase(main.primaryEntityType) in ('RISKS')
+        AND ucase(main.timeZoneID) = ucase('AFRICA/ABIDJAN') 
+        AND main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+
+) `$Table`
+limit 1000",37,PASS,2.23
+Q894769-141-20260518.123039.639,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","select `_`.`category` as `category`,
+    `_`.`categoryID` as `categoryID`,
+    `_`.`categoryTranslationKey` as `categoryTranslationKey`,
+    `_`.`control` as `control`,
+    `_`.`controlID` as `controlID`,
+    `_`.`controlTranslationKey` as `controlTranslationKey`,
+    `_`.`controlStatus` as `controlStatus`,
+    `_`.`controlStatusID` as `controlStatusID`,
+    `_`.`controlStatusTranslationKey` as `controlStatusTranslationKey`,
+    `_`.`deadline` as `deadline`,
+    `_`.`deadlineDate` as `deadlineDate`,
+    `_`.`deadlineDateYear` as `deadlineDateYear`,
+    `_`.`deadlineDateMonth` as `deadlineDateMonth`,
+    `_`.`deadlineDateMonthNumber` as `deadlineDateMonthNumber`,
+    `_`.`deadlineDateQuarter` as `deadlineDateQuarter`,
+    `_`.`description` as `description`,
+    `_`.`effectiveness` as `effectiveness`,
+    `_`.`effectivenessID` as `effectivenessID`,
+    `_`.`effectivenessTranslationKey` as `effectivenessTranslationKey`,
+    `_`.`framework` as `framework`,
+    `_`.`frameworkID` as `frameworkID`,
+    `_`.`frameworkTranslationKey` as `frameworkTranslationKey`,
+    `_`.`id` as `id`,
+    `_`.`identifier` as `identifier`,
+    `_`.`identifierRank` as `identifierRank`,
+    `_`.`lastModifiedDate` as `lastModifiedDate`,
+    `_`.`lastModified Date` as `lastModified Date`,
+    `_`.`lastModifiedDateYear` as `lastModifiedDateYear`,
+    `_`.`lastModifiedDateMonth` as `lastModifiedDateMonth`,
+    `_`.`lastModifiedDateMonthNumber` as `lastModifiedDateMonthNumber`,
+    `_`.`lastModifiedDateQuarter` as `lastModifiedDateQuarter`,
+    `_`.`masterControlID` as `masterControlID`,
+    `_`.`maturity` as `maturity`,
+    `_`.`maturityID` as `maturityID`,
+    `_`.`maturityTranslationKey` as `maturityTranslationKey`,
+    `_`.`note` as `note`,
+    `_`.`number` as `number`,
+    `_`.`owner` as `owner`,
+    `_`.`ownerID` as `ownerID`,
+    `_`.`ownerTranslationKey` as `ownerTranslationKey`,
+    `_`.`primaryEntity` as `primaryEntity`,
+    `_`.`primaryEntityID` as `primaryEntityID`,
+    `_`.`primaryEntityTranslationKey` as `primaryEntityTranslationKey`,
+    `_`.`primaryEntityType` as `primaryEntityType`,
+    `_`.`primaryEntityTypeID` as `primaryEntityTypeID`,
+    `_`.`primaryEntityTypeTranslationKey` as `primaryEntityTypeTranslationKey`,
+    `_`.`scope` as `scope`,
+    `_`.`scopeID` as `scopeID`,
+    `_`.`scopeTranslationKey` as `scopeTranslationKey`,
+    `_`.`status` as `status`,
+    `_`.`statusID` as `statusID`,
+    `_`.`statusTranslationKey` as `statusTranslationKey`,
+    `_`.`workflowId` as `workflowId`,
+    `_`.`workflow` as `workflow`,
+    `_`.`workflowStageId` as `workflowStageId`,
+    `_`.`workflowStage` as `workflowStage`,
+    `_`.`url` as `url`,
+    `_`.`timeZoneID` as `timeZoneID`,
+    `_`.`orgID` as `orgID`,
+    `_`.`orgName` as `orgName`,
+    `_`.`parentOrgID` as `parentOrgID`,
+    upper(`_`.`workflow`) as `t0_0`,
+    upper(`_`.`workflowStage`) as `t1_0`
+from 
+(
+    
+SELECT  main.* 
+FROM    abac_onetrust_scale.onetrust_sim.cmb_v_controlimplementation_v4 main 
+WHERE   ucase(main.primaryEntityType) in ('RISKS')
+        AND ucase(main.timeZoneID) = ucase('AFRICA/ABIDJAN') 
+        AND main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+
+) `_`
+limit 1000",37,PASS,1.95
+Q894769-136-20260518.123035.693,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","select `$Table`.`controlImplementationID` as `controlImplementationID`,
+    `$Table`.`entityID` as `entityID`,
+    `$Table`.`entityType` as `entityType`,
+    `$Table`.`organizationID` as `organizationID`,
+    `$Table`.`inventoryID` as `inventoryID`,
+    `$Table`.`inventoryName` as `inventoryName`,
+    `$Table`.`inventoryNumber` as `inventoryNumber`,
+    `$Table`.`riskID` as `riskID`,
+    `$Table`.`riskName` as `riskName`,
+    `$Table`.`riskNumber` as `riskNumber`,
+    `$Table`.`controlImplementationURL` as `controlImplementationURL`,
+    `$Table`.`entityURL` as `entityURL`,
+    `$Table`.`controlImplementationStatus` as `controlImplementationStatus`,
+    `$Table`.`completedControlImplementationId` as `completedControlImplementationId`,
+    `$Table`.`validControlImplementationId` as `validControlImplementationId`,
+    `$Table`.`orgID` as `orgID`,
+    `$Table`.`orgName` as `orgName`,
+    `$Table`.`parentOrgID` as `parentOrgID`,
+    `$Table`.`controlObjectiveId` as `controlObjectiveId`
+from 
+(
+    
+SELECT  main.*,
+        case when entityType = 'ControlObjective' then main.entityID end as controlObjectiveId
+FROM    abac_onetrust_scale.onetrust_sim.cmb_v_controlimplementationentitylink main 
+WHERE   main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+        and ucase(main.entityType) in ('ASSETS', 'RISKS')
+
+) `$Table`
+limit 1000",30,PASS,2.23
+Q894769-131-20260518.123032.197,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","select `$Table`.`entityTypeReference` as `entityTypeReference`,
+    `$Table`.`id` as `id`,
+    `$Table`.`entityId` as `entityId`,
+    `$Table`.`stageId` as `stageId`,
+    `$Table`.`workflowId` as `workflowId`,
+    `$Table`.`workflow` as `workflow`,
+    `$Table`.`stage` as `stage`,
+    `$Table`.`previousStageId` as `previousStageId`,
+    `$Table`.`previousWorkflowId` as `previousWorkflowId`,
+    `$Table`.`previousWorkflow` as `previousWorkflow`,
+    `$Table`.`previousStage` as `previousStage`,
+    `$Table`.`changedBy` as `changedBy`,
+    `$Table`.`cycleNumber` as `cycleNumber`,
+    `$Table`.`newStageChangedDateTime` as `newStageChangedDateTime`,
+    `$Table`.`newStageChangedDate` as `newStageChangedDate`,
+    `$Table`.`newStageChangedYear` as `newStageChangedYear`,
+    `$Table`.`newStageChangedMonth` as `newStageChangedMonth`,
+    `$Table`.`newStageChangedMonthNumber` as `newStageChangedMonthNumber`,
+    `$Table`.`newStageChangedQuarter` as `newStageChangedQuarter`,
+    `$Table`.`oldStageChangedDateTime` as `oldStageChangedDateTime`,
+    `$Table`.`oldStageChangedDate` as `oldStageChangedDate`,
+    `$Table`.`oldStageChangedYear` as `oldStageChangedYear`,
+    `$Table`.`oldStageChangedMonth` as `oldStageChangedMonth`,
+    `$Table`.`oldStageChangedMonthNumber` as `oldStageChangedMonthNumber`,
+    `$Table`.`oldStageChangedQuarter` as `oldStageChangedQuarter`,
+    `$Table`.`lastUpdatedStage` as `lastUpdatedStage`,
+    `$Table`.`daysSpentInOldStage` as `daysSpentInOldStage`,
+    `$Table`.`newStageAgeInDays` as `newStageAgeInDays`,
+    `$Table`.`timeZoneID` as `timeZoneID`
+from 
+(
+    
+SELECT  main.* 
+FROM    abac_onetrust_scale.onetrust_sim.entityworkflowstagechangetracker_v3 main
+WHERE   ucase(main.timeZoneID) = ucase('AFRICA/ABIDJAN') 
+        and ucase(main.entityTypeReference) in ('AISYSTEMS','MODELS','DATASETS','PROJECTS','AIAGENTS')
+        and ucase(main.stage) = 'NOT STARTED'
+
+) `$Table`
+limit 1000",1000,PASS,1.93
+d5dc4b5156925c72582b7a2a0780051cb37e7b1dafef947b96c254f55100704e,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::d5dc4b5156925c72582b7a2a0780051cb37e7b1dafef947b96c254f55100704e */
+/* ActivityId: 954ff5b8-8f88-4722-9659-62313c1b3802 CorrelationId: {`cid`:`6965b2a2-17bc-4718-9313-8ffcc62e8078`,`pid`:`45032688-9d05-4381-93d5-ab2a23de982a`,`rid`:`954ff5b8-8f88-4722-9659-62313c1b3802`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,14.12
+745042167b626da7a60c21840a1da647a104c40b5cb190d441e07600e722950c,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::745042167b626da7a60c21840a1da647a104c40b5cb190d441e07600e722950c */
+/* ActivityId: cf4c984f-cc1b-44b2-b54d-eeba3d98871a CorrelationId: {`cid`:`615452d0-d472-4b9b-9b88-61f86b422f9d`,`pid`:`fc5f5d82-86d2-4a6f-ac1e-75892bb35675`,`rid`:`cf4c984f-cc1b-44b2-b54d-eeba3d98871a`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,2.69
+59a1112f44a676b3cb1b582a586be1f71a67bd5e6495b61101d39730589605d9,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::59a1112f44a676b3cb1b582a586be1f71a67bd5e6495b61101d39730589605d9 */
+/* ActivityId: 954ff5b8-8f88-4722-9659-62313c1b3802 CorrelationId: {`cid`:`6965b2a2-17bc-4718-9313-8ffcc62e8078`,`pid`:`45032688-9d05-4381-93d5-ab2a23de982a`,`rid`:`954ff5b8-8f88-4722-9659-62313c1b3802`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,13.42
+c5c75b4e8a21cd14a37543c2313ad5e40db8ff03f0dab7230ec29dfce3449da6,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::c5c75b4e8a21cd14a37543c2313ad5e40db8ff03f0dab7230ec29dfce3449da6 */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asse', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.31
+2feed11430eb041a378f5cced83b8cfe6b4935c05ea3440d2e02b70913b7c7a1,real_query,"CMB_Assessment, OrgHierarchy","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","/* OneTrust::2feed11430eb041a378f5cced83b8cfe6b4935c05ea3440d2e02b70913b7c7a1 */
+/* auto_qa_e40yx52dkbjpcqazimno9yvh4k */
+WITH cte1(`name`, `number`, `questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738`, `questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f`, `templateID`, `templateName`, `templateType`, `GROUP_BY0Assessment`) AS (
+  /* `name` */
+  SELECT
+    CASE
+      WHEN NOT a1_0.name IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        a1_0.name AS value,
+        CASE WHEN NOT a1_0.id IS NULL THEN STRUCT(a1_0.id AS id) END AS hyperlink
+      )
+    END, /* `number` */
+    CASE
+      WHEN NOT a1_0.number IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.number AS value, NULL AS hyperlink)
+    END, /* `questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738` */
+    CASE
+      WHEN NOT ELEMENT_AT(a1_0.questionRootMap, 'a2d09d79-b6e2-42d7-a04d-a5726a062738') IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        ELEMENT_AT(a1_0.questionRootMap, 'a2d09d79-b6e2-42d7-a04d-a5726a062738') AS value,
+        NULL AS hyperlink
+      )
+    END, /* `questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f` */
+    CASE
+      WHEN NOT ELEMENT_AT(a1_0.questionRootMap, 'd82a01e9-276b-4499-8b47-7d5068536f4f') IS NULL
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        ELEMENT_AT(a1_0.questionRootMap, 'd82a01e9-276b-4499-8b47-7d5068536f4f') AS value,
+        NULL AS hyperlink
+      )
+    END, /* `templateID` */
+    CASE
+      WHEN NOT a1_0.templateID IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.templateID AS value, NULL AS hyperlink)
+    END, /* `templateName` */
+    CASE
+      WHEN (
+        NOT a1_0.template IS NULL OR NOT a1_0.templateID IS NULL
+      )
+      THEN STRUCT(
+        STRUCT(a1_0.id AS id) AS id,
+        STRUCT(a1_0.template AS value, a1_0.templateID AS valueKey) AS value,
+        NULL AS hyperlink
+      )
+    END, /* `templateType` */
+    CASE
+      WHEN NOT a1_0.templateType IS NULL
+      THEN STRUCT(STRUCT(a1_0.id AS id) AS id, a1_0.templateType AS value, NULL AS hyperlink)
+    END,
+    STRUCT(a1_0.id AS id)
+  FROM abac_onetrust_scale.onetrust_sim.CMB_Assessment AS a1_0
+  JOIN abac_onetrust_scale.onetrust_sim.OrgHierarchy AS oh1_0
+    ON oh1_0.orgID = a1_0.orgGroupID AND (
+      oh1_0.isDeleted = FALSE
+    )
+  WHERE
+    (
+      a1_0.isDeleted = FALSE
+    )
+    AND (
+      oh1_0.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+      OR ARRAY_CONTAINS(a1_0.userIdsAssociatedWithAssessment, '79f09a0f-fbd7-4439-9e1e-d48abe62c98e')
+    )
+  GROUP BY ALL
+), data(_0, _1, _2, _3, _4, _5) AS (
+  SELECT
+    CAST(cte11_0.`name`.`value` AS STRING),
+    TO_JSON(cte11_0.`templateName`.`value`),
+    TO_JSON(cte11_0.`questionRootMap.a2d09d79-b6e2-42d7-a04d-a5726a062738`.`value`),
+    TO_JSON(cte11_0.`questionRootMap.d82a01e9-276b-4499-8b47-7d5068536f4f`.`value`),
+    cte11_0.`name`.`hyperlink`.`id`,
+    cte11_0.`GROUP_BY0Assessment`
+  FROM cte1 AS cte11_0
+  WHERE
+    (
+      NOT cte11_0.`templateType`.`value` IN ('RA', 'GRA', 'DINA', 'BENCHMARKING')
+      OR cte11_0.`templateType`.`value` IS NULL
+    )
+    AND cte11_0.`templateID`.`value` IN ('47f3f457-f38f-4ed0-883e-05eee0d779bf')
+  ORDER BY
+    cte11_0.`number`.`value`,
+    6
+)
+SELECT
+  COUNT(*)
+FROM data AS data1_0",1,PASS,2.56
+0031ae576d4cb0cfc253e8bf978e37853143111407a8ca9b613fb4e31b1cd9d7,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::0031ae576d4cb0cfc253e8bf978e37853143111407a8ca9b613fb4e31b1cd9d7 */
+/* ActivityId: 3fd5a09f-eaed-4150-a5de-381ca06f0f42 CorrelationId: {`cid`:`44a06941-7697-40eb-9e7f-fa9e15d0b26e`,`pid`:`5b01166a-3fd2-43f7-9ffd-03af1a4b3f4c`,`rid`:`3fd5a09f-eaed-4150-a5de-381ca06f0f42`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.74
+f723c94d2d9849de9bcd239623497a5ffd0d975d054c5fac926ffd1e2e0ad32d,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::f723c94d2d9849de9bcd239623497a5ffd0d975d054c5fac926ffd1e2e0ad32d */
+/* ActivityId: 815d4100-bbfe-4554-a243-29c10679f29f CorrelationId: {`cid`:`5f2156c5-2374-48f4-b4d0-734cebe31426`,`pid`:`881e6aba-cfcd-4d8a-ad14-7e4b79686a39`,`rid`:`815d4100-bbfe-4554-a243-29c10679f29f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.94
+ea2685cd9ab1c0080ccd597819f6fa8f3fdf756323f3384a8496c3e4563e99b9,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::ea2685cd9ab1c0080ccd597819f6fa8f3fdf756323f3384a8496c3e4563e99b9 */
+/* ActivityId: 5497153c-158d-481b-8e73-68f092660a0f CorrelationId: {`cid`:`7dbe6e16-f583-4b33-8f2b-4db2f8c9863e`,`pid`:`b6b60609-a730-4b0d-9271-543ba0f106d2`,`rid`:`5497153c-158d-481b-8e73-68f092660a0f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.87
+aa8e9928f3e374d6372171266cb153ccc3f169f3071dce1a4abd037ab4177adb,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::aa8e9928f3e374d6372171266cb153ccc3f169f3071dce1a4abd037ab4177adb */
+/* ActivityId: 3fd5a09f-eaed-4150-a5de-381ca06f0f42 CorrelationId: {`cid`:`44a06941-7697-40eb-9e7f-fa9e15d0b26e`,`pid`:`5b01166a-3fd2-43f7-9ffd-03af1a4b3f4c`,`rid`:`3fd5a09f-eaed-4150-a5de-381ca06f0f42`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('as', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",12,PASS,13.41
+f56c590fd8713295a79b0a88386dedc2a4b225b25a22a505f572f1b2eb1df506,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::f56c590fd8713295a79b0a88386dedc2a4b225b25a22a505f572f1b2eb1df506 */
+/* ActivityId: cf4c984f-cc1b-44b2-b54d-eeba3d98871a CorrelationId: {`cid`:`615452d0-d472-4b9b-9b88-61f86b422f9d`,`pid`:`fc5f5d82-86d2-4a6f-ac1e-75892bb35675`,`rid`:`cf4c984f-cc1b-44b2-b54d-eeba3d98871a`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('ass', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.41
+9e2d68b35e0236de7932e8654a69e1cc8a724689297bd366deb54581cf08e715,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::9e2d68b35e0236de7932e8654a69e1cc8a724689297bd366deb54581cf08e715 */
+/* ActivityId: b7334d51-feb5-45eb-a6eb-0f6bb90c424c CorrelationId: {`cid`:`30887bc2-4787-4e46-af14-e3693fc23a8d`,`pid`:`99e00762-22e4-4df3-864e-06ea7de50ee1`,`rid`:`b7334d51-feb5-45eb-a6eb-0f6bb90c424c`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,2.15
+4c6544195cd23811ee2c209b42869935a41a2d0626ee79e18ca89fb88a842b9d,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::4c6544195cd23811ee2c209b42869935a41a2d0626ee79e18ca89fb88a842b9d */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    main.*
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+  WHERE
+    main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+) AS `_`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",14,PASS,13.31
+3cb69737de61b37ffb1e5fbd2ed1a4f94bcd717f9bbb8fcda4d249a524b82e4a,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::3cb69737de61b37ffb1e5fbd2ed1a4f94bcd717f9bbb8fcda4d249a524b82e4a */
+/* ActivityId: 598df0d9-9154-44ad-934d-1088a9fe200d CorrelationId: {`cid`:`18bee412-9e8e-4713-9669-edd0b1bcc426`,`pid`:`83f381c6-01c2-4b29-b0fd-0d5753cd201c`,`rid`:`598df0d9-9154-44ad-934d-1088a9fe200d`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('ass', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.11
+8b2f111739493f0f5a0ea7a60e3761e8cf8723e93d99ec71421a3c6bca114c6a,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::8b2f111739493f0f5a0ea7a60e3761e8cf8723e93d99ec71421a3c6bca114c6a */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`,
+  `inventoryNumber`
+FROM (
+  SELECT
+    `inventoryName`,
+    `inventoryNumber`,
+    `C1`,
+    COALESCE(CAST(`C1` AS DOUBLE), 0.000000000000000E+000) AS `C2`,
+    CASE WHEN `C1` IS NULL THEN 0 ELSE 1 END AS `C3`
+  FROM (
+    SELECT
+      `inventoryName`,
+      `inventoryNumber`,
+      `inventoryNumber` AS `C1`
+    FROM (
+      SELECT
+        main.*
+      FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+      WHERE
+        main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+    ) AS `_`
+  ) AS `ITBL`
+  GROUP BY
+    `inventoryName`,
+    `inventoryNumber`,
+    `C1`
+) AS `ITBL`
+ORDER BY
+  `ITBL`.`C2`,
+  `ITBL`.`C3`,
+  `inventoryName`
+LIMIT 501",14,PASS,13.52
+af506b357a48cca65d764a3945f7d6de794630a68c177960feae75d736259727,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::af506b357a48cca65d764a3945f7d6de794630a68c177960feae75d736259727 */
+/* ActivityId: cf4c984f-cc1b-44b2-b54d-eeba3d98871a CorrelationId: {`cid`:`615452d0-d472-4b9b-9b88-61f86b422f9d`,`pid`:`fc5f5d82-86d2-4a6f-ac1e-75892bb35675`,`rid`:`cf4c984f-cc1b-44b2-b54d-eeba3d98871a`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.12
+73f49349e03167db61076a36cee6a7a6865cbc83f2535a57748311ae5515c32e,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::73f49349e03167db61076a36cee6a7a6865cbc83f2535a57748311ae5515c32e */
+/* ActivityId: 954ff5b8-8f88-4722-9659-62313c1b3802 CorrelationId: {`cid`:`6965b2a2-17bc-4718-9313-8ffcc62e8078`,`pid`:`45032688-9d05-4381-93d5-ab2a23de982a`,`rid`:`954ff5b8-8f88-4722-9659-62313c1b3802`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.9
+610b63ef016c58130547569550fce6cee6f58edac952a7c7e0d11021808876b9,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","/* OneTrust::610b63ef016c58130547569550fce6cee6f58edac952a7c7e0d11021808876b9 */
+select dtsv1_0.schema,dtsv1_0.allSchemaHash,dtsv1_0.binaryVersion,dtsv1_0.moduleDDLSchemaHash,dtsv1_0.recModifiedDate,dtsv1_0.schemaHashVersion,dtsv1_0.sharedDDLSchemaHash,dtsv1_0.sharedDMLSchemaHash from abac_onetrust_scale.monitoring.dbxtenantschemaversion dtsv1_0 where dtsv1_0.schema='auto_qa_ipp17kyjyu4li3tuvgy7zbxk'",12,PASS,2.15
+d162356761700979ee31cdc27d74ef9351162072bfac8a66d0be0396790c16ca,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::d162356761700979ee31cdc27d74ef9351162072bfac8a66d0be0396790c16ca */
+/* ActivityId: b7334d51-feb5-45eb-a6eb-0f6bb90c424c CorrelationId: {`cid`:`30887bc2-4787-4e46-af14-e3693fc23a8d`,`pid`:`99e00762-22e4-4df3-864e-06ea7de50ee1`,`rid`:`b7334d51-feb5-45eb-a6eb-0f6bb90c424c`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.72
+e4352f3af65645c751e90a15dd47b6cf6b76f107c36b75a2b511436dde2f7e4a,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::e4352f3af65645c751e90a15dd47b6cf6b76f107c36b75a2b511436dde2f7e4a */
+/* ActivityId: 5497153c-158d-481b-8e73-68f092660a0f CorrelationId: {`cid`:`7dbe6e16-f583-4b33-8f2b-4db2f8c9863e`,`pid`:`b6b60609-a730-4b0d-9271-543ba0f106d2`,`rid`:`5497153c-158d-481b-8e73-68f092660a0f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.23
+d15e57020f5bd34867d8ca7927aa0b477c5efae2c8d92d2446112de72685f864,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::d15e57020f5bd34867d8ca7927aa0b477c5efae2c8d92d2446112de72685f864 */
+/* ActivityId: 815d4100-bbfe-4554-a243-29c10679f29f CorrelationId: {`cid`:`5f2156c5-2374-48f4-b4d0-734cebe31426`,`pid`:`881e6aba-cfcd-4d8a-ad14-7e4b79686a39`,`rid`:`815d4100-bbfe-4554-a243-29c10679f29f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.84
+abed58d97892dcbd2d72aeb7a0d2623baf2e997a4e6da641436fa228b50bc72e,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::abed58d97892dcbd2d72aeb7a0d2623baf2e997a4e6da641436fa228b50bc72e */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.95
+38fe7e8cb621b6d6dd3d7e8fe26826b795f522e451bc8e46264af12bbd2bf7cd,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::38fe7e8cb621b6d6dd3d7e8fe26826b795f522e451bc8e46264af12bbd2bf7cd */
+/* ActivityId: b7334d51-feb5-45eb-a6eb-0f6bb90c424c CorrelationId: {`cid`:`30887bc2-4787-4e46-af14-e3693fc23a8d`,`pid`:`99e00762-22e4-4df3-864e-06ea7de50ee1`,`rid`:`b7334d51-feb5-45eb-a6eb-0f6bb90c424c`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.84
+e9980be4ea64b9e7de3c65a72e67e4252a068e4c21fd6109a7aa9f33abc8f778,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::e9980be4ea64b9e7de3c65a72e67e4252a068e4c21fd6109a7aa9f33abc8f778 */
+/* ActivityId: 3c820c1d-0810-4cef-b7ba-a07f99c82cd3 CorrelationId: {`cid`:`cdf6cadc-9d22-4a61-821d-390b1cee25b2`,`pid`:`cab016a2-aa2f-432c-98e8-e0599e82de14`,`rid`:`3c820c1d-0810-4cef-b7ba-a07f99c82cd3`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.74
+43ce9be6c8f7a34fc6359aa816b2e2e28f11ec83c400cecd7d919c15b1da98b2,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::43ce9be6c8f7a34fc6359aa816b2e2e28f11ec83c400cecd7d919c15b1da98b2 */
+/* ActivityId: 3c820c1d-0810-4cef-b7ba-a07f99c82cd3 CorrelationId: {`cid`:`cdf6cadc-9d22-4a61-821d-390b1cee25b2`,`pid`:`cab016a2-aa2f-432c-98e8-e0599e82de14`,`rid`:`3c820c1d-0810-4cef-b7ba-a07f99c82cd3`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.74
+ce6f0dca326fac3332d6b2acbcc2a2250977a0dca73fdb21b165d8f39ee00c6a,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::ce6f0dca326fac3332d6b2acbcc2a2250977a0dca73fdb21b165d8f39ee00c6a */
+/* ActivityId: f2bd61ff-a7dd-4ab4-913b-b9ca44e3a144 CorrelationId: {`cid`:`079f27cb-d01c-4e52-871d-1908812195de`,`pid`:`b9afadbd-1610-479f-8038-f20b1373090b`,`rid`:`f2bd61ff-a7dd-4ab4-913b-b9ca44e3a144`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.01
+ad56dd72e4060d65ee9190b0a2e8f44081f9ed37b71955d9303e0ada89d5c203,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::ad56dd72e4060d65ee9190b0a2e8f44081f9ed37b71955d9303e0ada89d5c203 */
+/* ActivityId: 3c820c1d-0810-4cef-b7ba-a07f99c82cd3 CorrelationId: {`cid`:`cdf6cadc-9d22-4a61-821d-390b1cee25b2`,`pid`:`cab016a2-aa2f-432c-98e8-e0599e82de14`,`rid`:`3c820c1d-0810-4cef-b7ba-a07f99c82cd3`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.79
+f6ab5645d12e259c8d808e11b07b7f6ac37b6145949b97e45069d535e7185a31,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::f6ab5645d12e259c8d808e11b07b7f6ac37b6145949b97e45069d535e7185a31 */
+/* ActivityId: 815d4100-bbfe-4554-a243-29c10679f29f CorrelationId: {`cid`:`5f2156c5-2374-48f4-b4d0-734cebe31426`,`pid`:`881e6aba-cfcd-4d8a-ad14-7e4b79686a39`,`rid`:`815d4100-bbfe-4554-a243-29c10679f29f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.06
+245a1d81eb09ed2dfb294237a61bdfb47fd3863fcbf50566eabcbd15cf0f06ff,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::245a1d81eb09ed2dfb294237a61bdfb47fd3863fcbf50566eabcbd15cf0f06ff */
+/* ActivityId: cf4c984f-cc1b-44b2-b54d-eeba3d98871a CorrelationId: {`cid`:`615452d0-d472-4b9b-9b88-61f86b422f9d`,`pid`:`fc5f5d82-86d2-4a6f-ac1e-75892bb35675`,`rid`:`cf4c984f-cc1b-44b2-b54d-eeba3d98871a`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.7
+6caa3bd415aa32edf5b94b27bc8ad45d659a3c45ac394c01a78573bf0547aefb,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::6caa3bd415aa32edf5b94b27bc8ad45d659a3c45ac394c01a78573bf0547aefb */
+/* ActivityId: f2bd61ff-a7dd-4ab4-913b-b9ca44e3a144 CorrelationId: {`cid`:`079f27cb-d01c-4e52-871d-1908812195de`,`pid`:`b9afadbd-1610-479f-8038-f20b1373090b`,`rid`:`f2bd61ff-a7dd-4ab4-913b-b9ca44e3a144`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.74
+95b724c38125efb310f385380ef30769f1af39c545f55326fc5e742d644a2bcf,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::95b724c38125efb310f385380ef30769f1af39c545f55326fc5e742d644a2bcf */
+/* ActivityId: f2bd61ff-a7dd-4ab4-913b-b9ca44e3a144 CorrelationId: {`cid`:`079f27cb-d01c-4e52-871d-1908812195de`,`pid`:`b9afadbd-1610-479f-8038-f20b1373090b`,`rid`:`f2bd61ff-a7dd-4ab4-913b-b9ca44e3a144`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.84
+5f47fcdfe35bc2bc3b1d38f325d11270b1e979270ce2ed0aaa7ece0f6a82783e,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::5f47fcdfe35bc2bc3b1d38f325d11270b1e979270ce2ed0aaa7ece0f6a82783e */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    main.*
+  FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+  WHERE
+    main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+) AS `_`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",14,PASS,13.82
+f6196e0cc3ba46f1c6137b20491dee4816d71869d67688d91e833669b8a4f3e4,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::f6196e0cc3ba46f1c6137b20491dee4816d71869d67688d91e833669b8a4f3e4 */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,2.05
+1c302c6f6e4c5f757bfdd14ef0c60e8dcae344cb37d774f9d3c7b22299ac4e0e,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::1c302c6f6e4c5f757bfdd14ef0c60e8dcae344cb37d774f9d3c7b22299ac4e0e */
+/* ActivityId: 5497153c-158d-481b-8e73-68f092660a0f CorrelationId: {`cid`:`7dbe6e16-f583-4b33-8f2b-4db2f8c9863e`,`pid`:`b6b60609-a730-4b0d-9271-543ba0f106d2`,`rid`:`5497153c-158d-481b-8e73-68f092660a0f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asse', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",9,PASS,13.41
+cfaa050e6956622386b27e7a60a6c04d6240645b909dde04c51174be67fac156,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::cfaa050e6956622386b27e7a60a6c04d6240645b909dde04c51174be67fac156 */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryNumber`
+FROM (
+  SELECT
+    `inventoryNumber`,
+    `C1`,
+    COALESCE(CAST(`C1` AS DOUBLE), 0.000000000000000E+000) AS `C2`,
+    CASE WHEN `C1` IS NULL THEN 0 ELSE 1 END AS `C3`
+  FROM (
+    SELECT
+      `inventoryNumber`,
+      `inventoryNumber` AS `C1`
+    FROM (
+      SELECT
+        main.*
+      FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+      WHERE
+        main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+    ) AS `_`
+  ) AS `ITBL`
+  GROUP BY
+    `inventoryNumber`,
+    `C1`
+) AS `ITBL`
+ORDER BY
+  `ITBL`.`C2`,
+  `ITBL`.`C3`
+LIMIT 501",14,PASS,13.37
+23e1cbdf615df1693ed96fdde36d488bd3dd18386ddd00a52c62ed52150490b8,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::23e1cbdf615df1693ed96fdde36d488bd3dd18386ddd00a52c62ed52150490b8 */
+/* ActivityId: 3fd5a09f-eaed-4150-a5de-381ca06f0f42 CorrelationId: {`cid`:`44a06941-7697-40eb-9e7f-fa9e15d0b26e`,`pid`:`5b01166a-3fd2-43f7-9ffd-03af1a4b3f4c`,`rid`:`3fd5a09f-eaed-4150-a5de-381ca06f0f42`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.95
+7711760a384b556b80f5bf57c4411e81245989ff24deb56b991b176c13b9d8c6,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::7711760a384b556b80f5bf57c4411e81245989ff24deb56b991b176c13b9d8c6 */
+/* ActivityId: 598df0d9-9154-44ad-934d-1088a9fe200d CorrelationId: {`cid`:`18bee412-9e8e-4713-9669-edd0b1bcc426`,`pid`:`83f381c6-01c2-4b29-b0fd-0d5753cd201c`,`rid`:`598df0d9-9154-44ad-934d-1088a9fe200d`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.89
+bb19a935420476942638da1a400791a96aacbb6cdf48410a73b3eea8ed2fd858,real_query,,"{""tenant"":1,""user"":""probe"",""org"":""100"",""mode"":""DISABLE"",""root"":""Customer"",""permissions"":[]}","/* OneTrust::bb19a935420476942638da1a400791a96aacbb6cdf48410a73b3eea8ed2fd858 */
+select dtsv1_0.schema,dtsv1_0.allSchemaHash,dtsv1_0.binaryVersion,dtsv1_0.moduleDDLSchemaHash,dtsv1_0.recModifiedDate,dtsv1_0.schemaHashVersion,dtsv1_0.sharedDDLSchemaHash,dtsv1_0.sharedDMLSchemaHash from abac_onetrust_scale.monitoring.dbxtenantschemaversion dtsv1_0 where dtsv1_0.schema='auto_qa_024d1xlek07ht6gc2fhqxpttny'",11,PASS,1.94
+aca9168f01217d95ca05be86aef08974d20fd8fcf2a6568b9e95b3df7aef4a2a,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::aca9168f01217d95ca05be86aef08974d20fd8fcf2a6568b9e95b3df7aef4a2a */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.84
+92c93ffcc1e5aad799b0ddbedcb7870f97613c0ad3630883d05104e6fd533a29,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::92c93ffcc1e5aad799b0ddbedcb7870f97613c0ad3630883d05104e6fd533a29 */
+/* ActivityId: 6eab87fc-3698-4b72-b117-3da5c8dbc013 CorrelationId: {`cid`:`2cb9b28d-9735-439d-bd8c-9a1b711e2bce`,`pid`:`a877aeb3-da0e-41ea-8688-b17bd02ce4a1`,`rid`:`6eab87fc-3698-4b72-b117-3da5c8dbc013`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`,`Sources`:[{`ReportId`:`7033aa9e-3346-4581-b07a-fac8a771f117`,`VisualId`:`2f55e3047f2338f7431c`}]}} */
+SELECT
+  `inventoryName`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.85
+89d8507b3894d62c01857b7aecbd6386de68a2175e7222e36e1e8032864b8964,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::89d8507b3894d62c01857b7aecbd6386de68a2175e7222e36e1e8032864b8964 */
+/* ActivityId: 5497153c-158d-481b-8e73-68f092660a0f CorrelationId: {`cid`:`7dbe6e16-f583-4b33-8f2b-4db2f8c9863e`,`pid`:`b6b60609-a730-4b0d-9271-543ba0f106d2`,`rid`:`5497153c-158d-481b-8e73-68f092660a0f`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('as', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",12,PASS,13.3
+8a1ed6960de7ff74ef6c800a048cc55781e72e450f2e15a7e4011e7f43433a09,real_query,cmb_v_inventoryaggregatedrisksummary,"{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSETS"", ""VENDORS"", ""PROCESSING-ACTIVITIES""]}","/* OneTrust::8a1ed6960de7ff74ef6c800a048cc55781e72e450f2e15a7e4011e7f43433a09 */
+/* ActivityId: 598df0d9-9154-44ad-934d-1088a9fe200d CorrelationId: {`cid`:`18bee412-9e8e-4713-9669-edd0b1bcc426`,`pid`:`83f381c6-01c2-4b29-b0fd-0d5753cd201c`,`rid`:`598df0d9-9154-44ad-934d-1088a9fe200d`,`wl`:`AS`,`trctx`:`{\n  \`CustomerTenantId\`: \`9d1d17d8-372b-4b23-a9fc-1e5d895c89a1\`,\n  \`PremiumCapacityId\`: \`DEB4798E-BA7C-451B-B62E-A8046C30C147\`,\n  \`PremiumCapacityName\`: \`autoapppowerbigen2eastusqa\`,\n  \`SubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`ResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`TenantName\`: \`\`,\n  \`WorkspaceName\`: \`\`,\n  \`WorkspaceId\`: \`846ABBB3-4CBD-486E-8397-F5AF41B3A7E7\`,\n  \`WorkspaceDisplayName\`: \`auto-qa_E40Yx52dkBjpcQAZImno9Yvh4k\`,\n  \`PBIESubscriptionId\`: \`6cae49f5-1e4f-487a-8f43-cdbb8b50642f\`,\n  \`PBIEResourceGroup\`: \`auto-app-eastus-qa-rg\`,\n  \`WorkloadResourceMoniker\`: \`1ecf7d9b-a618-4714-b894-38b6d8de0cec\`,\n  \`ReplicaId\`: \`AAA\`,\n  \`ShouldCollectQueryText\`: true\n}`,`ctx`:{`DatasetId`:`1ecf7d9b-a618-4714-b894-38b6d8de0cec`}} */
+SELECT
+  `inventoryName`,
+  COUNT(1) AS `C1`
+FROM (
+  SELECT
+    `inventoryID`,
+    `entityID`,
+    `entityType`,
+    `id`,
+    `inherentRiskLevel`,
+    `inherentRiskLevelID`,
+    `inherentRiskScore`,
+    `residualRiskLevel`,
+    `residualRiskLevelID`,
+    `residualRiskScore`,
+    `targetRiskLevel`,
+    `targetRiskLevelID`,
+    `targetRiskScore`,
+    `inventoryType`,
+    `inventoryTypeID`,
+    `inventoryName`,
+    `inventoryNumber`,
+    `inventoryURL`,
+    `orgID`,
+    `orgName`,
+    `parentOrgID`
+  FROM (
+    SELECT
+      main.*
+    FROM abac_onetrust_scale.onetrust_sim.cmb_v_inventoryaggregatedrisksummary AS main
+    WHERE
+      main.parentOrgID = 'b99df4a4-2bf5-4c08-9483-bd636470bc11'
+  ) AS `_`
+  WHERE
+    LOCATE('asset_163271', COALESCE(`inventoryName`, ''), 1) >= 1
+) AS `ITBL`
+GROUP BY
+  `inventoryName`
+LIMIT 1000001",1,PASS,1.94
+GEN-ESA-Q1-owner-active,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.assessmentresponse.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, r.assessmentQuestionID, r.response, r.parsedResponse, r.parsedResponseNumeric
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",,PENDING,
+GEN-ESA-Q1-owner-inactive,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.inactive.grant@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, r.assessmentQuestionID, r.response, r.parsedResponse, r.parsedResponseNumeric
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",,PENDING,
+GEN-ESA-Q1-no-grant,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.nobody@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, r.assessmentQuestionID, r.response, r.parsedResponse, r.parsedResponseNumeric
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r",,PENDING,
+GEN-ESA-Q2-owner-active,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.assessmentresponse.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, count(*) AS visible_response_count
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+GROUP BY r.assessmentID",,PENDING,
+GEN-ESA-Q2-owner-inactive,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.inactive.grant@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, count(*) AS visible_response_count
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+GROUP BY r.assessmentID",,PENDING,
+GEN-ESA-Q2-no-grant,generated_perf_query,cmb_v_assessmentquestionresponse_v3,"{""tenant"": 1, ""user"": ""u.nobody@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT r.assessmentID, count(*) AS visible_response_count
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+GROUP BY r.assessmentID",,PENDING,
+GEN-ESA-Q3-owner-active-crosscheck,generated_perf_query,"cmb_v_assessmentquestion, cmb_assessment, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""u.assessment.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT main.assessmentID, main.assessmentQuestionID, main.questionID, main.questionType,
+       aqr.response, aqr.parsedResponse, aqr.parsedResponseNumeric, aqr.parsedResponseTimestamp
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestion main
+INNER JOIN abac_onetrust_scale.onetrust_sim.cmb_assessment a
+  ON a.id = main.assessmentID AND ucase(a.templateType) = 'CONTROL'
+LEFT OUTER JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 aqr
+  ON aqr.assessmentID = main.assessmentID
+ AND aqr.assessmentQuestionID = main.assessmentQuestionID
+ AND aqr.parentOrgID = main.parentOrgID",,PENDING,
+GEN-ESA-Q3-broad-perf,generated_perf_query,"cmb_v_assessmentquestion, cmb_assessment, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT main.assessmentID, main.assessmentQuestionID, main.questionID, main.questionType,
+       aqr.response, aqr.parsedResponse, aqr.parsedResponseNumeric, aqr.parsedResponseTimestamp
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestion main
+INNER JOIN abac_onetrust_scale.onetrust_sim.cmb_assessment a
+  ON a.id = main.assessmentID AND ucase(a.templateType) = 'CONTROL'
+LEFT OUTER JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 aqr
+  ON aqr.assessmentID = main.assessmentID
+ AND aqr.assessmentQuestionID = main.assessmentQuestionID
+ AND aqr.parentOrgID = main.parentOrgID",,PENDING,
+GEN-ESA-Q3-disable-baseline,generated_perf_query,"cmb_v_assessmentquestion, cmb_assessment, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT main.assessmentID, main.assessmentQuestionID, main.questionID, main.questionType,
+       aqr.response, aqr.parsedResponse, aqr.parsedResponseNumeric, aqr.parsedResponseTimestamp
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestion main
+INNER JOIN abac_onetrust_scale.onetrust_sim.cmb_assessment a
+  ON a.id = main.assessmentID AND ucase(a.templateType) = 'CONTROL'
+LEFT OUTER JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 aqr
+  ON aqr.assessmentID = main.assessmentID
+ AND aqr.assessmentQuestionID = main.assessmentQuestionID
+ AND aqr.parentOrgID = main.parentOrgID",,PENDING,
+GEN-BIG-STAGE-broad-perf,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT
+  s.newStage,
+  count(DISTINCT s.assessmentID) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
+  ON s.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+GROUP BY s.newStage
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-STAGE-disable-baseline,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT
+  s.newStage,
+  count(DISTINCT s.assessmentID) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
+  ON s.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+GROUP BY s.newStage
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-STAGE-crossjoin-owner,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT
+  s.newStage,
+  count(DISTINCT s.assessmentID) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
+  ON s.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+GROUP BY s.newStage
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-INVENTORY-broad-perf,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT
+  inv.inventoryType,
+  count(DISTINCT inv.assessmentID) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+  ON inv.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+GROUP BY inv.inventoryType
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-INVENTORY-disable-baseline,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT
+  inv.inventoryType,
+  count(DISTINCT inv.assessmentID) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+  ON inv.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+GROUP BY inv.inventoryType
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-INVENTORY-crossjoin-owner,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentinventory_v4, cmb_v_assessmentquestionresponse_v3","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT
+  inv.inventoryType,
+  count(DISTINCT inv.assessmentID) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+  ON inv.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+GROUP BY inv.inventoryType
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-4WAY-broad-perf,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""perf-test"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""__PERF_PROBE__"", ""permissions"": [""ASSESSMENT""]}","SELECT
+  s.newStage,
+  inv.inventoryType,
+  count(DISTINCT a.id) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response,
+  max(s.newStageDateTime) AS latest_stage_change
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
+  ON s.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+  ON inv.assessmentID = a.id
+GROUP BY s.newStage, inv.inventoryType
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-4WAY-disable-baseline,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""probe"", ""org"": ""100"", ""mode"": ""DISABLE"", ""root"": ""Customer"", ""permissions"": []}","SELECT
+  s.newStage,
+  inv.inventoryType,
+  count(DISTINCT a.id) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response,
+  max(s.newStageDateTime) AS latest_stage_change
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
+  ON s.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+  ON inv.assessmentID = a.id
+GROUP BY s.newStage, inv.inventoryType
+ORDER BY response_count DESC",,PENDING,
+GEN-BIG-4WAY-crossjoin-owner,generated_perf_query,"cmb_v_assessment_v4, cmb_v_assessmentstagechangetracker_v4, cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentinventory_v4","{""tenant"": 1, ""user"": ""u.assessment.crossjoin.owner@example.com"", ""org"": ""100"", ""mode"": ""ABAC"", ""root"": ""ASSESSMENT"", ""permissions"": []}","SELECT
+  s.newStage,
+  inv.inventoryType,
+  count(DISTINCT a.id) AS assessment_count,
+  count(r.responseValueID) AS response_count,
+  avg(r.parsedResponseNumeric) AS avg_numeric_response,
+  max(s.newStageDateTime) AS latest_stage_change
+FROM abac_onetrust_scale.onetrust_sim.cmb_v_assessment_v4 a
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentstagechangetracker_v4 s
+  ON s.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentquestionresponse_v3 r
+  ON r.assessmentID = a.id
+JOIN abac_onetrust_scale.onetrust_sim.cmb_v_assessmentinventory_v4 inv
+  ON inv.assessmentID = a.id
+GROUP BY s.newStage, inv.inventoryType
+ORDER BY response_count DESC",,PENDING,

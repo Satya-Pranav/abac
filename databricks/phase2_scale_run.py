@@ -131,7 +131,8 @@ assert integrity["assignment_match_rate"] > 0.99, f"Assignment FK integrity too 
 print(f"Referential integrity validation passed: {integrity}")
 
 # COMMAND ----------
-# Step 4: tags (8 tables, including the 4 new ones)
+# Step 4: tags (10 tables: the original 8 plus the 2 big-table POC additions --
+# cmb_v_assessmentquestionresponse_v3, cmb_v_assessmentstagechangetracker_v4)
 from onetrust_synth.governance_sql import (
     build_udf_sql, build_tags_sql, build_policies_sql, build_seed_principals_sql, build_oauth_wiring_sql,
 )
@@ -145,26 +146,34 @@ for stmt in build_tags_sql(CATALOG, MAIN_SCHEMA):
 print("Tags applied.")
 
 # COMMAND ----------
-# Step 5: policies (8 tables)
+# Step 5: policies (10 tables)
 for stmt in build_policies_sql(CATALOG, MAIN_SCHEMA, service_principal=SERVICE_PRINCIPAL):
     spark.sql(stmt)
 print("Policies created.")
 display(spark.sql(f"SHOW POLICIES ON SCHEMA {CATALOG}.{MAIN_SCHEMA}"))
 
 # COMMAND ----------
-# Step 6: seeded test principals (8 tables: 4 replayed + 4 new)
+# Step 6: seeded test principals (10 tables: 4 replayed + 4 design-doc new + 2 POC big-table new)
 for stmt in build_seed_principals_sql(CATALOG, MAIN_SCHEMA):
     spark.sql(stmt)
 seed_count = spark.sql(
     f"SELECT count(*) AS n FROM {CATALOG}.{MAIN_SCHEMA}.ABAC_EntitySubjectAssignment "
     "WHERE tenantHash = 'phase2-test-seed'"
 ).collect()[0]["n"]
-assert seed_count == 9, f"Expected 9 seeded ESA rows, got {seed_count}"
+# 11 guaranteed (900001-900011, each a single-table LIMIT 1 pick against a non-empty table) + a
+# 12th (900012) only if cmb_v_assessmentquestionresponse_v3.assessmentID and
+# cmb_v_assessmentstagechangetracker_v4.assessmentID actually share a value in the live data --
+# expected (same ndv in the real profile) but not guaranteed, so this doesn't hard-assert on it.
+assert seed_count in (11, 12), f"Expected 11 or 12 seeded ESA rows, got {seed_count}"
+if seed_count == 11:
+    print("WARNING: crossjoin seed 900012 found no shared assessmentID between "
+          "cmb_v_assessmentquestionresponse_v3 and cmb_v_assessmentstagechangetracker_v4 -- "
+          "the u.assessment.crossjoin.owner@example.com claim will see 0 rows on both tables.")
 print(f"Seeded {seed_count} test-principal ESA rows.")
 
 # COMMAND ----------
-# Step 7: OAuth wiring (get_user_context/abac_row_filter_wrapper_oauth, 8 policies re-pointed to
-# it, and grants) -- mirrors sql_onetrust/07_oauth_wiring.sql. Without this the 8 policies stay
+# Step 7: OAuth wiring (get_user_context/abac_row_filter_wrapper_oauth, 10 policies re-pointed to
+# it, and grants) -- mirrors sql_onetrust/07_oauth_wiring.sql. Without this the 10 policies stay
 # bound to abac_row_filter_wrapper (Step 5), which reads the hardcoded get_test_user_context()
 # literal, so every real OAuth claim would be silently ignored and the SP would have no grants to
 # even read the catalog.
@@ -181,7 +190,7 @@ oauth_wiring_stmts = build_oauth_wiring_sql(CATALOG, MAIN_SCHEMA, SERVICE_PRINCI
 for stmt in oauth_wiring_stmts[2:]:
     spark.sql(stmt)
 print("OAuth wiring applied: get_user_context, abac_row_filter_wrapper_oauth, "
-      "8 policies re-pointed to it, grants issued.")
+      "10 policies re-pointed to it, grants issued.")
 display(spark.sql(f"SHOW POLICIES ON SCHEMA {CATALOG}.{MAIN_SCHEMA}"))
 
 # COMMAND ----------

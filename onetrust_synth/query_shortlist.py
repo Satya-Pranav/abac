@@ -30,6 +30,9 @@ SEEDED_CLAIMS_BY_TABLE = {
     "cmb_inventory": '{"tenant":1,"user":"u.inventory.owner@example.com","org":"100","mode":"ABAC","root":"ASSETS","permissions":[]}',
     "cmb_v_assessment_v4": '{"tenant":1,"user":"u.assessmentv4.owner@example.com","org":"100","mode":"ABAC","root":"ASSESSMENT","permissions":[]}',
     "entitylink_v3": '{"tenant":1,"user":"u.entitylink.owner@example.com","org":"100","mode":"ABAC","root":"CONTROLTEMPLATE","permissions":[]}',
+    # POC-scoped big-table additions (governance_sql.py module docstring) -- not in the design doc.
+    "cmb_v_assessmentquestionresponse_v3": '{"tenant":1,"user":"u.assessmentresponse.owner@example.com","org":"100","mode":"ABAC","root":"ASSESSMENT","permissions":[]}',
+    "cmb_v_assessmentstagechangetracker_v4": '{"tenant":1,"user":"u.assessmentstage.owner@example.com","org":"100","mode":"ABAC","root":"ASSESSMENT","permissions":[]}',
 }
 _DISABLE_PROBE_CLAIM = '{"tenant":1,"user":"probe","org":"100","mode":"DISABLE","root":"Customer","permissions":[]}'
 
@@ -58,6 +61,8 @@ _ALL_OBJECT_TYPES_BY_TABLE = {
     "cmb_inventory": ["ASSETS", "VENDORS", "PROCESSING-ACTIVITIES"],
     "cmb_v_assessment_v4": ["ASSESSMENT"],
     "entitylink_v3": ["CONTROLTEMPLATE"],
+    "cmb_v_assessmentquestionresponse_v3": ["ASSESSMENT"],
+    "cmb_v_assessmentstagechangetracker_v4": ["ASSESSMENT"],
 }
 # Guaranteed to never equal any real object_type, so the permissions branch (not the root
 # branch's explicit-assignment/RBAC_ABAC paths) is what grants visibility here.
